@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>محفظة الالتزام للمشاريع للمقاولين</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231c6b3c'/%3E%3Ctext x='16' y='21' font-family='monospace' font-size='13' font-weight='700' text-anchor='middle' fill='white'%3EIL%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip" href="#view" data-ar="تخطَّ إلى المحتوى" data-en="Skip to content">تخطَّ إلى المحتوى</a>
+<div class="shell">
+<aside class="rail" id="rail">
+  <div class="rail-head">
+    <div class="brand">
+      <div class="brand-mark">IL</div>
+      <div>
+        <div class="brand-t" data-ar="محفظة الالتزام للمشاريع للمقاولين" data-en="Compliance Vault — contractor projects">محفظة الالتزام للمشاريع للمقاولين</div>
+        <div class="brand-s" data-ar="حصر وإدارة مشاريع التحويل — SEC" data-en="SEC conversion takeoff & control">حصر وإدارة مشاريع التحويل — SEC</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="railsec">
+    <div class="lbl" data-ar="١ · المقاول" data-en="1 · Contractor">١ · المقاول</div>
+    <select id="selContractor" aria-label="Contractor"></select>
+  </div>
+
+  <div class="railsec">
+    <div class="lbl" data-ar="٢ · المشروع / أمر العمل" data-en="2 · Project / Work Order">٢ · المشروع / أمر العمل</div>
+    <select id="selProject" aria-label="Project"></select>
+    <div class="rowflex">
+      <button class="btn sm" id="btnAddProject" data-ar="+ مشروع جديد" data-en="+ New project">+ مشروع جديد</button>
+      <button class="btn sm gh" id="btnDupProject" data-ar="نسخ" data-en="Duplicate">نسخ</button>
+      <button class="btn sm gh" id="btnDelProject" data-ar="حذف" data-en="Delete">حذف</button>
+    </div>
+    <div class="tagrow" id="projTags"></div>
+  </div>
+
+  <nav class="nav" id="nav" aria-label="Pages"></nav>
+
+  <div class="railsec">
+    <div class="lbl" data-ar="٣ · الاستنباط الآلي" data-en="3 · Auto-derivation">٣ · الاستنباط الآلي</div>
+    <button class="btn pri big" id="btnDeriveAll" data-ar="استنباط ومعالجة ذكية للبيانات" data-en="Derive & AI-process data">استنباط ومعالجة ذكية للبيانات</button>
+    <div class="ver" id="deriveState" data-ar="لم يُشغّل بعد" data-en="Not run yet">لم يُشغّل بعد</div>
+    <button class="btn big" id="btnDeck" data-ar="◧  عرض تقديمي تحليلي" data-en="◧  Analytical presentation">◧  عرض تقديمي تحليلي</button>
+    <button class="btn big" id="btnMap">⌖  عرض المشروع على الخريطة</button>
+  </div>
+
+  <div class="rail-foot">
+    <div class="rowflex">
+      <div class="seg" role="group" aria-label="Language">
+        <button id="langAr" aria-pressed="true">عربي</button>
+        <button id="langEn" aria-pressed="false">EN</button>
+      </div>
+      <button class="btn sm gh" id="btnTheme" data-ar="الوضع الليلي" data-en="Dark mode">الوضع الليلي</button>
+    </div>
+    <div class="ver">v1.0 · SEC Unified Contract 2023</div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="btn sm burger" id="burger" aria-label="Menu">☰</button>
+    <div>
+      <div class="t" id="pageTitle">لوحة التحكم</div>
+      <div class="s" id="pageCrumb"></div>
+    </div>
+    <div class="sp"></div>
+    <div class="rowflex noprint">
+      <span class="pill acc" id="woPill"></span>
+      <button class="btn sm" id="btnPrint" data-ar="طباعة" data-en="Print">طباعة</button>
+      <button class="btn sm pri" id="btnEmailReport" data-ar="✉ إرسال التقرير" data-en="✉ Email report" hidden>✉ إرسال التقرير</button>
+    </div>
+  </header>
+  <main class="wrap" id="view" tabindex="-1"></main>
+</div>
+</div>
+<div class="deck" id="deck" hidden role="dialog" aria-modal="true" aria-label="Analytical presentation">
+  <div class="deck-bar">
+    <button class="btn sm" id="deckClose">✕</button>
+    <span class="lab" id="deckLabel"></span>
+    <span class="sp"></span>
+    <div class="deck-dots" id="deckDots"></div>
+    <span class="deck-pos" id="deckPos"></span>
+    <button class="btn sm" id="deckPrev">‹</button>
+    <button class="btn sm pri" id="deckNext">›</button>
+    <button class="btn sm" id="deckPrint" data-ar="طباعة / PDF" data-en="Print / PDF">طباعة / PDF</button>
+    <button class="btn sm" id="deckFull" data-ar="ملء الشاشة" data-en="Full screen">ملء الشاشة</button>
+  </div>
+  <div class="deck-stage" id="deckStage"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

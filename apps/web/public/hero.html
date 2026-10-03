@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<title>محفظة الالتزام</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;600;700&display=swap">
+<style>
+/* Layout: ورقة رسم هندسية. نص القرار على جهة البداية، ولوحة مقياس الاعتماد على الجهة المقابلة.
+   Single dark look by design: the page is a CAD sheet, so every color is explicit. */
+:root {
+  --bg: #0a1511;          /* خلفية الورقة: أسود مائل للأخضر */
+  --sheet: #0f1f19;       /* سطح اللوحة */
+  --grid: #1b3329;        /* خطوط الشبكة */
+  --paper: #eaf4ee;       /* النص الأساسي */
+  --mute: #9cb7a7;        /* النص الثانوي */
+  --leaf: #8cc63f;        /* لون العلامة: الفعل والمسار */
+  --amber: #f0862b;       /* الانحراف الذي يحتاج توقيعًا */
+  --ink-on-leaf: #0a1511;
+  --f-display: "Reem Kufi", "IBM Plex Sans Arabic", Tahoma, sans-serif;
+  --f-body: "IBM Plex Sans Arabic", Tahoma, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--paper); font-family: var(--f-body); font-size: 16px; line-height: 1.7; padding-inline: clamp(16px, 4vw, 48px); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--leaf); outline-offset: 3px; border-radius: 6px; }
+
+.page { max-width: 1240px; margin-inline: auto; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; padding-block: clamp(28px, 5vw, 64px) clamp(24px, 4vw, 40px); }
+
+/* ── النص ── */
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; color: var(--mute); letter-spacing: .02em; }
+.mono-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--leaf); color: var(--ink-on-leaf); font: 600 13px/1 var(--f-mono); }
+h1 { margin: 20px 0 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(40px, 6.4vw, 78px); line-height: 1.16; letter-spacing: -.01em; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--leaf); }
+.sub { margin: 22px 0 0; max-width: 34em; font-size: clamp(17px, 1.7vw, 20px); color: var(--mute); line-height: 1.85; }
+.sub b { color: var(--paper); font-weight: 500; }
+.cta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 22px; margin-top: 32px; }
+.cta { display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 28px; border-radius: 12px; background: var(--leaf); color: var(--ink-on-leaf); font: 600 18px/1 var(--f-body); text-decoration: none; box-shadow: 0 0 0 0 rgba(140, 198, 63, .5); animation: ring 2.4s ease-out 1.6s 2; transition: transform .15s, background .15s; }
+.cta:hover { background: #a2d85a; transform: translateY(-2px); }
+.cta svg { width: 20px; height: 20px; flex: none; }
+[dir="rtl"] .cta svg { transform: scaleX(-1); }
+.how { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--paper); text-decoration: none; font-size: 16px; border-bottom: 1px solid var(--grid); }
+.how:hover { border-color: var(--leaf); }
+.how svg { width: 16px; height: 16px; animation: bob 1.8s ease-in-out infinite; }
+.reassure { margin: 16px 0 0; font-size: 14px; color: var(--mute); }
+.reassure span + span::before { content: "·"; margin-inline: 10px; opacity: .6; }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(140, 198, 63, .5); } 100% { box-shadow: 0 0 0 20px rgba(140, 198, 63, 0); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* ── لوحة الرسم ── */
+.sheet { position: relative; border: 1px solid var(--grid); border-radius: 14px; background: var(--sheet); overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
+.sheet-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--grid); font: 500 12px/1.4 var(--f-mono); color: var(--mute); letter-spacing: .04em; direction: ltr; }
+.sheet-bar b { color: var(--paper); font-weight: 600; }
+.draw { position: relative; }
+.draw svg.plan { display: block; width: 100%; height: auto; }
+.plan .g { stroke: var(--grid); stroke-width: 1; }
+.plan .route { fill: none; stroke: var(--leaf); stroke-width: 2.4; stroke-dasharray: 9 6; stroke-linejoin: round; opacity: .9; }
+.plan .sym { fill: var(--sheet); stroke: var(--leaf); stroke-width: 2; }
+.plan .tr { fill: var(--amber); }
+.plan text { fill: var(--mute); font: 500 11px var(--f-mono); }
+.gauge-card { position: relative; margin: -92px 14px 14px; padding: 16px 18px 16px; border: 1px solid var(--grid); border-radius: 12px; background: rgba(10, 21, 17, .92); backdrop-filter: blur(6px); }
+.readout { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.readout .lbl { font-size: 14px; color: var(--mute); }
+.pct { font: 600 clamp(34px, 5vw, 46px)/1 var(--f-mono); color: var(--amber); direction: ltr; font-variant-numeric: tabular-nums; }
+.pct.ok { color: var(--leaf); }
+.pct.hot { color: #ff7a63; }
+.scale { position: relative; margin-top: 16px; height: 44px; touch-action: none; cursor: ew-resize; user-select: none; -webkit-user-select: none; }
+.scale:focus-visible { outline-offset: 6px; }
+.seg-row { display: flex; height: 100%; gap: 3px; direction: rtl; }
+.seg { flex: 1; display: grid; place-items: center; border-radius: 6px; background: #14281f; color: var(--mute); font: 500 12px var(--f-mono); transition: background .2s, color .2s; }
+.seg.on { background: var(--amber); color: #1a0e04; font-weight: 600; }
+.needle { position: absolute; top: -8px; bottom: -8px; width: 3px; margin-inline-start: -1.5px; background: var(--paper); border-radius: 2px; pointer-events: none; }
+.needle::after { content: ""; position: absolute; top: -4px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--paper); }
+.verdict { margin-top: 6px; display: grid; gap: 2px; }
+.verdict .k { font-size: 13px; color: var(--mute); }
+.verdict .who { font: 600 clamp(19px, 2.4vw, 23px)/1.4 var(--f-display); color: var(--paper); min-height: 2.8em; }
+.note { margin-top: 10px; font: 500 11px/1.6 var(--f-mono); color: var(--mute); direction: ltr; text-align: end; }
+.hint { margin-top: 10px; min-height: 1.5em; font-size: 13px; color: var(--leaf); opacity: 0; transition: opacity .4s; }
+.hint.show { opacity: 1; }
+
+/* ── ما بعد الـ Hero: ثلاث خطوات حقيقية ── */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: clamp(8px, 2vw, 24px); padding-block: 28px 8px; border-top: 1px solid var(--grid); scroll-margin-top: 16px; }
+.step { padding-inline: 0 24px; display: grid; gap: 4px; align-content: start; }
+.step + .step { padding-inline-start: 24px; border-inline-start: 1px solid var(--grid); }
+.step .n { font: 600 13px var(--f-mono); color: var(--leaf); letter-spacing: .08em; }
+.step h2 { margin: 0; font: 600 20px/1.4 var(--f-display); }
+.step p { margin: 0; color: var(--mute); font-size: 15px; }
+.pm { margin-top: 28px; padding-block: 18px 28px; border-top: 1px solid var(--grid); text-align: center; font: 500 13px/1.7 var(--f-mono); color: var(--mute); letter-spacing: .04em; direction: ltr; }
+.pm b { color: var(--paper); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .gauge-card { margin-top: -72px; }
+}
+@media (max-width: 640px) {
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .step, .step + .step { padding-inline: 0; border-inline-start: 0; }
+  .cta { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta, .how svg { animation: none; }
+  .seg { transition: none; }
+}
+</style>
+
+<div class="page" dir="rtl" lang="ar">
+  <header class="hero">
+    <div class="copy">
+      <div class="eyebrow"><span class="mono-mark" aria-hidden="true">IL</span> محفظة الالتزام للمشاريع للمقاولين</div>
+      <h1>كل انحراف في المقايسة<br>له <em>اسمٌ يوقّع عليه</em></h1>
+      <p class="sub">ارفع ملفات المقاول، وسترى <b>الحصر والمقايسة والإحداثيات</b> تتطابق في ثوانٍ، وتعرف قبل الفاتورة <b>من يعتمد كل فرق</b>. مرّر لتشاهد كيف.</p>
+      <div class="cta-row">
+        <a class="cta" id="cta" href="/">
+          ادخل إلى المحفظة
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5"/></svg>
+        </a>
+        <a class="how" href="#how">شاهد كيف يعمل
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>
+        </a>
+      </div>
+      <p class="reassure"><span>بحساب مؤسستك</span><span>بلا تثبيت</span><span>عربي وEnglish</span></p>
+    </div>
+
+    <figure class="sheet" style="margin:0" aria-label="مثال حي: مقياس اعتماد انحراف المقايسة">
+      <div class="sheet-bar"><span>SHEET 01 · BOQ VARIANCE</span><b>W/O 234022308</b></div>
+      <div class="draw">
+        <svg class="plan" viewBox="0 0 600 330" role="img" aria-label="مسار مغذٍّ مع وحدات حلقية على مخطط إحداثيات" preserveAspectRatio="xMidYMid slice">
+          <g class="g"><path d="M0 55H600M0 110H600M0 165H600M0 220H600M0 275H600M75 0V330M150 0V330M225 0V330M300 0V330M375 0V330M450 0V330M525 0V330"/></g>
+          <polyline class="route" points="40,262 118,224 196,236 262,176 340,190 418,128 500,96 566,64"/>
+          <circle class="sym" cx="40" cy="262" r="8"/><rect class="sym" x="110" y="216" width="16" height="16"/>
+          <circle class="sym" cx="196" cy="236" r="8"/><rect class="sym" x="254" y="168" width="16" height="16"/>
+          <circle class="sym" cx="340" cy="190" r="8"/><rect class="sym" x="410" y="120" width="16" height="16"/>
+          <circle class="sym" cx="500" cy="96" r="8"/><circle class="sym" cx="566" cy="64" r="8"/>
+          <path class="tr" d="M270 150l7 12h-14z"/><path class="tr" d="M426 100l7 12h-14z"/>
+          <text x="22" y="288">R101552</text><text x="100" y="252">R101553</text><text x="168" y="262">R101554</text>
+          <text x="246" y="204">R101555</text><text x="316" y="216">R101556</text><text x="396" y="156">R101557</text>
+          <text x="552" y="40">N&#8593;</text>
+        </svg>
+      </div>
+
+      <div class="gauge-card">
+        <div class="readout">
+          <span class="lbl">انحراف المنفّذ عن المقايسة المعتمدة</span>
+          <span class="pct" id="pct">+13.0%</span>
+        </div>
+        <div class="scale" id="scale" role="slider" tabindex="0" aria-label="نسبة الانحراف" aria-valuemin="0" aria-valuemax="40" aria-valuenow="13" aria-valuetext="13 بالمئة — يعتمد مدير إدارة هندسة التوزيع">
+          <div class="seg-row" aria-hidden="true">
+            <div class="seg" data-i="0">10%</div><div class="seg" data-i="1">20%</div><div class="seg" data-i="2">30%</div><div class="seg" data-i="3">+30%</div>
+          </div>
+          <div class="needle" id="needle" style="inset-inline-start:32.5%"></div>
+        </div>
+        <div class="hint" id="hint">جرّب: اسحب المؤشر لترى من يعتمد كل نسبة</div>
+        <div class="verdict" aria-live="polite">
+          <span class="k">يلزم اعتماد</span>
+          <span class="who" id="who">مدير إدارة هندسة التوزيع</span>
+        </div>
+        <div class="note">EXAMPLE · مشروع تحويل طريق الحصينية، نجران</div>
+      </div>
+    </figure>
+  </header>
+
+  <section class="steps" id="how" aria-label="كيف يعمل">
+    <div class="step"><span class="n">01 — ارفع</span><h2>ملفات المقاول كما هي</h2><p>إكسل وPDF وWord وصور وKML. تُقرأ أرقام الكراسات والبنود والإحداثيات دون إعادة إدخال.</p></div>
+    <div class="step"><span class="n">02 — طابق</span><h2>الكميات تقابل المقايسة</h2><p>يُستنبط الحصر آليًا، ويُوقف أي ملف يحمل رقم أمر عمل مختلف قبل أن يخلط مشروعين.</p></div>
+    <div class="step"><span class="n">03 — اعتمد</span><h2>الفرق يصل لصاحبه</h2><p>الانحراف يحدد من يوقّع. وبنقرة واحدة يصل التقرير PDF وExcel إلى بريد كل مستلم.</p></div>
+  </section>
+
+  <footer class="pm">Project manager · <b>Eng. Ahmed Zahran</b></footer>
+</div>
+
+<script>
+(function () {
+  var APP_URL = "/";                       // رابط دخول المنصة
+  var cta = document.getElementById("cta"); if (cta) cta.setAttribute("href", APP_URL);
+
+  var LADDER = ["مدير إدارة كهرباء نجران", "مدير إدارة هندسة التوزيع", "نائب رئيس وحدة أعمال التوزيع وخدمات المشتركين – الجنوبية", "نائب الرئيس التنفيذي للتوزيع وخدمات المشتركين + تقرير فني"];
+  var MAX = 40, el = { scale: document.getElementById("scale"), needle: document.getElementById("needle"), pct: document.getElementById("pct"), who: document.getElementById("who"), hint: document.getElementById("hint") };
+  var segs = Array.prototype.slice.call(document.querySelectorAll(".seg")), cur = 13, touched = false;
+
+  function step(v) { return v <= 10 ? 0 : v <= 20 ? 1 : v <= 30 ? 2 : 3; }
+  function paint(v) {
+    cur = Math.max(0, Math.min(MAX, v));
+    var i = step(cur);
+    el.needle.style.insetInlineStart = (cur / MAX * 100) + "%";
+    el.pct.textContent = "+" + cur.toFixed(1) + "%";
+    el.pct.className = "pct" + (i === 0 ? " ok" : i === 3 ? " hot" : "");
+    el.who.textContent = LADDER[i];
+    segs.forEach(function (s, k) { s.classList.toggle("on", k === i); });
+    el.scale.setAttribute("aria-valuenow", String(Math.round(cur)));
+    el.scale.setAttribute("aria-valuetext", Math.round(cur) + " بالمئة — يعتمد " + LADDER[i]);
+  }
+  paint(13);                                // الحالة النهائية ظاهرة من أول إطار
+
+  function fromEvent(e) {
+    var r = el.scale.getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
+    var rtl = getComputedStyle(el.scale).direction === "rtl";
+    return (rtl ? 1 - x : x) * MAX;
+  }
+  var dragging = false;
+  el.scale.addEventListener("pointerdown", function (e) { dragging = true; touched = true; el.hint.classList.remove("show"); el.scale.setPointerCapture(e.pointerId); paint(Math.round(fromEvent(e) * 10) / 10); });
+  el.scale.addEventListener("pointermove", function (e) { if (dragging) paint(Math.round(fromEvent(e) * 10) / 10); });
+  el.scale.addEventListener("pointerup", function () { dragging = false; });
+  el.scale.addEventListener("keydown", function (e) {
+    var d = { ArrowLeft: 1, ArrowUp: 1, ArrowRight: -1, ArrowDown: -1 }[e.key];
+    if (e.key === "Home") paint(0); else if (e.key === "End") paint(MAX);
+    else if (d) { touched = true; paint(cur + d * (e.shiftKey ? 5 : 1)); } else return;
+    e.preventDefault(); el.hint.classList.remove("show");
+  });
+
+  /* حركة الدخول: المؤشر يكتسح من 0 حتى 13% فيتبدّل صاحب الاعتماد أمام عين الزائر */
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!calm) {
+    var t0 = null, dur = 1500;
+    paint(0);
+    requestAnimationFrame(function tick(ts) {
+      if (touched) return;
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur), ease = 1 - Math.pow(1 - k, 3);
+      paint(Math.round(13 * ease * 10) / 10);
+      if (k < 1) requestAnimationFrame(tick); else el.hint.classList.add("show");
+    });
+  } else el.hint.classList.add("show");
+})();
+</script>
+
+</body>
+</html>

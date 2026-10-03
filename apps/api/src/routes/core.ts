@@ -34,6 +34,9 @@ export async function coreRoutes(app: FastifyInstance): Promise<void> {
     };
   });
 
+  /** مكتبة المواد والأعمال (تتغير بعد الاستيراد عند إضافة بنود جديدة) */
+  r.get("/api/v1/catalog", { schema: { tags: ["system"], summary: "مكتبة المواد والأعمال الحالية" }, preHandler: app.authenticate }, async () => loadCatalog(db));
+
   /* نسخة احتياطية: كل المقاولين والمشاريع (JSON) */
   r.get("/api/v1/backup", { schema: { tags: ["system"], summary: "نسخة احتياطية JSON للمقاولين والمشاريع" }, preHandler: app.requirePerm("dash", "exp") }, async (req, reply) => {
     const cat = await loadCatalog(db);

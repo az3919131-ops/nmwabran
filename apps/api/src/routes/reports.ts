@@ -9,6 +9,7 @@ import { HttpError, badRequest, forbidden, notFound } from "../lib/errors";
 import { signPrintToken, verifyDownload } from "../plugins/auth";
 import { projectContractorId } from "../repo/projects";
 import { PROJECT_REPORTS, createReportJob } from "../services/reports/service";
+import { resolveRecipients } from "../services/recipients";
 
 export async function reportRoutes(app: FastifyInstance): Promise<void> {
   const ctx = app.ctx, db = ctx.db;
@@ -34,6 +35,17 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
     await audit(req, "report_send", { entity: "report", entityId: jobId, detail: `${key} · ${req.body.workOrderId ?? "-"}` });
     reply.code(202);
     return { jobId };
+  });
+
+  /** المستلمون الفعليون لهذا التقرير (لنافذة التأكيد): نشطون ضمن نطاق التقرير + مدير النظام دائمًا (isSystem) */
+  r.get("/api/v1/reports/:reportKey/recipients", {
+    schema: { tags, summary: "مستلمو التقرير الفعليون قبل الإرسال", params: keyp },
+    preHandler: app.requireUserOrKey("send:reports", (req) => (req.params as { reportKey: string }).reportKey, "exp", { ignoreLock: true }),
+  }, async (req) => {
+    const key = req.params.reportKey;
+    if (ADMIN_ONLY_REPORTS.includes(key) && req.auth && req.auth.user.role !== "admin") throw forbidden("هذا التقرير لمدير النظام فقط ولا يُرسل لغيره");
+    const list = await resolveRecipients(ctx, key, []);
+    return { recipients: list.map((x) => ({ email: x.email, name: x.name, isSystem: x.source === "admin" })), max: 50, adminEmail: ctx.cfg.ADMIN_EMAIL.toLowerCase() };
   });
 
   /** حالة المهمة: { status, perRecipient: [{email, status, error?}] } */

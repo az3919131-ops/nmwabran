@@ -16,7 +16,7 @@ import {
 import { userHasContractor } from "../repo/users";
 import { extOf, finishImport, importParsed, importSection, makeEnv, processFiles, readParsed, refreshProject, type UploadedBlob } from "../services/imports";
 import { insertFile, mutateProject, updateFile } from "../services/projects";
-import { readXlsx } from "../services/readers";
+import { readDocxText, readXlsx } from "../services/readers";
 import { contractors } from "../db/schema";
 void _h;
 
@@ -282,6 +282,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     if (["xlsx", "xlsm"].includes(f.ext)) return { sheets: (await readXlsx(s.data)).map((x) => ({ name: x.name, rows: x.rows.slice(0, 600), total: x.rows.length })) };
     if (f.ext === "csv") return { sheets: readCsvText(s.data.toString("utf8")).map((x) => ({ name: x.name, rows: x.rows.slice(0, 600), total: x.rows.length })) };
     if (["txt", "kml", "gpx", "geojson", "json", "xml"].includes(f.ext)) return { text: s.data.toString("utf8").slice(0, 200000) };
+    if (f.ext === "docx") return { text: (await readDocxText(s.data)).slice(0, 200000) };
     throw badRequest("لا يمكن عرض هذه الصيغة داخل المنصة", "unsupported_preview");
   });
 

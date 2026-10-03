@@ -4,7 +4,10 @@
   "version": "1.0.0",
   "description": "محفظة الالتزام للمشاريع للمقاولين — Compliance Vault (Frontend + API + PostgreSQL)",
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:api": "npm run dev -w @iltizam/api",
     "dev:web": "npm run dev -w @iltizam/web",
@@ -16,9 +19,15 @@
     "db:migrate": "npm run db:migrate -w @iltizam/api",
     "db:seed": "npm run db:seed -w @iltizam/api"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
+    "@types/mailparser": "^3.9.0",
+    "@types/smtp-server": "^3.5.13",
+    "mailparser": "^3.9.33",
+    "smtp-server": "^3.19.16",
     "typescript": "^5.6.0"
   }
 }
