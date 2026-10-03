@@ -47,6 +47,8 @@
 
 /* طباعة التقرير (PDF من الخادم) */
 body.print-mode .rail,body.print-mode .topbar,body.print-mode .aifab,body.print-mode #toast,body.print-mode .updbar,body.print-mode .updpanel{display:none!important}
+/* أدوات الرفع والاستيراد لا تُطبع في تقارير PDF */
+body.print-mode .drop,body.print-mode .secbtn,body.print-mode .docbtn,body.print-mode [data-clrup]{display:none!important}
 body.print-mode .shell{display:block}
 body.print-mode .wrap{padding:0;max-width:none}
 body.print-deck .shell{display:none!important}
