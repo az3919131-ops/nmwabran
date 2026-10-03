@@ -1,0 +1,56 @@
+{
+  "name": "محفظة الالتزام — تقرير لوحة التحكم كل أحد 8 صباحًا",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "weeks", "weeksInterval": 1, "triggerAtDay": [0], "triggerAtHour": 8, "triggerAtMinute": 0 } ] }
+      },
+      "id": "a1111111-1111-4111-8111-111111111111",
+      "name": "كل أحد 8 صباحًا",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $vars.ILTIZAM_URL || 'http://localhost:3000' }}/api/v1/projects",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "b2222222-2222-4222-8222-222222222222",
+      "name": "جلب المشاريع (read:projects)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0],
+      "credentials": { "httpHeaderAuth": { "id": "REPLACE_ME", "name": "Iltizam API key (X-API-Key)" } }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.ILTIZAM_URL || 'http://localhost:3000' }}/api/v1/reports/dash/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { workOrderId: $json.id, lang: 'ar', attachPdf: true, attachXlsx: true, note: 'تقرير أسبوعي آلي من n8n' } }}",
+        "options": {}
+      },
+      "id": "c3333333-3333-4333-8333-333333333333",
+      "name": "إرسال التقرير (send:reports)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0],
+      "credentials": { "httpHeaderAuth": { "id": "REPLACE_ME", "name": "Iltizam API key (X-API-Key)" } }
+    }
+  ],
+  "connections": {
+    "كل أحد 8 صباحًا": { "main": [ [ { "node": "جلب المشاريع (read:projects)", "type": "main", "index": 0 } ] ] },
+    "جلب المشاريع (read:projects)": { "main": [ [ { "node": "إرسال التقرير (send:reports)", "type": "main", "index": 0 } ] ] }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1", "timezone": "Asia/Riyadh" },
+  "active": false,
+  "tags": []
+}

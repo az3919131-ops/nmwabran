@@ -1,0 +1,958 @@
+{
+ "units-only": {
+  "rep": [
+   [
+    "ok",
+    "جدول الوحدات: 5 وحدة (5 جديدة) · 5 بإحداثيات · 5 بمقاومة تأريض"
+   ]
+  ],
+  "imported": true,
+  "rows": 7,
+  "boq": {},
+  "mat": {},
+  "rmus": [
+   {
+    "no": 1,
+    "feeder": "NER 409",
+    "rmu": "R101552",
+    "type": "4W",
+    "tr": "",
+    "relay": "SEL",
+    "model": "ASHIDA TPR6HP",
+    "set": false,
+    "ratio": "",
+    "ohm": "3.1",
+    "gps": "17.693713,44.459428",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 2,
+    "feeder": "NER 409",
+    "rmu": "R101553",
+    "type": "4W",
+    "tr": "TR1",
+    "relay": "SEL",
+    "model": "FANOX LUCY AEGIS",
+    "set": false,
+    "ratio": "500/400",
+    "ohm": "2.9",
+    "gps": "17.697286,44.456931",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 3,
+    "feeder": "NER 409",
+    "rmu": "R101554",
+    "type": "3W",
+    "tr": "",
+    "relay": "FANAR",
+    "model": "FANOX SFA-RM",
+    "set": false,
+    "ratio": "",
+    "ohm": "3.4",
+    "gps": "17.698596,44.455705",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 4,
+    "feeder": "NER 419",
+    "rmu": "R101572",
+    "type": "4W",
+    "tr": "TR1",
+    "relay": "LUCY",
+    "model": "FANOX AEGIS",
+    "set": false,
+    "ratio": "500/220",
+    "ohm": "3.1",
+    "gps": "17.694419,44.458481",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 5,
+    "feeder": "NER 419",
+    "rmu": "R101573",
+    "type": "3W",
+    "tr": "",
+    "relay": "FANAR",
+    "model": "ZIV SFA-RM",
+    "set": false,
+    "ratio": "",
+    "ohm": "2.1",
+    "gps": "17.696590,44.456515",
+    "gpsSrc": "ضبط الحماية"
+   }
+  ],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [
+   {
+    "id": "R101552",
+    "lat": 17.693713,
+    "lon": 44.459428,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 3"
+   },
+   {
+    "id": "R101553",
+    "lat": 17.697286,
+    "lon": 44.456931,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 4"
+   },
+   {
+    "id": "R101554",
+    "lat": 17.698596,
+    "lon": 44.455705,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 5"
+   },
+   {
+    "id": "R101572",
+    "lat": 17.694419,
+    "lon": 44.458481,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 6"
+   },
+   {
+    "id": "R101573",
+    "lat": 17.69659,
+    "lon": 44.456515,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 7"
+   }
+  ],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   "units"
+  ]
+ },
+ "boq-only": {
+  "rep": [
+   [
+    "ok",
+    "المقايسة من «المقايسة»: 2 مادة و 5 بند أجور · 7 سعر محدّث"
+   ],
+   [
+    "new",
+    "أُضيف 1 بند جديد للمكتبة بمسمياته من الملف: 301019999"
+   ]
+  ],
+  "imported": true,
+  "rows": 9,
+  "boq": {
+   "301010201": {
+    "plan": 16000,
+    "exec": 12546
+   },
+   "301010205": {
+    "plan": 1000,
+    "exec": 1547
+   },
+   "301019999": {
+    "plan": 5,
+    "exec": 7
+   },
+   "304010202": {
+    "plan": 18000,
+    "exec": 17430
+   },
+   "311000016": {
+    "plan": 0,
+    "exec": 47
+   }
+  },
+  "mat": {
+   "8114005": {
+    "iss": 18000,
+    "req": 22000
+   },
+   "8327004": {
+    "iss": 7,
+    "req": 14
+   }
+  },
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [],
+  "conf": [],
+  "added": [
+   "301019999"
+  ],
+  "kinds": [
+   "codes"
+  ]
+ },
+ "delivery-only": {
+  "rep": [
+   [
+    "ok",
+    "الكميات من «DDO»: 6 مادة و 0 بند أجور · 6 سعر محدّث"
+   ]
+  ],
+  "imported": true,
+  "rows": 8,
+  "boq": {},
+  "mat": {
+   "8111005": {
+    "iss": 453,
+    "req": 453
+   },
+   "8113009": {
+    "iss": 144,
+    "req": 144
+   },
+   "8121139": {
+    "iss": 36,
+    "req": 36
+   },
+   "8121179": {
+    "iss": 22,
+    "req": 22
+   },
+   "8121182": {
+    "iss": 18,
+    "req": 18
+   },
+   "8202054": {
+    "iss": 64,
+    "req": 64
+   }
+  },
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   "codes"
+  ]
+ },
+ "tally-only": {
+  "rep": [
+   [
+    "ok",
+    "حصر اللوحات: 2 لوحة و 6 حقل — استُبدل حصر المشروع"
+   ]
+  ],
+  "imported": true,
+  "rows": 8,
+  "boq": {},
+  "mat": {},
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 3,
+    "rmu4w": 5,
+    "rmuEx": 0,
+    "tr220": 3,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 4820,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 572,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 706,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   },
+   {
+    "name": "لوحة 2",
+    "rmu3w": 4,
+    "rmu4w": 3,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 4150,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 369,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   "tally"
+  ]
+ },
+ "units+boq+delivery": {
+  "rep": [
+   [
+    "ok",
+    "جدول الوحدات: 5 وحدة (5 جديدة) · 5 بإحداثيات · 5 بمقاومة تأريض"
+   ],
+   [
+    "ok",
+    "المقايسة من «المقايسة»: 2 مادة و 5 بند أجور · 7 سعر محدّث"
+   ],
+   [
+    "new",
+    "أُضيف 1 بند جديد للمكتبة بمسمياته من الملف: 301019999"
+   ],
+   [
+    "ok",
+    "الكميات من «DDO»: 6 مادة و 0 بند أجور · 6 سعر محدّث"
+   ]
+  ],
+  "imported": true,
+  "rows": 24,
+  "boq": {
+   "301010201": {
+    "plan": 16000,
+    "exec": 12546
+   },
+   "301010205": {
+    "plan": 1000,
+    "exec": 1547
+   },
+   "301019999": {
+    "plan": 5,
+    "exec": 7
+   },
+   "304010202": {
+    "plan": 18000,
+    "exec": 17430
+   },
+   "311000016": {
+    "plan": 0,
+    "exec": 47
+   }
+  },
+  "mat": {
+   "8111005": {
+    "iss": 453,
+    "req": 453
+   },
+   "8113009": {
+    "iss": 144,
+    "req": 144
+   },
+   "8114005": {
+    "iss": 18000,
+    "req": 22000
+   },
+   "8121139": {
+    "iss": 36,
+    "req": 36
+   },
+   "8121179": {
+    "iss": 22,
+    "req": 22
+   },
+   "8121182": {
+    "iss": 18,
+    "req": 18
+   },
+   "8202054": {
+    "iss": 64,
+    "req": 64
+   },
+   "8327004": {
+    "iss": 7,
+    "req": 14
+   }
+  },
+  "rmus": [
+   {
+    "no": 1,
+    "feeder": "NER 409",
+    "rmu": "R101552",
+    "type": "4W",
+    "tr": "",
+    "relay": "SEL",
+    "model": "ASHIDA TPR6HP",
+    "set": false,
+    "ratio": "",
+    "ohm": "3.1",
+    "gps": "17.693713,44.459428",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 2,
+    "feeder": "NER 409",
+    "rmu": "R101553",
+    "type": "4W",
+    "tr": "TR1",
+    "relay": "SEL",
+    "model": "FANOX LUCY AEGIS",
+    "set": false,
+    "ratio": "500/400",
+    "ohm": "2.9",
+    "gps": "17.697286,44.456931",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 3,
+    "feeder": "NER 409",
+    "rmu": "R101554",
+    "type": "3W",
+    "tr": "",
+    "relay": "FANAR",
+    "model": "FANOX SFA-RM",
+    "set": false,
+    "ratio": "",
+    "ohm": "3.4",
+    "gps": "17.698596,44.455705",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 4,
+    "feeder": "NER 419",
+    "rmu": "R101572",
+    "type": "4W",
+    "tr": "TR1",
+    "relay": "LUCY",
+    "model": "FANOX AEGIS",
+    "set": false,
+    "ratio": "500/220",
+    "ohm": "3.1",
+    "gps": "17.694419,44.458481",
+    "gpsSrc": "ضبط الحماية"
+   },
+   {
+    "no": 5,
+    "feeder": "NER 419",
+    "rmu": "R101573",
+    "type": "3W",
+    "tr": "",
+    "relay": "FANAR",
+    "model": "ZIV SFA-RM",
+    "set": false,
+    "ratio": "",
+    "ohm": "2.1",
+    "gps": "17.696590,44.456515",
+    "gpsSrc": "ضبط الحماية"
+   }
+  ],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [
+   {
+    "id": "R101552",
+    "lat": 17.693713,
+    "lon": 44.459428,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 3"
+   },
+   {
+    "id": "R101553",
+    "lat": 17.697286,
+    "lon": 44.456931,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 4"
+   },
+   {
+    "id": "R101554",
+    "lat": 17.698596,
+    "lon": 44.455705,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 5"
+   },
+   {
+    "id": "R101572",
+    "lat": 17.694419,
+    "lon": 44.458481,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 6"
+   },
+   {
+    "id": "R101573",
+    "lat": 17.69659,
+    "lon": 44.456515,
+    "type": "PT",
+    "src": "f.xlsx · ضبط الحماية · صف 7"
+   }
+  ],
+  "conf": [],
+  "added": [
+   "301019999"
+  ],
+  "kinds": [
+   "units",
+   "codes",
+   "codes"
+  ]
+ },
+ "geo-sheet": {
+  "rep": [
+   [
+    "skip",
+    "الورقة «إحداثيات»: 6 صف لم يُتعرّف على تنسيقها"
+   ]
+  ],
+  "imported": false,
+  "rows": 6,
+  "boq": {},
+  "mat": {},
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [
+   {
+    "id": "P1",
+    "lat": 17.7,
+    "lon": 44.45,
+    "type": "PT",
+    "src": "f.xlsx · إحداثيات · صف 2"
+   },
+   {
+    "id": "P2",
+    "lat": 17.693722222222224,
+    "lon": 44.45941666666667,
+    "type": "PT",
+    "src": "f.xlsx · إحداثيات · صف 3"
+   },
+   {
+    "id": "P3",
+    "lat": 17.71,
+    "lon": 44.46,
+    "type": "PT",
+    "src": "f.xlsx · إحداثيات · صف 4"
+   },
+   {
+    "id": "P5",
+    "lat": 17.71234,
+    "lon": 44.4598,
+    "type": "PT",
+    "src": "f.xlsx · إحداثيات · صف 6"
+   }
+  ],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   null
+  ]
+ },
+ "utm-sheet": {
+  "rep": [],
+  "imported": false,
+  "rows": 3,
+  "boq": {},
+  "mat": {},
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [
+   {
+    "id": "U1",
+    "lat": 17.685000464573157,
+    "lon": 43.46312579836656,
+    "type": "PT",
+    "src": "f.xlsx · UTM · صف 2"
+   },
+   {
+    "id": "U2",
+    "lat": 17.687729562864924,
+    "lon": 43.46545933287408,
+    "type": "PT",
+    "src": "f.xlsx · UTM · صف 3"
+   }
+  ],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   null
+  ]
+ },
+ "unknown": {
+  "rep": [
+   [
+    "skip",
+    "الورقة «ملاحظات»: 5 صف لم يُتعرّف على تنسيقها"
+   ]
+  ],
+  "imported": false,
+  "rows": 5,
+  "boq": {},
+  "mat": {},
+  "rmus": [],
+  "sheets": [
+   {
+    "name": "لوحة 1",
+    "rmu3w": 0,
+    "rmu4w": 0,
+    "rmuEx": 0,
+    "tr220": 0,
+    "tr400": 0,
+    "trIndoor": 0,
+    "trEx": 0,
+    "pillars": 0,
+    "htCable": 0,
+    "htEarth": 0,
+    "mvSingle": 0,
+    "lt300": 0,
+    "lt185": 0,
+    "lt70": 0,
+    "asHT1": 0,
+    "saHT1": 0,
+    "asHT2": 0,
+    "saHT2": 0,
+    "asHT3": 0,
+    "saHT3": 0,
+    "saHT4": 0,
+    "asLT13": 0,
+    "saLT13": 0,
+    "saLT4": 0,
+    "asphalt": 0,
+    "milling": 0,
+    "hdd": 0,
+    "term3x400": 0,
+    "joints": 0,
+    "lt300Term": 0,
+    "lt185Term": 0,
+    "lt70Term": 0,
+    "riser400": 0,
+    "poleSteel": 0,
+    "poleWood": 0,
+    "trPole1": 0,
+    "trPole2": 0,
+    "condMV": 0,
+    "abcLV": 0,
+    "riserRem": 0,
+    "lbsRem": 0
+   }
+  ],
+  "derived": false,
+  "bookGeo": [],
+  "conf": [],
+  "added": [],
+  "kinds": [
+   null
+  ]
+ }
+}

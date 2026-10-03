@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.env
+storage
+**/storage
+reference
+e2e/.output
+*.log
