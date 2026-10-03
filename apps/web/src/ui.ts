@@ -7,17 +7,21 @@ const FOCUSABLE = 'button:not([disabled]),input:not([disabled]),select:not([disa
 export function trapDialog(w: HTMLElement, close: () => void): () => void {
   const prev = document.activeElement as HTMLElement | null;
   w.setAttribute("role", "dialog"); w.setAttribute("aria-modal", "true");
+  // على مستوى المستند: يعمل Escape وحبس التركيز حتى لو انتقل التركيز إلى body بعد تعطيل زر
   const key = (e: KeyboardEvent) => {
+    if (!w.isConnected) { document.removeEventListener("keydown", key, true); return; }
     if (e.key === "Escape") { e.stopPropagation(); close(); return; }
     if (e.key !== "Tab") return;
     const f = [...w.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((x) => !x.hidden && x.offsetParent !== null);
     if (!f.length) return;
     const first = f[0], last = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    const inside = w.contains(document.activeElement);
+    if (!inside) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   };
-  w.addEventListener("keydown", key);
-  return () => { w.removeEventListener("keydown", key); try { prev?.focus(); } catch { /* ignore */ } };
+  document.addEventListener("keydown", key, true);
+  return () => { document.removeEventListener("keydown", key, true); try { prev?.focus(); } catch { /* ignore */ } };
 }
 
 export function askText(title: string, val: string, ph: string, cb: (v: string) => void): void {

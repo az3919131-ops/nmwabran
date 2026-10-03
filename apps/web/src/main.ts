@@ -13,7 +13,13 @@ import { installDeckKeys } from "./views/deck";
 import { secCopyPt } from "./views/map";
 import { bootPrint } from "./print";
 
-(window as any).secCopyPt = secCopyPt;      // يُستدعى من بالون الخريطة (onclick مضمّن)
+// نسخ إحداثي نقطة من بالون الخريطة (تفويض أحداث بدل onclick مضمّن، ليبقى CSP صارمًا)
+document.addEventListener("click", (e) => {
+  const b = (e.target as HTMLElement | null)?.closest?.("[data-copypt]") as HTMLElement | null;
+  if (!b) return;
+  const [lat, lon, id] = (b.dataset.copypt ?? "").split("|");
+  secCopyPt(lat, lon, id);
+});
 
 async function boot(): Promise<void> {
   const q = new URLSearchParams(location.search);

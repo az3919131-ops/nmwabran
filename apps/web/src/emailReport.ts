@@ -7,8 +7,8 @@ import { $, AR, P, S, T, can, esc, toast } from "./runtime";
 import { ApiError, get, post } from "./api";
 import { trapDialog } from "./ui";
 import { render } from "./render";
-import { save } from "./sync";
-import { flushAll } from "./sync";
+import { save, flushAll } from "./sync";
+import { E } from "./views/emails";
 
 interface Rcp { email: string; name: string; isSystem: boolean }
 interface PerRecipient { email: string; status: "queued" | "sent" | "failed"; error?: string }
@@ -67,7 +67,7 @@ export async function openEmailReport(): Promise<void> {
       <button class="btn sm" id="erNo">${T("إغلاق", "Close")}</button>
       <button class="btn sm pri" id="erGo">${T("إرسال الآن", "Send now")}</button></div>`;
   ($("erNo") as HTMLElement).onclick = close;
-  const mg = $("erManage"); if (mg) mg.onclick = () => { close(); S.page = "emails"; save(); render(); };
+  const mg = $("erManage"); if (mg) mg.onclick = () => { close(); S.page = "emails"; E.loaded = false; save(); render(); };
   ($("erGo") as HTMLElement).focus();
 
   const go = $("erGo") as HTMLButtonElement;

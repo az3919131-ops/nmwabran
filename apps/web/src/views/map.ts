@@ -273,7 +273,7 @@ function popHTML(d, hex){
         <a href="https://www.google.com/maps/search/?api=1&query=${d.lat},${d.lon}" target="_blank" rel="noopener">Google Maps ↗</a>
         <a href="https://earth.google.com/web/search/${d.lat},${d.lon}" target="_blank" rel="noopener">Earth ↗</a>
         <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${d.lat},${d.lon}" target="_blank" rel="noopener">Street View ↗</a>
-        <button type="button" onclick="secCopyPt('${d.lat}','${d.lon}','${esc(d.unit).replace(/'/g,"")}')">${T("نسخ الإحداثي","Copy coord.")}</button>
+        <button type="button" data-copypt="${d.lat}|${d.lon}|${esc(d.unit)}">${T("نسخ الإحداثي","Copy coord.")}</button>
       </div>
       <div class="ft">${esc(T("الشركة السعودية للكهرباء — تحويل شبكة هوائية إلى أرضية","Saudi Electricity Company — overhead to underground conversion"))}</div>
     </div></div>`;

@@ -1,0 +1,39 @@
+{
+  "name": "محفظة الالتزام — استيراد ملف إلى مشروع (Webhook وارد)",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "iltizam-import", "options": { "binaryPropertyName": "file" }, "responseMode": "onReceived" },
+      "id": "d4444444-4444-4444-8444-444444444444",
+      "name": "استقبال ملف",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "iltizam-import"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $vars.ILTIZAM_URL || 'http://localhost:3000' }}/api/v1/hooks/import",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": { "parameters": [ { "name": "wo", "value": "={{ $json.query.wo }}" }, { "name": "lang", "value": "ar" } ] },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": { "parameters": [ { "parameterType": "formBinaryData", "name": "file", "inputDataFieldName": "file" } ] },
+        "options": {}
+      },
+      "id": "e5555555-5555-4555-8555-555555555555",
+      "name": "استيراد في المحفظة (write:imports)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [280, 0],
+      "credentials": { "httpHeaderAuth": { "id": "REPLACE_ME", "name": "Iltizam API key (X-API-Key)" } }
+    }
+  ],
+  "connections": { "استقبال ملف": { "main": [ [ { "node": "استيراد في المحفظة (write:imports)", "type": "main", "index": 0 } ] ] } },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "active": false,
+  "tags": []
+}

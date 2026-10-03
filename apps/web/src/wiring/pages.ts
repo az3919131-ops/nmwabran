@@ -150,9 +150,36 @@ export function applyPermsToView(v: HTMLElement): void {
   }
   if (!can("import", "edit") || !AUTH.unlocked) {
     ["updRun", "updAdd", "updMore", "updUndo", "btnAiDerive"].forEach((id) => { const e = $(id); if (e) { e.disabled = true; e.classList.add("locked-field"); } });
-    v.querySelectorAll(".drop,[data-upre],[data-sec],[data-secimp]").forEach((e) => e.classList.add("locked-field"));
+    v.querySelectorAll(".drop,[data-upre],[data-sec],[data-secimp]").forEach((e) => { e.classList.add("locked-field"); e.setAttribute("aria-disabled", "true"); });
   }
   if (!can(page, "del") || !AUTH.unlocked) v.querySelectorAll<HTMLButtonElement>("[data-fdelp],[data-fdel],[data-udel],[data-delsheet]").forEach((e) => { e.disabled = true; e.classList.add("locked-field"); });
+}
+
+/** كل حقل بلا تسمية يأخذ اسمًا من سياقه: «عنوان العمود — اسم الصف» (قارئات الشاشة) */
+export function labelInputs(v: HTMLElement): void {
+  v.querySelectorAll<HTMLElement>("input,select,textarea").forEach((el) => {
+    if ((el as HTMLInputElement).type === "hidden" || el.hidden) return;
+    if (el.getAttribute("aria-label") || el.getAttribute("aria-labelledby") || el.closest("label") || (el.id && v.querySelector(`label[for="${CSS.escape(el.id)}"]`))) return;
+    const td = el.closest("td,th") as HTMLTableCellElement | null;
+    let name = "";
+    if (td) {
+      const row = td.parentElement as HTMLTableRowElement, table = td.closest("table") as HTMLTableElement | null;
+      const head = table?.tHead?.rows[table.tHead.rows.length - 1]?.cells[td.cellIndex]?.textContent?.trim() ?? "";
+      const first = (row.cells[0]?.textContent ?? "").trim().replace(/\s+/g, " ").slice(0, 70);
+      name = [first && row.cells[0] !== td ? first : "", head].filter(Boolean).join(" — ");
+    }
+    name ||= el.getAttribute("placeholder") || el.getAttribute("title") || (el as HTMLInputElement).name || el.dataset.key || el.dataset.f || el.id || "field";
+    el.setAttribute("aria-label", name);
+  });
+}
+
+/** مناطق التمرير (الجداول العريضة) تُفتح بلوحة المفاتيح: tabindex + دور region + اسم */
+export function focusableScrollers(v: HTMLElement): void {
+  v.querySelectorAll<HTMLElement>(".scroll").forEach((el, i) => {
+    if (el.hasAttribute("tabindex")) return;
+    const h = el.closest(".card")?.querySelector("h3")?.textContent?.trim() || el.id || `${T("جدول", "Table")} ${i + 1}`;
+    el.setAttribute("tabindex", "0"); el.setAttribute("role", "region"); el.setAttribute("aria-label", h);
+  });
 }
 
 export function wireExtras(v: HTMLElement): void {

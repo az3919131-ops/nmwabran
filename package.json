@@ -12,8 +12,8 @@
     "dev:api": "npm run dev -w @iltizam/api",
     "dev:web": "npm run dev -w @iltizam/web",
     "build": "npm run build -w @iltizam/core --if-present && npm run build -w @iltizam/web && npm run build -w @iltizam/api",
-    "test": "npm run test -w @iltizam/core && npm run test -w @iltizam/api",
-    "test:e2e": "node e2e/run.mjs",
+    "test": "npm run test -w @iltizam/core && npm run test -w @iltizam/api && npm run test -w @iltizam/web",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "typecheck": "npm run typecheck -w @iltizam/core && npm run typecheck -w @iltizam/api && npm run typecheck -w @iltizam/web",
     "db:generate": "npm run db:generate -w @iltizam/api",
     "db:migrate": "npm run db:migrate -w @iltizam/api",
@@ -23,6 +23,7 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.49.0",
     "@types/mailparser": "^3.9.0",
     "@types/smtp-server": "^3.5.13",

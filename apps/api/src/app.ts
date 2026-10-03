@@ -27,7 +27,7 @@ export interface BuildOpts { ctx: AppCtx; logger?: boolean; routes?: ((app: Fast
 
 export async function buildApp(opts: BuildOpts): Promise<FastifyInstance> {
   const { ctx } = opts;
-  const app = Fastify({ logger: opts.logger ? { level: "info", redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-api-key']"] } : false, trustProxy: true, bodyLimit: 20 * 1024 * 1024, maxParamLength: 2048 });
+  const app = Fastify({ logger: opts.logger ? { level: "info", redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-api-key']"] } : false, trustProxy: true, bodyLimit: 20 * 1024 * 1024, routerOptions: { maxParamLength: 2048 } });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
   app.decorate("ctx", ctx);

@@ -45,7 +45,8 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
     const key = req.params.reportKey;
     if (ADMIN_ONLY_REPORTS.includes(key) && req.auth && req.auth.user.role !== "admin") throw forbidden("هذا التقرير لمدير النظام فقط ولا يُرسل لغيره");
     const list = await resolveRecipients(ctx, key, []);
-    return { recipients: list.map((x) => ({ email: x.email, name: x.name, isSystem: x.source === "admin" })), max: 50, adminEmail: ctx.cfg.ADMIN_EMAIL.toLowerCase() };
+    const admin = ctx.cfg.ADMIN_EMAIL.toLowerCase();
+    return { recipients: list.map((x) => ({ email: x.email, name: x.name, isSystem: x.email === admin })), max: 50, adminEmail: admin };
   });
 
   /** حالة المهمة: { status, perRecipient: [{email, status, error?}] } */

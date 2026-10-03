@@ -27,3 +27,5 @@ e2e/.artifacts/
 .DS_Store
 .idea/
 .vscode/
+
+e2e/.output/

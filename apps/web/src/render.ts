@@ -6,7 +6,7 @@ import { $, AUTH, P, PAGES, S, T, can, firmGuard, firmProjects, visiblePages } f
 import { gateRender, renderUserBar } from "./auth";
 import { applyLang, renderRail } from "./wiring/chrome";
 import { wire } from "./wiring/core";
-import { addPmSign, applyPermsToView, mountUpdBar, wireDash, wireExtras, wireFirms, wireGeo, wireMaster, wireQtyInv } from "./wiring/pages";
+import { addPmSign, applyPermsToView, focusableScrollers, labelInputs, mountUpdBar, wireDash, wireExtras, wireFirms, wireGeo, wireMaster, wireQtyInv } from "./wiring/pages";
 import { viewDash } from "./views/dash";
 import { viewBOQ, viewForms, viewRecs, viewWages } from "./views/basic";
 import { viewMasterFull } from "./views/master";
@@ -75,6 +75,8 @@ export function render(): void {
   if (hasProject) wireExtras(v);
   addPmSign(v);
   applyPermsToView(v);
+  focusableScrollers(v);
+  labelInputs(v);
   refreshAiLabels();
   document.title = T("محفظة الالتزام للمشاريع للمقاولين", "Compliance Vault — contractor projects") + " · " + (PAGES.find((x) => x.id === S.page)?.[S.lang === "ar" ? "ar" : "en"] ?? "");
   saveUi();

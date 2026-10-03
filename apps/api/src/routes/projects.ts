@@ -60,9 +60,9 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
   };
   const emit = (event: string, payload: Record<string, unknown>) => { void Promise.resolve(ctx.events.emit(event, payload)).catch(() => {}); };
 
-  r.get("/api/v1/projects", { schema: { tags, summary: "مشاريع المستخدم (حسب المقاولين المسموح بهم)" }, preHandler: app.authenticate }, async (req) => {
+  r.get("/api/v1/projects", { schema: { tags, summary: "مشاريع المستخدم (حسب المقاولين المسموح بهم) — أو كل المشاريع لمفتاح API بنطاق read:projects" }, preHandler: app.requireUserOrKey("read:projects", "dash", "view") }, async (req) => {
     const cat = await loadCatalog(db);
-    return (await listProjects(db, cat, req.auth!.contractorIds)).map((p) => projectDto(p));
+    return (await listProjects(db, cat, req.auth ? req.auth.contractorIds : null)).map((p) => projectDto(p));
   });
   r.get("/api/v1/projects/:id", { schema: { tags, params: idp }, preHandler: app.requireUserOrKey("read:projects", "dash", "view") }, async (req) => {
     if (req.auth) await guardProject(req, req.params.id);

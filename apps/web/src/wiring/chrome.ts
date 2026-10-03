@@ -10,6 +10,8 @@ import { backupData, exportWorkbook, restoreData } from "../actions/exports";
 import { openDeck, closeDeck, stepDeck } from "../views/deck";
 import { guardAct } from "../actions/common";
 import { openEmailReport } from "../emailReport";
+import { E } from "../views/emails";
+import { U } from "../views/users";
 
 let built = false;
 /** ينشئ العناصر الديناميكية مرة واحدة ويربط أزرار الشريط الجانبي */
@@ -119,7 +121,12 @@ export function renderRail(): void {
 
   $("nav").innerHTML = PAGES.map((pg, i) => `<button data-page="${pg.id}" aria-current="${S.page === pg.id}">
       <span class="ix">${i === 0 ? "◎" : String(i).padStart(2, "0")}</span><span>${esc(T(pg.ar, pg.en))}</span></button>`).join("");
-  $("nav").querySelectorAll("button").forEach((b: HTMLElement) => b.onclick = () => { S.page = b.dataset.page!; save(); render(); $("rail").classList.remove("open"); });
+  $("nav").querySelectorAll("button").forEach((b: HTMLElement) => b.onclick = () => {
+    S.page = b.dataset.page!;
+    if (S.page === "emails") E.loaded = false;        // بيانات حية عند كل دخول للصفحة
+    if (S.page === "users") U.loaded = false;
+    save(); render(); $("rail").classList.remove("open");
+  });
 
   $("projTags").innerHTML =
     `<span class="pill" style="background:${fHex(cur)}33;color:var(--ink)">${esc(CONTRACTORS[cur] || "—")}</span>
