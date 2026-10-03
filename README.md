@@ -98,7 +98,7 @@ docker/         Dockerfile للـ api والـ web وإعداد nginx
 
 ```bash
 npm run typecheck     # core + api + web (ويفحص أسماء الدوال المنقولة)
-npm test              # Vitest: core (48) + api (49) + web parity (22)
+npm test              # Vitest: core (48) + api (60) + web parity (22)
 npm run test:e2e      # Playwright: دخول ← رفع ← استنباط ← إرسال تقرير ← وصوله لمدير النظام وللمستلم المضاف + فحص WCAG 2.1 AA بـ axe
 ```
 
@@ -119,7 +119,7 @@ webhook وارد `/api/v1/hooks/import`، ملفا n8n (تقرير كل أحد 8
 - **صور docker لم تُبنَ في بيئة التطوير الحالية** (لا يوجد Docker Hub متاح بلا قيود). تحققنا من صحة `docker-compose.yml`
   (`docker compose config`) ومن تشغيل حزمة الخادم الإنتاجية بالاعتماديات الإنتاجية فقط، لكن أول `docker compose up --build` على جهازك هو أول بناء فعلي للصور.
 - «محفظة Ai» لم تُجرَّب مع واجهة Claude الحية (لا مفتاح في بيئة التطوير)؛ مغطّاة بسلوك الاعتذار الواضح عند غيابه.
-- مزوّدا Resend وGmail API مكتوبان لكن لم يُجرَّبا ضد خدماتهما الحية؛ المجرَّب فعليًا هو SMTP (عبر خادم SMTP وهمي في اختبار E2E).
+- مزوّدا Resend وGmail API لم يُجرَّبا ضد خدماتهما الحية (لا مفاتيح في بيئة التطوير). تغطيهما اختبارات `apps/api/test/providers.test.ts` بإعتراض `fetch`: عنوان الطلب والترويسات والجسم، وMIME المرفق بايتًا ببايت، وتبادل OAuth وإعادة استخدام الرمز، ومعالجة الأخطاء بلا تسريب أسرار. هذا يثبت مطابقة الطلب للعقد المتوقع ولا يغني عن إرسال حقيقي؛ المجرَّب فعليًا من طرف إلى طرف هو SMTP (خادم SMTP وهمي في اختبار E2E).
 
 ---
 Project manager · Eng. Ahmed Zahran
