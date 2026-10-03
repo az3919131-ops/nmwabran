@@ -14,7 +14,8 @@
     "db:seed": "tsx --env-file-if-exists=../../.env src/db/seed-cli.ts"
   },
   "dependencies": {
-    "@iltizam/core": "*",
+    "@anthropic-ai/sdk": "^0.40.0",
+    "@aws-sdk/client-s3": "^3.1146.0",
     "@fastify/cookie": "^11.0.0",
     "@fastify/cors": "^10.0.0",
     "@fastify/multipart": "^9.0.0",
@@ -22,8 +23,9 @@
     "@fastify/static": "^8.0.0",
     "@fastify/swagger": "^9.0.0",
     "@fastify/swagger-ui": "^5.0.0",
+    "@iltizam/core": "*",
     "@node-rs/argon2": "^2.0.0",
-    "@anthropic-ai/sdk": "^0.40.0",
+    "cron-parser": "^4.9.0",
     "drizzle-orm": "^0.44.0",
     "exceljs": "^4.4.0",
     "fastify": "^5.0.0",

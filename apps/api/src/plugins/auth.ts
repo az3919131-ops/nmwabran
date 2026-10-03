@@ -91,13 +91,13 @@ export function registerAuth(app: FastifyInstance): void {
   }) as preHandlerHookHandler);
 
   /** مستخدم مسجّل أو مفتاح API بنطاق محدد */
-  app.decorate("requireUserOrKey", (scope: ApiScope, mod: string, act: Act, opts: { ignoreLock?: boolean } = {}) => (async (req: FastifyRequest) => {
+  app.decorate("requireUserOrKey", (scope: ApiScope, mod: string | ((req: FastifyRequest) => string), act: Act, opts: { ignoreLock?: boolean } = {}) => (async (req: FastifyRequest) => {
     const key = await authKey(app, req);
     if (key) {
       if (!key.scopes.includes(scope)) throw forbidden(`مفتاح API لا يملك النطاق ${scope}`, "scope_missing");
       req.apiKey = key; return;
     }
-    await checkPerm(app, req, mod, act, opts);
+    await checkPerm(app, req, typeof mod === "function" ? mod(req) : mod, act, opts);
   }) as preHandlerHookHandler);
 }
 
@@ -105,6 +105,6 @@ declare module "fastify" {
   interface FastifyInstance {
     authenticate: preHandlerHookHandler;
     requirePerm: (mod: string, act: Act, opts?: { ignoreLock?: boolean }) => preHandlerHookHandler;
-    requireUserOrKey: (scope: ApiScope, mod: string, act: Act, opts?: { ignoreLock?: boolean }) => preHandlerHookHandler;
+    requireUserOrKey: (scope: ApiScope, mod: string | ((req: FastifyRequest) => string), act: Act, opts?: { ignoreLock?: boolean }) => preHandlerHookHandler;
   }
 }

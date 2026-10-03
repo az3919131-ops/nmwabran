@@ -13,11 +13,13 @@ import type { Config } from "./config";
 import type { DbHandle } from "./db/client";
 import { HttpError } from "./lib/errors";
 import { registerAuth } from "./plugins/auth";
+import type { AiService } from "./services/ai";
+import type { PdfRenderer } from "./services/reports/pdf";
 import type { AppEvents, JobQueue, MailProvider, StorageProvider } from "./services/types";
 
 export interface AppCtx {
   cfg: Config; h: DbHandle; db: DbHandle["db"];
-  mail: MailProvider; storage: StorageProvider; queue: JobQueue; events: AppEvents;
+  mail: MailProvider; storage: StorageProvider; queue: JobQueue; events: AppEvents; ai: AiService; pdf: PdfRenderer | null;
 }
 declare module "fastify" { interface FastifyInstance { ctx: AppCtx } }
 
@@ -25,14 +27,14 @@ export interface BuildOpts { ctx: AppCtx; logger?: boolean; routes?: ((app: Fast
 
 export async function buildApp(opts: BuildOpts): Promise<FastifyInstance> {
   const { ctx } = opts;
-  const app = Fastify({ logger: opts.logger ? { level: "info", redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-api-key']"] } : false, trustProxy: true, bodyLimit: 20 * 1024 * 1024 });
+  const app = Fastify({ logger: opts.logger ? { level: "info", redact: ["req.headers.authorization", "req.headers.cookie", "req.headers['x-api-key']"] } : false, trustProxy: true, bodyLimit: 20 * 1024 * 1024, maxParamLength: 2048 });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
   app.decorate("ctx", ctx);
 
   await app.register(cors, { origin: ctx.cfg.CORS_ORIGINS ? ctx.cfg.CORS_ORIGINS.split(",").map((s) => s.trim()) : [ctx.cfg.APP_BASE_URL], credentials: true });
   await app.register(cookie);
-  await app.register(rateLimit, { global: true, max: 600, timeWindow: "1 minute" });
+  await app.register(rateLimit, { global: true, max: 600, timeWindow: "1 minute", hook: "preHandler" });
   await app.register(multipart, { limits: { fileSize: 60 * 1024 * 1024, files: 20 } });
   await app.register(swagger, {
     openapi: {

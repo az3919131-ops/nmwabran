@@ -1,12 +1,17 @@
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
-import { DEFAULT_FACTORS, derive, type Catalog, type FileRec, type GeoPoint, type Project, type RmuRow, type Sheet } from "@iltizam/core";
+import { DEFAULT_FACTORS, derive, type Catalog, type FileRec, type GeoConflict, type GeoPoint, type Project, type RmuRow, type Sheet } from "@iltizam/core";
 import type { DB, Tx } from "../db/client";
 import {
   contractors, geoPoints, layoutSheets, materialLines, projectSnapshots, rmuUnits, uploadedFiles, workOrderLines, workOrders,
 } from "../db/schema";
 
 /** مشروع كما يراه الـ API: نموذج core + معرّف المقاول (UUID) بدل الفهرس */
-export type ApiProject = Project & { contractorId: string; version: number; updatedAt: string; createdAt: string };
+export type ApiProject = Project & { contractorId: string; version: number; updatedAt: string; createdAt: string; geoConflicts: GeoConflict[] };
+
+/** ما يُرسل للعميل: بلا مفاتيح التخزين الداخلية */
+export function projectDto(p: ApiProject, extra: Record<string, unknown> = {}) {
+  return { ...p, files: p.files.map(({ storageKey, ...f }) => { void storageKey; return f; }), ...extra };
+}
 
 const n = (x: string | number | null | undefined) => (x == null || x === "" ? 0 : Number(x));
 type Q = DB | Tx;
@@ -16,7 +21,7 @@ function toFileRec(f: typeof uploadedFiles.$inferSelect): FileRec {
     id: f.id, name: f.name, size: f.size, type: f.mime, ext: f.ext, kind: f.kind,
     imported: f.status === "imported", blocked: f.status === "blocked", rows: f.rows, at: f.createdAt.toISOString(),
     rep: (f.report as FileRec["rep"]) ?? [], ident: (f.ident as FileRec["ident"]) ?? undefined,
-    woState: (f.woState as FileRec["woState"]) ?? undefined, geoN: f.geoN, hasOriginal: !!f.storageKey, storageKey: undefined,
+    woState: (f.woState as FileRec["woState"]) ?? undefined, geoN: f.geoN, hasOriginal: !!f.storageKey, storageKey: f.storageKey ?? undefined,
   };
 }
 
@@ -50,7 +55,7 @@ async function assemble(db: Q, rows: (typeof workOrders.$inferSelect)[], cat: Ca
       sheets: sheets.length ? sheets : [], factors, files: fl.filter((f) => f.workOrderId === w.id).map(toFileRec),
       derived: null, boq, mat, rmus, accept: (w.accept as Record<string, unknown>) ?? {}, notes: w.notes, geo,
       ...(w.invoice ? { inv: w.invoice as Project["inv"] } : {}), ...(w.prevTotal != null ? { prevTotal: n(w.prevTotal) } : {}),
-      version: w.version, updatedAt: w.updatedAt.toISOString(), createdAt: w.createdAt.toISOString(),
+      geoConflicts: (w.geoConflicts as GeoConflict[]) ?? [], version: w.version, updatedAt: w.updatedAt.toISOString(), createdAt: w.createdAt.toISOString(),
     };
     if (w.derivedAt) { p.derived = derive(p, cat); p.derived.at = w.derivedAt.toISOString(); }
     return p;
@@ -118,7 +123,7 @@ export async function insertProject(tx: Tx, p: Project & { contractorId: string 
     woNumber: p.wo, name: p.name, site: p.site, admin: p.admin, sector: p.sector, contractorId: p.contractorId, approvedDate: p.approvedDate,
     estMat: String(p.estCost.mat), estInst: String(p.estCost.inst), estInd: String(p.estCost.ind),
     derivedAt: opts.derived ? new Date() : null, factors: p.factors, notes: p.notes, invoice: p.inv ?? null,
-    prevTotal: p.prevTotal != null ? String(p.prevTotal) : null, accept: p.accept ?? {},
+    prevTotal: p.prevTotal != null ? String(p.prevTotal) : null, accept: p.accept ?? {}, geoConflicts: (p as any).geoConflicts ?? [],
   }).returning({ id: workOrders.id });
   await writeChildren(tx, row.id, p);
   return row.id;
@@ -134,7 +139,7 @@ export async function saveProject(tx: Tx, p: Project & { contractorId?: string }
     woNumber: p.wo, name: p.name, site: p.site, admin: p.admin, sector: p.sector, ...(p.contractorId ? { contractorId: p.contractorId } : {}),
     approvedDate: p.approvedDate, estMat: String(p.estCost.mat), estInst: String(p.estCost.inst), estInd: String(p.estCost.ind),
     derivedAt, factors: p.factors, notes: p.notes, invoice: p.inv ?? null, prevTotal: p.prevTotal != null ? String(p.prevTotal) : null,
-    accept: p.accept ?? {}, version: cur[0].v + 1, updatedAt: new Date(),
+    accept: p.accept ?? {}, geoConflicts: (p as any).geoConflicts ?? [], version: cur[0].v + 1, updatedAt: new Date(),
   }).where(eq(workOrders.id, p.id));
   await writeChildren(tx, p.id, p);
 }
@@ -146,16 +151,15 @@ export async function deleteProject(tx: Tx, id: string): Promise<void> {
 /** لقطة قبل أي استيراد — للتراجع. نحتفظ بآخر 8 لقطات لكل مشروع. */
 export async function takeSnapshot(tx: Tx, p: ApiProject, label: string): Promise<void> {
   const { files, ...rest } = p;
-  void files;
-  await tx.insert(projectSnapshots).values({ workOrderId: p.id, label, data: rest });
+  await tx.insert(projectSnapshots).values({ workOrderId: p.id, label, data: { ...rest, fileIds: files.map((f) => f.id) } });
   const old = await tx.select({ id: projectSnapshots.id }).from(projectSnapshots).where(eq(projectSnapshots.workOrderId, p.id)).orderBy(desc(projectSnapshots.id)).offset(8);
   if (old.length) await tx.delete(projectSnapshots).where(inArray(projectSnapshots.id, old.map((o) => o.id)));
 }
-export async function popSnapshot(tx: Tx, projectId: string): Promise<{ label: string; data: Omit<ApiProject, "files"> } | null> {
+export async function popSnapshot(tx: Tx, projectId: string): Promise<{ label: string; data: Omit<ApiProject, "files"> & { fileIds: string[] } } | null> {
   const r = await tx.select().from(projectSnapshots).where(eq(projectSnapshots.workOrderId, projectId)).orderBy(desc(projectSnapshots.id)).limit(1);
   if (!r.length) return null;
   await tx.delete(projectSnapshots).where(and(eq(projectSnapshots.id, r[0].id)));
-  return { label: r[0].label, data: r[0].data as Omit<ApiProject, "files"> };
+  return { label: r[0].label, data: r[0].data as Omit<ApiProject, "files"> & { fileIds: string[] } };
 }
 export async function hasSnapshot(db: Q, projectId: string): Promise<boolean> {
   const r = await db.select({ id: projectSnapshots.id }).from(projectSnapshots).where(eq(projectSnapshots.workOrderId, projectId)).limit(1);

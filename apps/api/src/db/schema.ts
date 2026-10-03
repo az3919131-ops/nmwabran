@@ -101,6 +101,8 @@ export const workOrders = pgTable("work_orders", {
   invoice: jsonb("invoice"),
   prevTotal: numeric("prev_total", { precision: 18, scale: 2 }),
   accept: jsonb("accept").notNull().default({}),
+  /** تعارض إحداثيات بين ملفين لنفس الوحدة (> 300 م) — يُبقي الأول ويعرض بطاقة تعارض */
+  geoConflicts: jsonb("geo_conflicts").notNull().default([]),
   version: integer("version").notNull().default(1),
   createdAt: createdAt(), updatedAt: updatedAt(),
 }, (t) => [index("work_orders_wo_idx").on(t.woNumber), index("work_orders_contractor_idx").on(t.contractorId)]);

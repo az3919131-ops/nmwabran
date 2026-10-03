@@ -1,5 +1,5 @@
 {
-  "id": "d9d76ec9-3904-4248-9a3f-ac17152f0a6a",
+  "id": "72665077-9469-4de5-b0c8-c596cb18438f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -2618,6 +2618,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{}'::jsonb"
+        },
+        "geo_conflicts": {
+          "name": "geo_conflicts",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
         },
         "version": {
           "name": "version",

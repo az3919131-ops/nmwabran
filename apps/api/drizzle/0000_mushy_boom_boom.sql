@@ -328,6 +328,7 @@ CREATE TABLE "work_orders" (
 	"invoice" jsonb,
 	"prev_total" numeric(18, 2),
 	"accept" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"geo_conflicts" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"version" integer DEFAULT 1 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
