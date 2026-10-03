@@ -29,13 +29,51 @@ docker compose up --build
 
 ## التشغيل المحلي بلا docker
 
+**المتطلبات:** Node.js 20 أو أحدث، وPostgreSQL 14 أو أحدث (على أي نظام). لا حاجة لـ docker.
+
+**1) قاعدة البيانات.** ثبّت PostgreSQL ثم أنشئ مستخدمًا وقاعدة (من `psql` بحساب المدير):
+
+```sql
+CREATE ROLE iltizam LOGIN PASSWORD 'iltizam';
+CREATE DATABASE iltizam OWNER iltizam;
+```
+
+> على Ubuntu/Debian يمكنك بدلًا من ذلك تشغيل `bash scripts/dev-pg.sh start`، وهو ينشئ قاعدة تجريبية جاهزة على المنفذ 5432.
+> ويمكن استعمال أي قاعدة موجودة بوضع رابطها في `DATABASE_URL`.
+
+**2) التثبيت والإعداد.**
+
 ```bash
 npm install
-bash scripts/dev-pg.sh start        # PostgreSQL محلي على 5432 (أو استعمل أي قاعدة وضع رابطها في DATABASE_URL)
-cp .env.example .env
-npm run dev:api                      # الخادم على :3000 (يطبّق الهجرات ويزرع المستخدمين تلقائيًا)
-npm run dev:web                      # الواجهة على :5173 مع تمرير /api
+cp .env.example .env     # على Windows (PowerShell): Copy-Item .env.example .env
 ```
+
+القيم الافتراضية في `.env` تناسب التجربة المحلية (`DATABASE_URL` يطابق الخطوة 1). اضبط `SEED_*_PASSWORD` قبل **أول** تشغيل إن أردت كلمات مرور غير التجريبية.
+
+**3) التشغيل** (في نافذتين):
+
+```bash
+npm run dev:api          # الخادم على http://localhost:3000 — يطبّق الهجرات ويزرع المستخدمين تلقائيًا
+npm run dev:web          # الواجهة على http://localhost:5173 مع تمرير /api إلى الخادم
+```
+
+افتح **http://localhost:5173** والوثائق التفاعلية على http://localhost:5173/api/docs، ثم ادخل بحساب `ahmed` (جدول الحسابات أعلاه).
+
+**4) توليد PDF (اختياري).** يحتاج Chromium. إن لم يكن عندك:
+
+```bash
+npx playwright install chromium
+```
+
+أو ضع مسار متصفح Chrome/Chromium مثبّت في `CHROMIUM_PATH` داخل `.env`. وإن لم ترد PDF فاضبط `DISABLE_PDF=true` ويبقى Excel يعمل.
+
+**5) البريد (للتجربة).** بلا docker لا يوجد MailHog جاهز؛ لتجربة «إرسال التقرير» اختر أحد الخيارين في `.env`:
+- خادم SMTP تجريبي محلي مثل [Mailpit](https://mailpit.axllent.org) (ملف تنفيذي واحد لكل الأنظمة): `SMTP_HOST=localhost` و`SMTP_PORT=1025` وتقرأ الرسائل على http://localhost:8025.
+- أو SMTP حقيقي (`SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASS`)، أو `MAIL_PROVIDER=resend` مع `RESEND_API_KEY`.
+
+بعد أي تعديل في `.env` أعد تشغيل `npm run dev:api`. لإيقاف قاعدة `dev-pg.sh`: `bash scripts/dev-pg.sh stop`.
+
+**تشغيل إنتاجي بلا docker:** `npm run build` ثم `npm run start -w @iltizam/api` للخادم، وتخدم مجلد `apps/web/dist` بأي خادم ويب مع تمرير `/api` إلى الخادم.
 
 ## البنية
 
