@@ -1,0 +1,653 @@
+{
+  "name": "واجهة لوحة التحكم – أحمد",
+  "nodes": [
+    {
+      "id": "1393e100-8c5e-4e46-9e2f-014706417b7f",
+      "name": "استقبال طلب اللوحة",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        400
+      ],
+      "webhookId": "d058a7da-1114-4920-959d-ec7e0e1f6c56",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ahmed-dashboard",
+        "authentication": "none",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      }
+    },
+    {
+      "id": "da1bad96-19fb-40af-a60f-d48ddd682aae",
+      "name": "قراءة الطلب",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        400
+      ],
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "req-action",
+              "name": "action",
+              "value": "={{ $json.body?.action ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "req-message",
+              "name": "message",
+              "value": "={{ $json.body?.message ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "req-enabled",
+              "name": "enabled",
+              "value": "={{ $json.body?.enabled ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "req-key",
+              "name": "provided_key",
+              "value": "={{ $json.headers?.[\"x-dashboard-key\"] ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "req-today",
+              "name": "today",
+              "value": "={{ $now.setZone(\"Asia/Riyadh\").toFormat(\"yyyy-MM-dd\") }}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "df5e1210-86d2-4f8e-acdb-97801514545f",
+      "name": "جلب المفتاح السري",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        400
+      ],
+      "alwaysOutputData": true,
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gKLhEBnaaHVOchwk",
+          "cachedResultName": "dashboard_config"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "api_key"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      }
+    },
+    {
+      "id": "7896fe09-fdec-42a6-8df8-0b9a69083ebe",
+      "name": "المفتاح صحيح؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ ($json.value ?? \"\") !== \"\" && $json.value !== \"CHANGE_ME\" && $json.value === $(\"قراءة الطلب\").first().json.provided_key }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "1278132d-b8ce-4206-b971-b9db0b29ad35",
+      "name": "توجيه الإجراء",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        272
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "renameOutput": true,
+              "outputKey": "overview",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"قراءة الطلب\").first().json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "overview"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "save_message",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"قراءة الطلب\").first().json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "save_message"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "unknown"
+        }
+      }
+    },
+    {
+      "id": "df75a47f-ebd9-46a2-b13d-7e4161bc335d",
+      "name": "جلب رسالة اليوم",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "alwaysOutputData": true,
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "87qtvRMzdaAkEHAp",
+          "cachedResultName": "wa_daily_message"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "current"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      }
+    },
+    {
+      "id": "bdd29166-2f2a-4630-aa64-27af2bcf3b2c",
+      "name": "جلب سجل الردود",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        0
+      ],
+      "alwaysOutputData": true,
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "EXBpNmHMCYSl9GTj",
+          "cachedResultName": "wa_reply_log"
+        },
+        "matchType": "anyCondition",
+        "returnAll": false,
+        "limit": 500,
+        "orderBy": true,
+        "orderByColumn": "createdAt",
+        "orderByDirection": "DESC"
+      }
+    },
+    {
+      "id": "d203e660-560b-468b-877d-348a3bda8493",
+      "name": "رد: نظرة عامة",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: $(\"جلب رسالة اليوم\").first().json.key !== undefined ? $(\"جلب رسالة اليوم\").first().json : null, replies: $(\"جلب سجل الردود\").all().map(i => i.json).filter(r => r.id !== undefined) }) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "daf69104-6b85-4d71-a779-0007bd00f408",
+      "name": "الرسالة صالحة؟",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        288
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $(\"قراءة الطلب\").first().json.message.trim().length > 0 && $(\"قراءة الطلب\").first().json.message.length <= 1000 && [\"نعم\", \"لا\"].includes($(\"قراءة الطلب\").first().json.enabled) }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "13e9df5f-eec0-4530-a6ea-b8424bb9d4a5",
+      "name": "حفظ رسالة اليوم",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        192
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "87qtvRMzdaAkEHAp",
+          "cachedResultName": "wa_daily_message"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "key",
+              "condition": "eq",
+              "keyValue": "current"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key": "current",
+            "message": "={{ $(\"قراءة الطلب\").first().json.message }}",
+            "enabled": "={{ $(\"قراءة الطلب\").first().json.enabled }}",
+            "updated_on": "={{ $(\"قراءة الطلب\").first().json.today }}"
+          },
+          "schema": [
+            {
+              "id": "key",
+              "displayName": "key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "enabled",
+              "displayName": "enabled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_on",
+              "displayName": "updated_on",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a6f76bbd-3e26-4cc6-8cf7-be01e14e20a2",
+      "name": "رد: تم الحفظ",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1568,
+        192
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: { message: $(\"قراءة الطلب\").first().json.message, enabled: $(\"قراءة الطلب\").first().json.enabled, updated_on: $(\"قراءة الطلب\").first().json.today } }) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "78d3ecb1-5f9a-4648-9225-0ac5aae173a6",
+      "name": "رد: رسالة غير صالحة",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1344,
+        384
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"error\":\"invalid_message\"}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "e34f6179-dd34-4056-9205-b6eeccea8daf",
+      "name": "رد: إجراء غير معروف",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        480
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"error\":\"unknown_action\"}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "e0de312a-da2d-488b-aec8-2284ee9c6332",
+      "name": "رد: غير مصرّح",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        496
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"error\":\"unauthorized\"}",
+        "options": {
+          "responseCode": 401,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "93c8c8cc-d73b-4111-93ad-c2f832ebd6a7",
+      "name": "ملاحظة",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        496
+      ],
+      "parameters": {
+        "content": "## واجهة لوحة التحكم – أحمد\nيستقبل طلبات لوحة التحكم (POST) ويتحقق من المفتاح في الترويسة x-dashboard-key مقابل الصف api_key في جدول dashboard_config.\n\n**قبل التشغيل:** غيّر القيمة CHANGE_ME في الجدول إلى مفتاحك السري (نص طويل عشوائي)، ثم انشر الـ workflow.\n\nالإجراءات: overview (رسالة اليوم + سجل الردود) و save_message (تحديث رسالة الرد الآلي).",
+        "color": 4
+      }
+    }
+  ],
+  "connections": {
+    "استقبال طلب اللوحة": {
+      "main": [
+        [
+          {
+            "node": "قراءة الطلب",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة الطلب": {
+      "main": [
+        [
+          {
+            "node": "جلب المفتاح السري",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "جلب المفتاح السري": {
+      "main": [
+        [
+          {
+            "node": "المفتاح صحيح؟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "المفتاح صحيح؟": {
+      "main": [
+        [
+          {
+            "node": "توجيه الإجراء",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "رد: غير مصرّح",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "توجيه الإجراء": {
+      "main": [
+        [
+          {
+            "node": "جلب رسالة اليوم",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "الرسالة صالحة؟",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "رد: إجراء غير معروف",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "جلب رسالة اليوم": {
+      "main": [
+        [
+          {
+            "node": "جلب سجل الردود",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "جلب سجل الردود": {
+      "main": [
+        [
+          {
+            "node": "رد: نظرة عامة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "الرسالة صالحة؟": {
+      "main": [
+        [
+          {
+            "node": "حفظ رسالة اليوم",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "رد: رسالة غير صالحة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "حفظ رسالة اليوم": {
+      "main": [
+        [
+          {
+            "node": "رد: تم الحفظ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

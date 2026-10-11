@@ -1,0 +1,9 @@
+# نشر موقع أحمد زهران (apps/portfolio) على Netlify مباشرة من هذا المستودع.
+# Netlify: Add new project ← Import from GitHub ← اختر المستودع والفرع ← Deploy (كل الإعدادات تُقرأ من هنا).
+[build]
+  command = "npm run build -w @nmwabran/portfolio"
+  publish = "apps/portfolio/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
