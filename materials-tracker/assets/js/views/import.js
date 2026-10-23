@@ -1,4 +1,4 @@
-/* شاشة الاستيراد: كاميرا أو صورة أو Excel، ثم قراءة، ثم مراجعة قابلة للتعديل، ثم حفظ وتصدير. */
+/* شاشة الاستيراد: كاميرا أو صورة أو Excel أو PDF، ثم قراءة، ثم مراجعة قابلة للتعديل، ثم حفظ وتصدير. */
 (function (g) {
   'use strict';
   const MT = g.MT;
@@ -16,27 +16,27 @@
       title: 'قائمة Checklist',
       sub: 'المطلوب صرفه من شركة الكهرباء',
       qtyLabel: 'الكمية المطلوبة',
-      tips: ['صوّر صفحة واحدة في كل مرة، والورقة مستقيمة أمامك.', 'تأكد أن أعمدة Unloading Point والحجز والكمية ظاهرة بالكامل.', 'رقم المادة الجانبي يُقرأ تلقائيًا. ما لم يُقرأ تكتبه بنفسك وتظهر لك اقتراحات.'],
+      tips: ['صوّر صفحة واحدة في كل مرة، والورقة مستقيمة أمامك.', 'تأكد أن أعمدة Unloading Point والحجز والكمية ظاهرة بالكامل.', 'رقم المادة الجانبي يُقرأ تلقائيًا. ما لم يُقرأ تكتبه بنفسك وتظهر لك اقتراحات.', 'يمكنك رفع ملف PDF أو Excel مُصدَّر من النظام بدل التصوير.'],
     },
     uds: {
       label: 'UDS',
       title: 'قائمة UDS',
       sub: 'المسجّل على نظام UDS',
       qtyLabel: 'الكمية المسجلة',
-      tips: ['صوّر شاشة UDS أو ارفع لقطة الشاشة بدل التصوير من الجوال إن أمكن.', 'تأكد أن رقم المادة والكمية ورقم المرجع ظاهرة في كل سطر.', 'يمكنك أيضًا رفع ملف Excel مُصدَّر من النظام.'],
+      tips: ['صوّر شاشة UDS أو ارفع لقطة الشاشة بدل التصوير من الجوال إن أمكن.', 'تأكد أن رقم المادة والكمية ورقم المرجع ظاهرة في كل سطر.', 'يمكنك أيضًا رفع ملف Excel أو PDF مُصدَّر من النظام.'],
     },
     gatepass: {
       label: 'Gate Pass',
       title: 'مستند Gate Pass',
       sub: 'المصروف فعليًا من المستودع',
       qtyLabel: 'الكمية المصروفة',
-      tips: ['صوّر كل صفحة من الـ Gate Pass على حدة. الصفحات التي تحمل نفس الرقم تُضاف إلى مستند واحد.', 'تجنّب الظل واللمعان على أعمدة الأرقام، وقرّب الكاميرا من الجدول.', 'الكميات المكتوبة بخط صغير تحتاج مراجعتك. بجانب كل كمية يظهر المطلوب في الـ Checklist للمقارنة.'],
+      tips: ['صوّر كل صفحة من الـ Gate Pass على حدة. الصفحات التي تحمل نفس الرقم تُضاف إلى مستند واحد.', 'تجنّب الظل واللمعان على أعمدة الأرقام، وقرّب الكاميرا من الجدول.', 'الكميات المكتوبة بخط صغير تحتاج مراجعتك. بجانب كل كمية يظهر المطلوب في الـ Checklist للمقارنة.', 'يمكنك رفع ملف PDF أو Excel بدل التصوير. الـ PDF النصي يُقرأ مباشرة.'],
     },
   };
 
   const FLAG_ICON = { bad: '✕', warn: '▲', ok: '●' };
   const drafts = {};
-  const fresh = () => ({ step: 'source', src: null, file: null, blob: null, rotation: 0, auto: true, useAI: false, busy: null, rows: [], header: {}, warnings: [], matrix: null, mapping: {}, headerIndex: -1, sheetName: '', note: '', mode: 'merge', previewUrl: '', readInfo: '' });
+  const fresh = () => ({ step: 'source', src: null, file: null, blob: null, rotation: 0, auto: true, useAI: false, busy: null, rows: [], header: {}, warnings: [], matrix: null, mapping: {}, headerIndex: -1, sheetName: '', note: '', mode: 'merge', previewUrl: '', readInfo: '', pdf: null });
   const D = (k) => (drafts[k] = drafts[k] || fresh());
   // مسودة مشروع لا تنتقل إلى مشروع آخر
   Store.on('project', () => Object.keys(drafts).forEach((k) => delete drafts[k]));
@@ -84,7 +84,8 @@
 
   /* ====================== المعالج ====================== */
   function stepsBar(active) {
-    const s = ['١. اختر المصدر', '٢. جهّز الصورة', '٣. راجع واحفظ'];
+    const src = D(kind).src;
+    const s = ['١. اختر المصدر', src === 'pdf' || src === 'excel' ? '٢. جهّز الملف' : '٢. جهّز الصورة', '٣. راجع واحفظ'];
     return `<ol class="wz-steps" aria-label="خطوات الاستيراد">${s.map((t, i) => `<li class="${i + 1 === active ? 'is-current' : i + 1 < active ? 'is-done' : ''}" ${i + 1 === active ? 'aria-current="step"' : ''}>${t}</li>`).join('')}</ol>`;
   }
 
@@ -105,11 +106,11 @@
         <div class="source-btns">
           <button type="button" class="src-btn src-btn-cam" data-pick="cam">${UI.icon('camera', 34)}<strong>صوّر بالكاميرا</strong><small>على الجوال تفتح الكاميرا مباشرة</small></button>
           <button type="button" class="src-btn" data-pick="img">${UI.icon('image', 34)}<strong>ارفع صورة</strong><small>JPG أو PNG أو لقطة شاشة</small></button>
-          <button type="button" class="src-btn" data-pick="xls">${UI.icon('sheet', 34)}<strong>ارفع Excel أو CSV</strong><small>مع معاينة وربط الأعمدة</small></button>
+          <button type="button" class="src-btn" data-pick="xls">${UI.icon('sheet', 34)}<strong>ارفع Excel أو PDF</strong><small>ملف مُصدَّر من النظام يُقرأ مباشرة</small></button>
         </div>
         <input type="file" id="f-cam" accept="image/*" capture="environment" hidden>
         <input type="file" id="f-img" accept="image/*" hidden>
-        <input type="file" id="f-xls" accept=".xlsx,.xls,.csv,text/csv" hidden>
+        <input type="file" id="f-xls" accept=".xlsx,.xls,.csv,.pdf,text/csv,application/pdf" hidden>
         <p class="dz-hint">أو اسحب الملف وأفلته هنا.</p>
       </div>
       <ul class="tips">${k.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
@@ -132,10 +133,24 @@
     });
   }
 
+  const isPdf = (f) => /\.pdf$/i.test(f.name || '') || f.type === 'application/pdf';
+
+  function releasePdf(d) {
+    if (d.pdf && d.pdf.doc && d.pdf.doc.destroy) d.pdf.doc.destroy().catch(() => {});
+    d.pdf = null;
+  }
+
   async function handleFile(file) {
     const d = D(kind);
+    const hint = rootEl && rootEl.querySelector('.dz-hint');
     try {
-      if (/\.(xlsx|xls|csv)$/i.test(file.name) || /spreadsheet|excel|csv/.test(file.type)) {
+      if (isPdf(file)) {
+        if (hint) hint.textContent = 'جارٍ فتح الملف...';
+        const info = await MT.PDF.inspect(file);
+        if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+        releasePdf(d);
+        Object.assign(d, fresh(), { step: 'prepare', src: 'pdf', file, pdf: info, previewUrl: URL.createObjectURL(info.preview) });
+      } else if (/\.(xlsx|xls|csv)$/i.test(file.name) || /spreadsheet|excel|csv/.test(file.type)) {
         const { matrix, sheetName } = await MT.Excel.readMatrix(file);
         if (!matrix.length) throw new Error('الملف فارغ.');
         const t = P.detectTable(matrix);
@@ -145,9 +160,10 @@
         Object.assign(d, fresh(), { step: 'prepare', src: 'image', file, blob: file });
         d.useAI = false;
         await refreshPreview(d);
-      } else throw new Error('نوع الملف غير مدعوم. ارفع صورة أو ملف Excel أو CSV.');
+      } else throw new Error('نوع الملف غير مدعوم. ارفع ملف Excel أو PDF أو صورة.');
       drawWizard();
     } catch (e) {
+      if (hint) hint.textContent = 'أو اسحب الملف وأفلته هنا.';
       UI.toast(e.message || String(e), { type: 'error', ms: 7000 });
     }
   }
@@ -161,6 +177,7 @@
   /* ----- الخطوة 2 ----- */
   function drawPrepare(host, d) {
     if (d.src === 'excel') return drawMapping(host, d);
+    if (d.src === 'pdf') return drawPdfPrepare(host, d);
     const aiOk = MT.AI.hasKey();
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
       ${stepsBar(2)}
@@ -210,6 +227,85 @@
     };
   }
 
+  /* ----- الخطوة 2 لملف PDF ----- */
+  function drawPdfPrepare(host, d) {
+    const info = d.pdf;
+    const aiOk = MT.AI.hasKey() && !info.textual;
+    const extra = info.pageCount > info.usedPages ? ` (تُقرأ أول ${info.usedPages} صفحة فقط)` : '';
+    host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
+      ${stepsBar(2)}
+      <h2 id="wz-h" class="h3">جهّز الملف</h2>
+      <div class="prep">
+        <figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة الصفحة الأولى من ملف ${KINDS[kind].title}"></figure>
+        <div class="prep-side">
+          <p class="muted mono" dir="ltr">${esc(d.file.name || 'file.pdf')} (${(d.file.size / 1024).toFixed(0)} KB)</p>
+          <p><strong>${info.pageCount} ${info.pageCount === 1 ? 'صفحة' : 'صفحات'}</strong>${extra}</p>
+          <p class="note">${info.textual ? 'الملف يحتوي نصًا مضمّنًا، فيُقرأ مباشرة وبدقة عالية دون تعرّف ضوئي. صفحات الملف تُجمع في قائمة واحدة.' : 'الملف صورة ممسوحة بلا نص مضمّن، فيُقرأ بالتعرّف الضوئي كما تُقرأ الصور وقد تحتاج مراجعة بعض الأرقام. صفحات الملف تُجمع في قائمة واحدة.'}</p>
+          ${aiOk ? `<label class="check"><input type="checkbox" id="use-ai" ${d.useAI ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>قراءة ذكية بـ Claude (أدق مع الصور الممسوحة)</span></label>` : ''}
+          <div class="row-actions">
+            <button type="button" class="btn btn-primary" id="read" ${d.busy ? 'disabled' : ''}>${UI.icon('spark', 20)}<span>اقرأ الملف</span></button>
+            <button type="button" class="btn" id="skip" ${d.busy ? 'disabled' : ''}>${UI.icon('edit', 20)}<span>أدخل البيانات يدويًا</span></button>
+            <button type="button" class="btn btn-ghost" id="back" ${d.busy ? 'disabled' : ''}>اختر ملفًا آخر</button>
+          </div>
+          <div class="progress-box" id="prog" ${d.busy ? '' : 'hidden'} role="status" aria-live="polite"><div class="progress progress-lg"><span id="prog-bar" style="width:${d.busy ? d.busy.pct : 0}%"></span></div><p id="prog-text" class="muted">${d.busy ? esc(d.busy.text) : ''}</p><div class="row-actions"><button type="button" class="btn btn-sm" id="cancel-read">ألغِ القراءة</button></div></div>
+        </div>
+      </div>
+    </section>`;
+    const ai = host.querySelector('#use-ai');
+    if (ai) ai.onchange = (e) => (d.useAI = e.target.checked);
+    host.querySelector('#back').onclick = () => {
+      if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+      releasePdf(d);
+      Object.assign(d, fresh());
+      drawWizard();
+    };
+    host.querySelector('#skip').onclick = () => {
+      d.rows = [];
+      d.header = kind === 'gatepass' ? { date: U.today() } : {};
+      d.step = 'review';
+      d.readInfo = 'أُدخلت البيانات يدويًا.';
+      drawWizard();
+    };
+    host.querySelector('#read').onclick = () => runRead(host, d);
+    host.querySelector('#cancel-read').onclick = () => {
+      d.run = (d.run || 0) + 1;
+      d.busy = null;
+      MT.OCR.dispose();
+      drawWizard();
+      UI.toast('أُلغيت القراءة.', { type: 'info', ms: 2500 });
+    };
+  }
+
+  /** قراءة ملف PDF: النص المضمّن أولًا، ثم التعرّف الضوئي على صفحات مرسومة إن لزم */
+  async function readPdf(d, setBusy) {
+    const info = d.pdf;
+    const ctx = ctxFor();
+    if (info.textual) {
+      setBusy(40, 'قراءة النص من الملف...');
+      const L = { lines: info.lines };
+      const parsed = kind === 'checklist' ? P.parseChecklist(L, ctx) : kind === 'gatepass' ? P.parseGatePass(L, ctx) : P.parseUds(L, ctx);
+      if (parsed.rows.length) return { parsed, direct: true };
+      setBusy(45, 'لا صفوف في النص المضمّن. أجرّب التعرّف الضوئي على الصفحات...');
+    }
+    setBusy(8, 'تجهيز صفحات الملف...');
+    const pages = await MT.PDF.renderAll(info.doc, info.usedPages, (n, N) => setBusy(8 + Math.round((n / N) * 10), `تجهيز الصفحة ${n} من ${N}...`));
+    if (d.useAI && MT.AI.hasKey() && !info.textual) {
+      const rows = [];
+      let header = {};
+      const warnings = [];
+      for (let i = 0; i < pages.length; i++) {
+        setBusy(20 + Math.round((i / pages.length) * 70), `تحليل الصفحة ${i + 1} من ${pages.length} بالذكاء الاصطناعي...`);
+        const part = await MT.AI.read(kind, pages[i], { rotation: 0, ctx });
+        rows.push(...part.rows);
+        header = { ...(part.header || {}), ...header };
+        warnings.push(...(part.warnings || []));
+      }
+      return { parsed: { rows, header, warnings }, ai: true };
+    }
+    const out = await MT.OCR.readMany(kind, pages, { rotation: 'auto', upright: true, onStatus: (s) => setBusy(Math.max(18, Math.round(18 + s.pct * 0.82)), s.text), ctx });
+    return { parsed: out.parsed };
+  }
+
   async function rotate(d, delta) {
     d.auto = false;
     d.rotation = (d.rotation + delta + 360) % 360;
@@ -231,7 +327,9 @@
     drawWizard();
     try {
       let out;
-      if (d.useAI && MT.AI.hasKey()) {
+      if (d.src === 'pdf') {
+        out = await readPdf(d, setBusy);
+      } else if (d.useAI && MT.AI.hasKey()) {
         setBusy(30, 'تحليل الصورة بالذكاء الاصطناعي...');
         const parsed = await MT.AI.read(kind, d.blob, { rotation: d.auto ? 0 : d.rotation, ctx: ctxFor() });
         out = { parsed, rotation: d.rotation, ai: true };
@@ -247,12 +345,12 @@
       d.header = out.parsed.header || {};
       if (kind === 'gatepass' && !d.header.date) d.header.date = U.today();
       d.warnings = out.parsed.warnings || [];
-      d.readInfo = out.ai ? 'قراءة ذكية بـ Claude.' : `قراءة محلية مجانية. دقتها تتأثر بجودة الصورة، فراجع كل رقم.`;
+      d.readInfo = out.direct ? 'قُرئ النص المضمّن في ملف PDF مباشرة. راجع الأرقام قبل الحفظ.' : out.ai ? 'قراءة ذكية بـ Claude.' : `قراءة محلية مجانية. دقتها تتأثر بجودة الصورة، فراجع كل رقم.`;
       d.busy = null;
       d.step = 'review';
       drawWizard();
       const bad = d.rows.filter((r) => P.flagLevel(r.flags) === 'bad').length;
-      UI.toast(d.rows.length ? `قُرئ ${d.rows.length} صفًا${bad ? `، منها ${bad} يحتاج إكمالًا` : ''}.` : 'لم أجد صفوفًا في الصورة. أعد التصوير أو أدخل البيانات يدويًا.', { type: d.rows.length ? 'ok' : 'error', ms: 7000 });
+      UI.toast(d.rows.length ? `قُرئ ${d.rows.length} صفًا${bad ? `، منها ${bad} يحتاج إكمالًا` : ''}.` : (d.src === 'pdf' ? 'لم أجد صفوفًا في الملف. تأكد أنه القائمة الصحيحة أو أدخل البيانات يدويًا.' : 'لم أجد صفوفًا في الصورة. أعد التصوير أو أدخل البيانات يدويًا.'), { type: d.rows.length ? 'ok' : 'error', ms: 7000 });
     } catch (e) {
       console.error(e);
       if (d.run !== run) return;
@@ -408,7 +506,7 @@
     const canMode = kind !== 'gatepass';
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
       ${stepsBar(3)}
-      <div class="rv-head"><h2 id="wz-h" class="h3">راجع ${k.title} واحفظها</h2><p class="muted">${esc(d.readInfo)} ${d.src === 'image' ? 'الصف الملوّن يحتاج تدخلك. لا يُحفظ أي صف ناقص الكود أو الكمية.' : ''}</p></div>
+      <div class="rv-head"><h2 id="wz-h" class="h3">راجع ${k.title} واحفظها</h2><p class="muted">${esc(d.readInfo)} ${d.src === 'image' || d.src === 'pdf' ? 'الصف الملوّن يحتاج تدخلك. لا يُحفظ أي صف ناقص الكود أو الكمية.' : ''}</p></div>
       ${d.warnings.length ? `<ul class="note note-warn">${d.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
       <div class="rv-layout ${d.previewUrl ? 'has-img' : ''}">
         ${d.previewUrl ? `<aside class="rv-img"><button type="button" class="rv-img-btn" id="zoom" aria-label="كبّر صورة المستند">${`<img loading="lazy" decoding="async" src="${d.previewUrl}" alt="صورة المستند الأصلية للمقارنة مع الجدول">`}<span class="rv-zoom">${UI.icon('zoom', 18)}<span>كبّر الصورة</span></span></button></aside>` : ''}
@@ -512,7 +610,8 @@
     const zoom = host.querySelector('#zoom');
     if (zoom)
       zoom.onclick = async () => {
-        const url = await UI.imageToBlob(d.blob, { maxSide: 2200, quality: 0.9, rotate: d.rotation }).then((b) => URL.createObjectURL(b));
+        const big = d.src === 'pdf' ? await MT.PDF.renderPage(d.pdf.doc, 1, 2200) : await UI.imageToBlob(d.blob, { maxSide: 2200, quality: 0.9, rotate: d.rotation });
+        const url = URL.createObjectURL(big);
         UI.dialog({ title: 'صورة المستند', size: 'xl', body: `<img class="doc-img" loading="lazy" decoding="async" src="${url}" alt="صورة المستند الأصلي">`, actions: [{ label: 'إغلاق', value: null }] });
       };
     host.querySelector('#add-row').onclick = () => {
@@ -524,6 +623,7 @@
     host.querySelector('#cancel').onclick = async () => {
       if (d.rows.length && !(await UI.confirm('ستُحذف المسودة بما فيها من صفوف. هل تتابع؟', { ok: 'ألغِ المسودة', danger: true }))) return;
       if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+      releasePdf(d);
       drafts[kind] = fresh();
       drawWizard();
     };
@@ -567,7 +667,7 @@
     const btn = host.querySelector('#save');
     btn.disabled = true;
     try {
-      const imageBlob = d.src === 'image' && d.blob ? await UI.imageToBlob(d.blob, { maxSide: 1800, quality: 0.82, rotate: d.rotation }) : null;
+      const imageBlob = d.src === 'image' && d.blob ? await UI.imageToBlob(d.blob, { maxSide: 1800, quality: 0.82, rotate: d.rotation }) : d.src === 'pdf' && d.pdf ? await MT.PDF.renderPage(d.pdf.doc, 1, 1800) : null;
       let msg;
       if (kind === 'gatepass') {
         const groups = U.groupBy(valid, (r) => r.gp_no || d.header.no);
@@ -583,10 +683,11 @@
         }
         msg = `تم حفظ Gate Pass: ${added} بند جديد${updated ? `، ${updated} محدَّث` : ''}${merged ? ' (أُضيفت إلى مستند موجود)' : ''}.`;
       } else {
-        const res = await Store.importList(kind, valid.map(cleanRow), { mode: d.mode, ref: d.note, note: d.src === 'excel' ? 'من ملف Excel' : d.src === 'image' ? 'من صورة' : 'إدخال يدوي', imageBlob });
+        const res = await Store.importList(kind, valid.map(cleanRow), { mode: d.mode, ref: d.note, note: d.src === 'excel' ? 'من ملف Excel' : d.src === 'pdf' ? 'من ملف PDF' : d.src === 'image' ? 'من صورة' : 'إدخال يدوي', imageBlob });
         msg = `تم حفظ ${KINDS[kind].label}: ${res.added} بند جديد${res.updated ? `، ${res.updated} محدَّث` : ''}${res.removed ? `، ${res.removed} محذوف` : ''}.`;
       }
       if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+      releasePdf(d);
       drafts[kind] = fresh();
       drawWizard();
       UI.toast(msg, { ms: 9000, action: { label: 'قارن الآن', fn: () => App.go('#/compare') } });

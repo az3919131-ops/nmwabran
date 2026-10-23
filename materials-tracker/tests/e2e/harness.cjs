@@ -1,4 +1,4 @@
-/* أدوات اختبار المتصفح. التثبيت (خارج المشروع): npm i playwright-core exceljs@4.4.0 xlsx@0.18.5 tesseract.js@5.1.1 @tesseract.js-data/eng
+/* أدوات اختبار المتصفح. التثبيت (خارج المشروع): npm i playwright-core exceljs@4.4.0 xlsx@0.18.5 tesseract.js@5.1.1 @tesseract.js-data/eng pdfjs-dist@3.11.174
    ثم: E2E_DEPS=/مسار/node_modules node tests/e2e/smoke.cjs
    المكتبات تُقدَّم من النسخ المحلية بدل الـ CDN لأن بيئة الاختبار قد لا تصل إلى الإنترنت. */
 const path = require('path');
@@ -13,6 +13,9 @@ const CHROME = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome
 const MAP = [
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/xlsx\/0\.18\.5\/xlsx\.full\.min\.js/, 'xlsx/dist/xlsx.full.min.js'],
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/exceljs\/4\.4\.0\/exceljs\.min\.js/, 'exceljs/dist/exceljs.min.js'],
+  [/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\/3\.11\.174\/pdf\.min\.js/, 'pdfjs-dist/build/pdf.min.js'],
+  [/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\/3\.11\.174\/pdf\.worker\.min\.js/, 'pdfjs-dist/build/pdf.worker.min.js'],
+  [/cdn\.jsdelivr\.net\/npm\/pdfjs-dist@3\.11\.174\/(.+)$/, (m) => 'pdfjs-dist/' + m[1]],
   [/cdn\.jsdelivr\.net\/npm\/tesseract\.js@5\.1\.1\/dist\/tesseract\.min\.js/, 'tesseract.js/dist/tesseract.min.js'],
   [/cdn\.jsdelivr\.net\/npm\/tesseract\.js@v5\.1\.1\/dist\/worker\.min\.js/, 'tesseract.js/dist/worker.min.js'],
   [/cdn\.jsdelivr\.net\/npm\/tesseract\.js-core@v5\.1\.\d+\/(.+)$/, (m) => 'tesseract.js-core/' + m[1]],

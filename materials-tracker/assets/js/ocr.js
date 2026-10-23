@@ -93,6 +93,8 @@
       acc += hist[hi];
       if (acc > total * 0.01) break;
     }
+    /* صفحة بيضاء فيها جدول صغير تكون بكسلاتها الداكنة أقل من 1%، فيقفز lo إلى الرمادي الفاتح ويُسوَّد الجدول كله */
+    lo = Math.min(lo, 100);
     const span = Math.max(40, hi - lo);
     for (let i = 0; i < d.length; i += 4) {
       const v = Math.max(0, Math.min(255, ((d[i] - lo) * 255) / span));
@@ -127,12 +129,16 @@
     return w > h ? [270, 90, 0, 180] : [0, 180, 90, 270];
   }
 
+  const shift = (lines, dy) => (dy ? lines.map((l) => ({ ...l, bbox: l.bbox ? { ...l.bbox, y0: l.bbox.y0 + dy, y1: l.bbox.y1 + dy } : l.bbox })) : lines);
+
   /**
-   * يقرأ الصورة ويعيد { parsed, rotation, text }.
-   * rotation: 'auto' أو عدد الدرجات (0/90/180/270).
+   * يقرأ صورة واحدة أو عدة صفحات (صور) كمستند واحد ويعيد { parsed, rotation, text }.
+   * rotation: 'auto' أو عدد الدرجات (0/90/180/270). upright: الصفحات مرسومة باتجاهها الأصلي (PDF).
+   * صفحات المستند تُدمج أسطرها قبل التحليل.
    */
-  async function read(kind, blob, { rotation = 'auto', onStatus, ctx = {} } = {}) {
+  async function readMany(kind, blobs, { rotation = 'auto', upright = false, onStatus, ctx = {} } = {}) {
     const say = (stage, pct, text) => onStatus && onStatus({ stage, pct, text });
+    const N = blobs.length;
     say('engine', 3, 'تحميل محرك القراءة (أول مرة فقط)...');
     onProg = (m) => {
       if (/loading/.test(m.status)) say('engine', 3 + Math.round(m.progress * 22), 'تحميل محرك القراءة (أول مرة فقط)...');
@@ -140,44 +146,61 @@
     clearTimeout(idleTimer);
     const worker = await getWorker();
 
-    let rot = rotation;
-    if (rotation === 'auto') {
-      const bmp = await MT.UI.loadBitmap(blob);
-      const order = candidates(bmp.width, bmp.height);
-      if (bmp.close) bmp.close();
-      let best = { s: -1, r: 0 };
-      for (let i = 0; i < order.length; i++) {
-        say('orient', 25 + i * 6, 'فحص اتجاه الصورة...');
-        const c = await prepareCanvas(blob, order[i], 1100);
-        const res = await recognize(worker, c, 6);
-        const s = score(res.lines);
-        if (s > best.s) best = { s, r: order[i] };
-        if (s >= 8) break;
+    const linesA = [];
+    const linesB = [];
+    const rots = [];
+    const texts = [];
+    let confSum = 0;
+    let offset = 0;
+    for (let i = 0; i < N; i++) {
+      const blob = blobs[i];
+      /* يحوّل تقدم الصفحة (25 إلى 98) إلى موضعه بين كل الصفحات */
+      const sayPage = (stage, pct, text) => say(stage, Math.round(25 + (((i + (pct - 25) / 73) / N) * 73)), N > 1 ? `${text} (صفحة ${i + 1} من ${N})` : text);
+      let rot = rotation;
+      if (rotation === 'auto') {
+        const bmp = await MT.UI.loadBitmap(blob);
+        /* صفحة PDF مرسومة باتجاهها الأصلي: نبدأ منه ونفحص بدقة أعلى لأن نصها قد يكون صغيرًا */
+        const order = upright ? [0, 90, 270, 180] : candidates(bmp.width, bmp.height);
+        if (bmp.close) bmp.close();
+        let best = { s: -1, r: 0 };
+        for (let k = 0; k < order.length; k++) {
+          sayPage('orient', 25 + k * 6, 'فحص اتجاه الصورة...');
+          const c = await prepareCanvas(blob, order[k], upright ? 1700 : 1100);
+          const res = await recognize(worker, c, 6);
+          const sc = score(res.lines);
+          if (sc > best.s) best = { s: sc, r: order[k] };
+          if (sc >= 8) break;
+        }
+        rot = best.r;
       }
-      rot = best.r;
+      rots.push(rot);
+      onProg = (m) => {
+        if (m.status === 'recognizing text') sayPage('read', 50 + Math.round(m.progress * 40), 'قراءة النص من الصورة...');
+      };
+      sayPage('read', 50, 'قراءة النص من الصورة...');
+      const big = await prepareCanvas(blob, rot, 2400);
+      const a = await recognize(worker, big, 6);
+      linesA.push(...shift(a.lines, offset));
+      texts.push(a.text);
+      confSum += a.confidence || 0;
+      if (kind === 'gatepass') {
+        sayPage('read', 80, 'تمريرة ثانية لتحسين الدقة...');
+        const b = await recognize(worker, big, 4);
+        linesB.push(...shift(b.lines, offset));
+      }
+      offset += big.height + 240;
     }
-
-    onProg = (m) => {
-      if (m.status === 'recognizing text') say('read', 50 + Math.round(m.progress * 40), 'قراءة النص من الصورة...');
-    };
-    say('read', 50, 'قراءة النص من الصورة...');
-    const big = await prepareCanvas(blob, rot, 2400);
-    const a = await recognize(worker, big, 6);
     let parsed;
-    if (kind === 'checklist') {
-      parsed = P.parseChecklist({ lines: a.lines }, ctx);
-    } else if (kind === 'gatepass') {
-      say('read', 80, 'تمريرة ثانية لتحسين الدقة...');
-      const b = await recognize(worker, big, 4);
-      parsed = P.mergeGatePass(P.parseGatePass({ lines: a.lines }, ctx), P.parseGatePass({ lines: b.lines }, ctx), ctx);
-    } else {
-      parsed = P.parseUds({ lines: a.lines }, ctx);
-    }
+    if (kind === 'checklist') parsed = P.parseChecklist({ lines: linesA }, ctx);
+    else if (kind === 'gatepass') parsed = P.mergeGatePass(P.parseGatePass({ lines: linesA }, ctx), P.parseGatePass({ lines: linesB }, ctx), ctx);
+    else parsed = P.parseUds({ lines: linesA }, ctx);
     say('parse', 98, 'تحليل الصفوف...');
     scheduleDispose();
-    return { parsed, rotation: rot, text: a.text, confidence: a.confidence, hits: score(a.lines) };
+    return { parsed, rotation: rots[0], rotations: rots, text: texts.join('\n'), confidence: confSum / N, hits: score(linesA) };
   }
 
-  MT.OCR = { read, prepareCanvas, score, dispose };
+  const read = (kind, blob, opts) => readMany(kind, [blob], opts);
+
+  MT.OCR = { read, readMany, prepareCanvas, score, dispose };
   if (typeof module !== 'undefined' && module.exports) module.exports = MT.OCR;
 })(typeof window !== 'undefined' ? window : globalThis);

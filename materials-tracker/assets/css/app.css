@@ -2395,6 +2395,7 @@ tr[data-code] {
 /* ---------- المعالج والاستيراد ---------- */
 .wizard {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   border-radius: var(--r-xl);
   padding: clamp(20px, 3vw, 32px);
@@ -2548,7 +2549,11 @@ tr[data-code] {
 }
 .rv-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
+}
+.rv-main {
+  min-width: 0;
 }
 .rv-img-btn {
   position: relative;
@@ -2636,15 +2641,15 @@ tr[data-code] {
   vertical-align: top;
 }
 .review .input {
-  min-width: 110px;
+  min-width: 92px;
 }
 .review input[data-f='reservation'],
 .review input[data-f='work_order'],
 .review input[data-f='reference'] {
-  min-width: 140px;
+  min-width: 128px;
 }
 .review .rv-code {
-  min-width: 190px;
+  min-width: 160px;
 }
 .review .rv-n {
   width: 36px;

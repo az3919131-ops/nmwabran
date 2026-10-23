@@ -5,7 +5,7 @@
   "description": "متابعة صرف المواد من الكهرباء: مقارنة Checklist و UDS و Gate Pass",
   "type": "commonjs",
   "scripts": {
-    "test": "node tests/compare.test.js && node tests/parsers.test.js && node tests/store.test.js && node tests/supabase-adapter.test.js",
+    "test": "node tests/compare.test.js && node tests/parsers.test.js && node tests/pdf.test.js && node tests/store.test.js && node tests/supabase-adapter.test.js",
     "serve": "npx --yes serve -l 8080 ."
   }
 }
