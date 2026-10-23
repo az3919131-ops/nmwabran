@@ -5,7 +5,7 @@
   const U = MT.Util;
 
   const COLORS = { ok: 'FF37E0C2', short: 'FFFFC53D', excess: 'FF4B57E8', none: 'FFFF6B5E' };
-  const INK = 'FF17120E';
+  const INK = 'FF151845';
 
   async function readMatrix(file) {
     const XLSX = await MT.Lib.load('xlsx');
@@ -35,8 +35,9 @@
     wb.creator = author;
     wb.created = new Date();
     wb.title = 'متابعة صرف المواد من الكهرباء';
-    const border = { top: { style: 'thin', color: { argb: INK } }, left: { style: 'thin', color: { argb: INK } }, bottom: { style: 'thin', color: { argb: INK } }, right: { style: 'thin', color: { argb: INK } } };
-    const stamp = `${project ? project + ' · ' : ''}${U.fmtDate(U.today())}`;
+    const bc = { argb: 'FFC9CEEF' };
+    const border = { top: { style: 'thin', color: bc }, left: { style: 'thin', color: bc }, bottom: { style: 'thin', color: bc }, right: { style: 'thin', color: bc } };
+    const stamp = `${project ? project + '، ' : ''}${U.fmtDate(U.today())}`;
 
     sheets.forEach((sh) => {
       const ws = wb.addWorksheet(safeName(sh.name), { views: [{ rightToLeft: true, state: 'frozen', ySplit: 4 }], properties: { tabColor: { argb: 'FF4B57E8' } } });

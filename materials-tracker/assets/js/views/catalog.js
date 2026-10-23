@@ -17,7 +17,7 @@
       const cats = [...new Set(items.map((i) => i.categoryAr).filter(Boolean))];
       root.innerHTML = `<div class="page">
         <header class="page-head">
-          <div><p class="eyebrow mono">05 · CATALOG</p><h1 class="h1">كتالوج المواد</h1>
+          <div><h1 class="h1">كتالوج المواد</h1>
           <p class="lead">الوصف والوحدة لكل رقم مادة. تُعرض هذه الأوصاف في كل الشاشات بدل ما يُقرأ من الصورة.</p></div>
           <div class="page-actions">
             <label class="btn btn-primary" for="cat-file">${UI.icon('upload', 20)}<span>استورد كتالوج Excel</span></label>
@@ -25,7 +25,7 @@
             <button class="btn" type="button" id="cat-export">${UI.icon('download', 20)}<span>نزّل الكتالوج</span></button>
           </div>
         </header>
-        <p class="meta-line mono">${U.fmt(items.length, 0)} صنف · ${U.fmt(cats.length, 0)} قسمًا · المصدر: ${esc(C.source || 'الكتالوج المدمج')}</p>
+        <p class="meta-line">${U.fmt(items.length, 0)} صنف في ${U.fmt(cats.length, 0)} قسمًا. المصدر: ${esc(C.source || 'الكتالوج المدمج')}.</p>
         <section class="card panel panel-flush" id="cat-table"></section>
       </div>`;
 

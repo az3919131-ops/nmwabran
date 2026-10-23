@@ -65,7 +65,7 @@
       const k = KINDS[kind];
       root.innerHTML = `<div class="page">
         <header class="page-head">
-          <div><p class="eyebrow mono">02 · IMPORT</p><h1 class="h1">استيراد القوائم</h1>
+          <div><h1 class="h1">استيراد القوائم</h1>
           <p class="lead">صوّر القائمة أو ارفعها. تظهر لك الأرقام المقروءة لتصحيحها قبل الحفظ.</p></div>
         </header>
         <div class="tabs" role="tablist" aria-label="نوع القائمة">${Object.entries(KINDS)
@@ -168,7 +168,7 @@
       <div class="prep">
         <figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة صورة ${KINDS[kind].title}"></figure>
         <div class="prep-side">
-          <p class="muted mono" dir="ltr">${esc(d.file.name || 'camera.jpg')} · ${(d.file.size / 1024).toFixed(0)} KB</p>
+          <p class="muted mono" dir="ltr">${esc(d.file.name || 'camera.jpg')} (${(d.file.size / 1024).toFixed(0)} KB)</p>
           <div class="row-actions">
             <button type="button" class="btn" id="rot-l" ${d.busy ? 'disabled' : ''}>${UI.icon('rotl', 20)}<span>دوّر يسارًا</span></button>
             <button type="button" class="btn" id="rot-r" ${d.busy ? 'disabled' : ''}>${UI.icon('rotr', 20)}<span>دوّر يمينًا</span></button>
@@ -277,7 +277,7 @@
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
       ${stepsBar(2)}
       <h2 id="wz-h" class="h3">اربط أعمدة الملف</h2>
-      <p class="muted">الورقة «${esc(d.sheetName)}» · ${U.fmt(d.matrix.length - d.headerIndex - 1, 0)} صفًا. حدّدنا الأعمدة تلقائيًا، صحّح ما يلزم.</p>
+      <p class="muted">الورقة «${esc(d.sheetName)}» فيها ${U.fmt(d.matrix.length - d.headerIndex - 1, 0)} صفًا. حدّدتُ الأعمدة تلقائيًا، فصحّح ما يلزم.</p>
       <div class="map-grid">${MAP_FIELDS[kind].map(([f, label, req]) => `<label class="field"><span class="field-label">${esc(label)}${req ? ' *' : ''}</span><select class="input" data-map="${f}">${opts(d.mapping[f])}</select></label>`).join('')}
         <label class="field"><span class="field-label">صف العناوين</span><input class="input mono" type="number" min="1" max="${Math.min(d.matrix.length, 50)}" id="hdr-row" value="${d.headerIndex + 1}"></label></div>
       <div class="table-wrap"><table class="table table-sm preview"><caption class="sr-only">معاينة أول الصفوف</caption><thead><tr>${headers.map((h) => `<th scope="col">${esc(h == null ? '' : h)}</th>`).join('')}</tr></thead><tbody>${prev.map((r) => `<tr>${headers.map((_, i) => `<td data-label="${esc(headers[i] || '')}"><span class="mono" dir="ltr">${esc(r[i] instanceof Date ? U.isoDate(r[i]) : r[i] == null ? '' : r[i])}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>
@@ -765,7 +765,7 @@
     return `<details class="gp-card">
       <summary><span class="gp-no mono" dir="ltr">${esc(gp.no)}</span><span class="gp-meta"><span class="mono" dir="ltr">${U.fmtDate(gp.date)}</span><span>${gp.items.length} بند</span><span class="mono" dir="ltr">${U.fmt(qty)} قطعة</span>${(gp.images || []).length ? `<span>${gp.images.length} صورة</span>` : ''}</span></summary>
       <div class="gp-body">
-        <p class="muted mono" dir="ltr">ERP ${esc(gp.erp_delivery || '—')} · Doc ${esc(gp.material_doc || '—')} · ${esc(gp.contractor || '')}</p>
+        <p class="muted mono" dir="ltr">ERP ${esc(gp.erp_delivery || '—')}، Doc ${esc(gp.material_doc || '—')}، ${esc(gp.contractor || '')}</p>
         <div class="table-wrap"><table class="table table-sm"><caption class="sr-only">بنود Gate Pass ${esc(gp.no)}</caption>
           <thead><tr><th scope="col">كود المادة</th><th scope="col">الوصف</th><th scope="col">رقم الحجز</th><th scope="col">السطر</th><th scope="col">الكمية</th><th scope="col"><span class="sr-only">حذف</span></th></tr></thead>
           <tbody>${gp.items.map((i) => `<tr><td data-label="كود المادة">${UI.code(i.code)}</td><td data-label="الوصف" class="col-desc"><span class="desc" dir="ltr">${UI.descHtml(C.describe(i.code) || i.doc_desc || '—')}</span></td><td data-label="رقم الحجز"><span class="mono" dir="ltr">${esc(i.reservation || '—')}</span></td><td data-label="السطر"><span class="mono" dir="ltr">${esc(i.line_no || '—')}</span></td><td data-label="الكمية" class="num"><input class="input input-qty mono" dir="ltr" inputmode="decimal" data-gp-qty="${gp.id}:${i.id}" value="${i.qty}" aria-label="الكمية للمادة ${i.code}"></td><td data-label="حذف"><button type="button" class="icon-btn icon-btn-danger" data-gp-del-item="${gp.id}:${i.id}" aria-label="احذف بند ${i.code}">${UI.icon('trash', 18)}</button></td></tr>`).join('')}</tbody></table></div>

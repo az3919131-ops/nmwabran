@@ -27,7 +27,7 @@
 
   function descCell(r) {
     const docDiff = r.docDesc && r.desc && U.sim(r.docDesc, r.desc) < 0.75;
-    return `<span class="desc" dir="ltr">${UI.descHtml(r.desc || r.docDesc || '—')}</span>${docDiff ? `<small class="doc-desc" dir="ltr" title="الوصف المكتوب في المستند يختلف عن الكتالوج">في المستند: ${UI.descHtml(r.docDesc)}</small>` : ''}${r.inCatalog ? '' : '<small class="doc-desc">خارج الكتالوج</small>'}`;
+    return `<span class="desc" dir="ltr">${UI.descHtml(r.desc || r.docDesc || '—')}</span>${docDiff ? `<small class="doc-desc" dir="ltr" title="الوصف المكتوب في المستند يختلف عن الكتالوج">في المستند: ${UI.descHtml(r.docDesc)}</small>` : ''}${r.unit ? `<small class="doc-desc mono" dir="ltr">${esc(r.unit)}</small>` : ''}${r.inCatalog ? '' : '<small class="doc-desc">خارج الكتالوج</small>'}`;
   }
 
   const view = {
@@ -60,7 +60,7 @@
 
     root.innerHTML = `<div class="page">
       <header class="page-head">
-        <div><p class="eyebrow mono">03 · COMPARE</p><h1 class="h1">مقارنة المواد</h1>
+        <div><h1 class="h1">مقارنة المواد</h1>
         <p class="lead">${orders ? 'كل أمر عمل وما صُرف من بنوده، مربوطًا برقم الحجز.' : 'لكل مادة: المطلوب في Checklist، المسجّل في UDS، والمصروف في Gate Pass.'}</p></div>
         <div class="page-actions"><button class="btn btn-accent2" type="button" id="export-all">${UI.icon('sheet', 20)}<span>نزّل المقارنة Excel</span></button></div>
       </header>
@@ -118,14 +118,13 @@
       columns: [
         { key: 'code', label: 'كود المادة', sort: (r) => r.code, render: (r) => UI.code(r.code) },
         { key: 'desc', label: 'الوصف', sort: (r) => r.desc, cls: 'col-desc', render: descCell },
-        { key: 'unit', label: 'الوحدة', sort: (r) => r.unit, render: (r) => `<span class="mono">${esc(r.unit || '—')}</span>` },
         { key: 'cl', label: 'Checklist', sort: (r) => r.cl, cls: 'num', render: (r) => UI.num(r.hasCl ? r.cl : null) },
         { key: 'uds', label: 'UDS', sort: (r) => r.uds, cls: 'num', render: (r) => UI.num(r.hasUds ? r.uds : null) },
         { key: 'gp', label: 'Gate Pass', sort: (r) => r.gp, cls: 'num', render: (r) => UI.num(r.gp) },
         { key: 'd1', label: 'فرق الصرف', sort: (r) => (r.diffGpCl == null ? -1e9 : r.diffGpCl), cls: 'num', render: (r) => UI.diff(r.diffGpCl) },
         { key: 'd2', label: 'فرق UDS', sort: (r) => (r.diffGpUds == null ? -1e9 : r.diffGpUds), cls: 'num', render: (r) => UI.diff(r.diffGpUds == null ? null : -r.diffGpUds) },
         { key: 'status', label: 'الحالة', sort: (r) => r.status, render: (r) => UI.badge(r.status, r.unrequested ? 'غير مطلوب' : null) },
-        { key: 'act', label: 'التفاصيل', render: (r) => `<button type="button" class="btn btn-sm" data-detail="${r.code}">${UI.icon('eye', 16)}<span>اعرض</span></button>` },
+        { key: 'act', label: 'التفاصيل', render: (r) => `<button type="button" class="icon-btn" data-detail="${r.code}" aria-label="اعرض تفاصيل المادة ${r.code}">${UI.icon('eye', 18)}</button>` },
       ],
     });
     if (st.q) table.setQuery(st.q);

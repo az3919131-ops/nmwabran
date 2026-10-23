@@ -15,18 +15,17 @@
       const draw = (error = '') => {
         root.innerHTML = `<div class="login">
           <section class="login-hero">
-            <p class="eyebrow mono">SEC · NAJRAN · MATERIALS</p>
             <h1 class="display">تابع كل مادة من الطلب حتى الصرف.</h1>
-            <p class="lead">صوّر القوائم الثلاث. شاهد الناقص والزائد بالألوان. صدّر التقرير إلى Excel.</p>
-            <ol class="steps">
-              <li class="step step-cl"><span class="step-n mono">01</span><strong>Checklist</strong><small>المطلوب صرفه من شركة الكهرباء</small></li>
-              <li class="step step-uds"><span class="step-n mono">02</span><strong>UDS</strong><small>المسجّل على النظام</small></li>
-              <li class="step step-gp"><span class="step-n mono">03</span><strong>Gate Pass</strong><small>المصروف فعليًا من المستودع</small></li>
+            <p class="lead">ترفع صورة كل قائمة، فيحسب التطبيق ما نقص وما زاد في كل مادة ويعرضه لك بالألوان.</p>
+            <ol class="steps" aria-label="القوائم الثلاث بترتيب مسارها">
+              <li class="step step-cl"><span class="step-dot">${UI.icon('report', 22)}</span><strong>Checklist</strong><small>ما طلبته من شركة الكهرباء</small></li>
+              <li class="step step-uds"><span class="step-dot">${UI.icon('layers', 22)}</span><strong>UDS</strong><small>ما سُجّل على النظام</small></li>
+              <li class="step step-gp"><span class="step-dot">${UI.icon('folder', 22)}</span><strong>Gate Pass</strong><small>ما خرج فعليًا من المستودع</small></li>
             </ol>
           </section>
           <section class="login-card card" aria-labelledby="login-h">
             <h2 id="login-h" class="card-title">${sb ? (signup ? 'أنشئ حسابك' : 'ادخل إلى حسابك') : 'ادخل بالوضع المحلي'}</h2>
-            ${sb ? '' : `<p class="note note-warn">لم يُربط التطبيق بقاعدة بيانات بعد. بياناتك تبقى على هذا الجهاز فقط. لربط Supabase اتبع ملف README-AR.md.</p>`}
+            ${sb ? '' : `<p class="note note-warn">لم تُربط قاعدة بيانات بعد، فتُحفظ بياناتك على هذا الجهاز فقط. خطوات الربط في ملف README-AR.md.</p>`}
             <form id="login-form" novalidate>
               ${sb ? `
                 ${signup ? `<label class="field"><span class="field-label">الاسم</span><input class="input" name="name" autocomplete="name" required></label>` : ''}

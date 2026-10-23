@@ -11,7 +11,7 @@ const H = Number(process.env.H || 900);
     const r = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }));
     console.log(name, r.sw > r.iw + 1 ? 'OVERFLOW ' + r.sw + '>' + r.iw : 'ok');
   };
-  const shot = async (n, full = true) => { await page.waitForTimeout(350); await page.screenshot({ path: `${OUT}/${W}-${n}.png`, fullPage: full }); await over(n); };
+  const shot = async (n, full = true) => { await page.waitForTimeout(1700); await page.screenshot({ path: `${OUT}/${W}-${n}.png`, fullPage: full }); await over(n); };
   await page.goto(fileUrl());
   await page.waitForSelector('.login-card');
   await shot('01-login');

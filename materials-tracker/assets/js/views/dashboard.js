@@ -20,7 +20,7 @@
     if (!hasPrev) return '<span class="delta delta-na">لا توجد فترة سابقة للمقارنة</span>';
     const d = cur - prev;
     const tone = d === 0 ? 'flat' : d > 0 === goodUp ? 'good' : 'bad';
-    return `<span class="delta delta-${tone}"><span aria-hidden="true">${d > 0 ? '▲' : d < 0 ? '▼' : '■'}</span><span class="mono" dir="ltr">${U.signed(d)}</span><small>${esc(label)}</small></span>`;
+    return `<span class="delta delta-${tone}"><span aria-hidden="true">${d > 0 ? '▲' : d < 0 ? '▼' : '='}</span><span class="mono" dir="ltr">${U.signed(d)}</span><small>${esc(label)}</small></span>`;
   }
 
   let table = null;
@@ -45,8 +45,14 @@
       const hasPrev = P.counts.total > 0;
       const href = (s) => `#/compare?status=${s}`;
 
-      const heroEmpty = `<section class="card hero hero-empty">
-          <div><p class="eyebrow mono">START</p><h2 class="h2">ابدأ بصورة الـ Checklist.</h2>
+      const needs = c.short + c.excess + c.none;
+      const gap1 = K.r3(udsQty - clQty);
+      const gap2 = K.r3(gpQty - udsQty);
+      const pipe = (g, n, label) =>
+        `<div class="pipe pipe-${n}"><span class="pipe-pill ${g < 0 ? 'pipe-neg' : g > 0 ? 'pipe-pos' : 'pipe-zero'}"><span class="sr-only">${label}: </span>${g === 0 ? 'متطابقة' : `<span dir="ltr">${U.signed(g)}</span>`}</span></div>`;
+
+      const heroEmpty = `<section class="hero-empty" aria-label="ابدأ من هنا">
+          <div><h2 class="h2">ابدأ بصورة الـ Checklist.</h2>
           <p class="lead">ارفع القوائم الثلاث بالترتيب. بعد كل رفع تظهر الأرقام هنا.</p></div>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#/import/checklist">${UI.icon('camera', 20)}<span>صوّر الـ Checklist</span></a>
@@ -54,18 +60,23 @@
             <a class="btn" href="#/import/gatepass">${UI.icon('upload', 20)}<span>استورد Gate Pass</span></a>
           </div></section>`;
 
-      const hero = `<section class="hero" aria-label="ملخص المشروع">
-          <div class="card hero-total">
-            <p class="eyebrow mono">TOTAL ITEMS</p>
-            <p class="big mono" dir="ltr">${U.fmt(c.total, 0)}</p>
-            <p class="hero-label">إجمالي الأصناف</p>
-            ${MT.Charts.stack(KPIS.map((k) => ({ key: k.key, value: c[k.key], label: k.label })))}
-            <p class="hero-note">${c.total ? `<strong class="mono" dir="ltr">${pct}%</strong> من الأصناف مطابقة للمطلوب.` : 'لا توجد أصناف ضمن هذه الفترة.'}</p>
+      const hero = `<section class="flow" aria-labelledby="flow-h">
+          <div class="flow-head">
+            <div>
+              <h2 id="flow-h" class="flow-title">${c.total ? (needs ? `${needs} من ${c.total} أصناف تحتاج متابعة` : 'كل الأصناف مطابقة للمطلوب') : 'لا توجد أصناف ضمن هذه الفترة'}</h2>
+              <p class="flow-sub">المطلوب ثم المسجّل ثم المصروف فعليًا. الأنبوب بين كل مرحلتين يبيّن الفرق في الكمية.</p>
+            </div>
           </div>
-          <div class="hero-sources">
-            <a class="card src-card src-cl" href="#/import/checklist"><span class="src-k">Checklist</span><strong class="mono" dir="ltr">${U.fmt(d.checklist.length, 0)}</strong><small>بند · ${U.fmt(clQty)} قطعة مطلوبة</small></a>
-            <a class="card src-card src-uds" href="#/import/uds"><span class="src-k">UDS</span><strong class="mono" dir="ltr">${U.fmt(d.uds.length, 0)}</strong><small>بند · ${U.fmt(udsQty)} قطعة مسجلة</small></a>
-            <a class="card src-card src-gp" href="#/import/gatepass"><span class="src-k">Gate Pass</span><strong class="mono" dir="ltr">${U.fmt(gpCount, 0)}</strong><small>مستند · ${U.fmt(gpQty)} قطعة مصروفة</small></a>
+          <div class="flow-track">
+            <a class="node node-cl" href="#/import/checklist"><span class="node-k">Checklist</span><strong class="node-n figure" dir="ltr">${U.fmt(clQty)}</strong><small>قطعة مطلوبة في ${U.fmt(d.checklist.length, 0)} بندًا</small></a>
+            ${pipe(gap1, 1, 'فرق UDS عن Checklist')}
+            <a class="node node-uds" href="#/import/uds"><span class="node-k">UDS</span><strong class="node-n figure" dir="ltr">${U.fmt(udsQty)}</strong><small>قطعة مسجلة في ${U.fmt(d.uds.length, 0)} بندًا</small></a>
+            ${pipe(gap2, 2, 'فرق Gate Pass عن UDS')}
+            <a class="node node-gp" href="#/import/gatepass"><span class="node-k">Gate Pass</span><strong class="node-n figure" dir="ltr">${U.fmt(gpQty)}</strong><small>قطعة مصروفة في ${U.fmt(gpCount, 0)} مستندًا</small></a>
+          </div>
+          <div class="flow-foot">
+            ${MT.Charts.stack(KPIS.map((k) => ({ key: k.key, value: c[k.key], label: k.label })))}
+            <p class="flow-foot-line"><span>${c.total ? `${pct}% من ${U.fmt(c.total, 0)} صنفًا مطابقة للمطلوب` : 'لا توجد أصناف'}</span>${R.hasUds ? (c.udsDiff ? `<a class="chip-link" href="${href('uds')}">${c.udsDiff} أصناف يختلف فيها UDS عن Gate Pass</a>` : '<span>UDS يطابق Gate Pass في كل الأصناف</span>') : '<span>لم تُستورد قائمة UDS بعد</span>'}</p>
           </div>
         </section>`;
 
@@ -73,16 +84,12 @@
         (k) => `<a class="card kpi kpi-${k.key}" href="${href(k.key)}">
             <span class="kpi-bar" aria-hidden="true"></span>
             <span class="kpi-label">${UI.badge(k.key)}</span>
-            <span class="kpi-n mono" dir="ltr">${U.fmt(c[k.key], 0)}</span>
+            <span class="kpi-n figure" dir="ltr">${U.fmt(c[k.key], 0)}</span>
             ${delta(c[k.key], P.counts[k.key], k.goodUp, prevInfo.label, hasPrev)}
             <span class="kpi-note">${k.note}</span>
             <span class="kpi-go">اعرض الأصناف ${UI.icon('prev', 16)}</span>
           </a>`
       ).join('')}</section>`;
-
-      const udsLine = R.hasUds
-        ? `<a class="chip-link" href="${href('uds')}"><strong class="mono" dir="ltr">${c.udsDiff}</strong> صنف يختلف فيه UDS عن الـ Gate Pass</a>`
-        : `<span class="muted">لم تُستورد قائمة UDS بعد.</span>`;
 
       const wos = R.workOrders.filter((w) => w.status !== 'ok').slice(0, 5);
       const woPanel = `<section class="card panel" aria-labelledby="wo-h">
@@ -97,9 +104,9 @@
       root.innerHTML = `<div class="page">
         <header class="page-head">
           <div>
-            <p class="eyebrow mono">02 · DASHBOARD${App.period.preset !== 'all' ? ' · ' + esc(App.periodLabel()) : ''}</p>
+            <p class="context-chip">${esc(Store.project.region || 'نجران')}${Store.project.contractor ? '، ' + esc(Store.project.contractor) : ''}${App.period.preset !== 'all' ? '، ' + esc(App.periodLabel()) : ''}</p>
             <h1 class="h1">${esc(Store.project.name)}</h1>
-            <p class="lead">${empty ? 'المشروع فارغ. ابدأ برفع الـ Checklist.' : 'قارن المطلوب بالمسجل بالمصروف، وانتقل إلى أي صنف بنقرة.'}</p>
+            <p class="lead">${empty ? 'المشروع فارغ. ابدأ برفع الـ Checklist.' : 'اضغط أي بطاقة لترى أصنافها وتفاصيلها.'}</p>
           </div>
           <div class="page-actions">
             <a class="btn btn-primary" href="#/import/checklist">${UI.icon('upload', 20)}<span>استورد قائمة</span></a>
@@ -108,7 +115,7 @@
         </header>
 
         <div class="section">${empty ? heroEmpty : hero}</div>
-        <div class="section">${kpis}<p class="kpis-foot">${udsLine}</p></div>
+        <div class="section">${kpis}</div>
 
         <div class="section charts">
           <section class="card panel" aria-labelledby="tr-h"><div class="panel-head"><h2 id="tr-h" class="h3">اتجاه الصرف</h2><span class="muted mono">${esc(App.periodLabel())}</span></div><div id="trend" class="chart-host"></div></section>

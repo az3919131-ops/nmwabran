@@ -139,13 +139,13 @@
         <aside class="sidebar" aria-label="القائمة الرئيسية">
           <a class="brand" href="#/dashboard">
             <span class="brand-mark">${UI.icon('bolt', 26)}</span>
-            <span class="brand-text"><strong>صرف المواد</strong><small class="mono">SEC · NAJRAN</small></span>
+            <span class="brand-text"><strong>صرف المواد</strong><small>كهرباء نجران</small></span>
           </a>
           <nav class="nav" aria-label="الأقسام">${NAV.map((n) => navItem(n, 'nav-item')).join('')}</nav>
           <div class="side-foot">
             <div class="account">
               <span class="avatar" aria-hidden="true">${initial}</span>
-              <span class="account-text"><strong>${esc(Store.user.name || Store.user.email)}</strong><small class="mono">${Store.mode === 'supabase' ? 'متصل بقاعدة البيانات' : 'وضع محلي'}</small></span>
+              <span class="account-text"><strong>${esc(Store.user.name || Store.user.email)}</strong><small>${Store.mode === 'supabase' ? 'متصل بقاعدة البيانات' : 'وضع محلي'}</small></span>
             </div>
           </div>
         </aside>

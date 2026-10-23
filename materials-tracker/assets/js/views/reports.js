@@ -124,7 +124,7 @@
     return {
       id: 'summary',
       name: 'ملخص',
-      title: `ملخص مقارنة المواد · ${App.periodLabel()}`,
+      title: `ملخص مقارنة المواد، ${App.periodLabel()}`,
       desc: 'الأرقام الرئيسية للمشروع حسب الفترة المختارة في الشريط العلوي.',
       rows,
       columns: [
@@ -251,12 +251,12 @@
     tab = def.id;
     root.innerHTML = `<div class="page">
       <header class="page-head">
-        <div><p class="eyebrow mono">04 · REPORTS</p><h1 class="h1">التقارير</h1><p class="lead">قارن المصادر الثلاثة، وصدّر الناقص إلى Excel لإرساله للمستودع.</p></div>
+        <div><h1 class="h1">التقارير</h1><p class="lead">قارن المصادر الثلاثة، وصدّر الناقص إلى Excel لإرساله للمستودع.</p></div>
         <div class="page-actions no-print"><button class="btn btn-accent2" type="button" id="exp-all">${UI.icon('sheet', 20)}<span>نزّل كل التقارير Excel</span></button></div>
       </header>
       <div class="tabs no-print" role="tablist" aria-label="أنواع التقارير">${list.map((d) => `<button type="button" role="tab" class="tab" id="tab-${d.id}" aria-selected="${d.id === tab}" aria-controls="rep-panel" tabindex="${d.id === tab ? 0 : -1}" data-tab="${d.id}">${esc(d.name)}${d.id === 'shortage' ? `<span class="chip-n mono">${d.rows.length}</span>` : ''}</button>`).join('')}</div>
       <section class="card panel" id="rep-panel" role="tabpanel" aria-labelledby="tab-${def.id}">
-        <div class="print-only print-head"><strong>${esc(Store.project.name)}</strong><span>${U.fmtDate(U.today())} · ${esc(App.periodLabel())}</span></div>
+        <div class="print-only print-head"><strong>${esc(Store.project.name)}</strong><span>${U.fmtDate(U.today())}، ${esc(App.periodLabel())}</span></div>
         <div class="panel-head"><div><h2 class="h3">${esc(def.title)}</h2><p class="muted">${esc(def.desc)}</p></div>
           <div class="panel-actions no-print"><button class="btn btn-sm" type="button" id="exp-one">${UI.icon('download', 16)}<span>Excel لهذا التقرير</span></button><button class="btn btn-sm" type="button" id="print">${UI.icon('printer', 16)}<span>اطبع أو احفظ PDF</span></button></div></div>
         <div id="rep-table"></div>

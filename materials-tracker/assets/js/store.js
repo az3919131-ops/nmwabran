@@ -528,7 +528,7 @@
       const byId = new Map(m.save.map((r) => [r.id, r]));
       this.data[table] = existing.filter((r) => !m.removed.includes(r.id)).map((r) => byId.get(r.id) || r).concat(m.save.filter((r) => !existing.some((x) => x.id === r.id)));
       const image = imageBlob ? await this.uploadImage(kind, imageBlob).catch(() => '') : '';
-      await this._log(kind, ref, m.save.length, `${m.added} جديد، ${m.updated} محدَّث${m.removed.length ? `، ${m.removed.length} محذوف` : ''}${note ? ' · ' + note : ''}`, image);
+      await this._log(kind, ref, m.save.length, `${m.added} جديد، ${m.updated} محدَّث${m.removed.length ? `، ${m.removed.length} محذوف` : ''}${note ? '، ' + note : ''}`, image);
       this.emit('change');
       return { added: m.added, updated: m.updated, removed: m.removed.length };
     },
@@ -556,7 +556,7 @@
       }
       await this.adapter.saveGatePass(this.project.id, gp);
       if (!merged) this.data.gatePasses.push(gp);
-      await this._log('gatepass', no, m.save.length, `${merged ? 'أُضيفت صفحة إلى Gate Pass موجود' : 'Gate Pass جديد'} · ${m.added} جديد، ${m.updated} محدَّث${pageNote ? ' · ' + pageNote : ''}`, image);
+      await this._log('gatepass', no, m.save.length, `${merged ? 'أُضيفت صفحة إلى Gate Pass موجود' : 'Gate Pass جديد'}، ${m.added} جديد، ${m.updated} محدَّث${pageNote ? '، ' + pageNote : ''}`, image);
       this.emit('change');
       return { added: m.added, updated: m.updated, merged, gp };
     },

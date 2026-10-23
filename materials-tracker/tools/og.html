@@ -1,24 +1,31 @@
 <!doctype html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Arabic:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;background:#4B57E8;color:#fff;font-family:'IBM Plex Sans Arabic',sans-serif;display:grid;grid-template-columns:1.2fr 1fr;border:0}
-.l{padding:56px 56px 40px;display:flex;flex-direction:column;justify-content:space-between}
-.e{font:500 22px 'IBM Plex Mono',monospace;direction:ltr;text-align:start}
-h1{font:800 76px/1.2 'Alexandria',sans-serif}
-p{font-size:28px;opacity:1;max-width:560px}
-.r{background:#F2F1EC;border-inline-start:6px solid #17120E;padding:48px 44px;display:flex;flex-direction:column;gap:20px;justify-content:center;color:#17120E}
-.s{border:6px solid #17120E;border-radius:12px;box-shadow:-10px 10px 0 #17120E;padding:14px 22px;display:grid;grid-template-columns:70px 1fr;column-gap:16px;align-items:center}
-.s b{font:500 40px 'IBM Plex Mono',monospace;grid-row:span 2}
-.s strong{font:800 30px 'Alexandria',sans-serif}
-.s span{font-size:20px;color:#5E574D}
-.a{background:#EADFC8}.b{background:#CFE3F0}.c{background:#F0D5D0}
-.f{font:500 20px 'IBM Plex Mono',monospace;direction:ltr;text-align:start}
-</style></head><body>
-<div class="l"><div class="e">SEC · NAJRAN · MATERIALS</div><div><h1>تابع كل مادة من الطلب حتى الصرف.</h1><p style="margin-top:20px">قارن Checklist وUDS وGate Pass. الناقص والزائد بالألوان وتقرير Excel جاهز.</p></div><div class="f">Project Manager | Eng. Ahmed Zahran</div></div>
+html,body{width:1200px;height:630px;overflow:hidden;background:#151845}
+.stage{width:1200px;height:630px;font-family:'Readex Pro',sans-serif;color:#fff;display:grid;grid-template-columns:1.15fr 1fr;background:linear-gradient(150deg,#4b57e8 0%,#2b34c4 52%,#151845 100%);position:relative;overflow:hidden}
+
+.stage::before{content:'';position:absolute;width:900px;height:900px;border-radius:50%;left:-300px;bottom:-560px;background:radial-gradient(closest-side,rgba(55,224,194,.6),transparent)}
+.stage::after{content:'';position:absolute;width:560px;height:560px;border-radius:50%;right:-120px;top:-300px;background:radial-gradient(closest-side,rgba(255,255,255,.2),transparent)}
+.l{padding:64px 64px 44px;display:flex;flex-direction:column;justify-content:center;gap:24px;position:relative;z-index:1}
+h1{font-weight:700;font-size:78px;line-height:1.25}
+p{font-size:28px;line-height:1.6;max-width:560px}
+.f{position:absolute;inset-inline-start:64px;bottom:36px;font:500 20px 'IBM Plex Mono',monospace;direction:ltr;opacity:.95}
+.r{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;padding:0 56px 0 24px}
+.n{border-radius:30px;padding:20px 28px;color:#151845;display:grid;grid-template-columns:1fr auto;align-items:center;box-shadow:0 24px 40px -22px rgba(0,0,0,.6)}
+.n strong{font-size:34px;font-weight:700;display:block}
+.n span{font-size:22px;color:#4f5380}
+.n b{font-size:56px;font-weight:600}
+.a{background:#ddd3ff}.b{background:#cdebff}.c{background:#ffddc4}
+.p{height:34px;width:16px;border-radius:9px;margin:0 auto;align-self:center}
+.p1{background:linear-gradient(#8f7bf2,#4cb3f4)}.p2{background:linear-gradient(#4cb3f4,#ff9a56)}
+</style></head><body><div class="stage">
+<div class="l"><h1>تابع كل مادة من الطلب حتى الصرف.</h1><p>المطلوب في Checklist، والمسجّل في UDS، والمصروف في Gate Pass في شاشة واحدة.</p></div>
 <div class="r">
-<div class="s a"><b>01</b><strong>Checklist</strong><span>المطلوب صرفه من شركة الكهرباء</span></div>
-<div class="s b"><b>02</b><strong>UDS</strong><span>المسجّل على النظام</span></div>
-<div class="s c"><b>03</b><strong>Gate Pass</strong><span>المصروف فعليًا من المستودع</span></div>
+<div class="n a"><div><strong>Checklist</strong><span>ما طلبته من شركة الكهرباء</span></div></div><div class="p p1"></div>
+<div class="n b"><div><strong>UDS</strong><span>ما سُجّل على النظام</span></div></div><div class="p p2"></div>
+<div class="n c"><div><strong>Gate Pass</strong><span>ما خرج فعليًا من المستودع</span></div></div>
+</div>
+<div class="f">Project Manager | Eng. Ahmed Zahran</div>
 </div></body></html>
