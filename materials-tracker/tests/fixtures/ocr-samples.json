@@ -1,0 +1,1624 @@
+{
+ "1.webp_r270_p6": {
+  "lines": [
+   {
+    "text": "El TI —— wo © — |",
+    "bbox": {
+     "x0": 608,
+     "y0": 0,
+     "x1": 2400,
+     "y1": 16
+    },
+    "confidence": 15
+   },
+   {
+    "text": "Date & Time 14.10.2026:07:59:36 AM Original Created By 104812",
+    "bbox": {
+     "x0": 87,
+     "y0": 145,
+     "x1": 2085,
+     "y1": 219
+    },
+    "confidence": 85
+   },
+   {
+    "text": "{ 1] |",
+    "bbox": {
+     "x0": 194,
+     "y0": 247,
+     "x1": 542,
+     "y1": 289
+    },
+    "confidence": 37
+   },
+   {
+    "text": "Hi SEC Gate Pass Ah",
+    "bbox": {
+     "x0": 162,
+     "y0": 278,
+     "x1": 2022,
+     "y1": 373
+    },
+    "confidence": 74
+   },
+   {
+    "text": "2000538783 S fe",
+    "bbox": {
+     "x0": 333,
+     "y0": 373,
+     "x1": 2268,
+     "y1": 461
+    },
+    "confidence": 70
+   },
+   {
+    "text": "L~ 21Y",
+    "bbox": {
+     "x0": 2127,
+     "y0": 437,
+     "x1": 2263,
+     "y1": 466
+    },
+    "confidence": 0
+   },
+   {
+    "text": "saudienergy",
+    "bbox": {
+     "x0": 2002,
+     "y0": 482,
+     "x1": 2339,
+     "y1": 532
+    },
+    "confidence": 77
+   },
+   {
+    "text": "Contractor/User 1000670 Contractor/ User Name NASSIR MANEA WABRAN CO. &",
+    "bbox": {
+     "x0": 76,
+     "y0": 663,
+     "x1": 2188,
+     "y1": 708
+    },
+    "confidence": 92
+   },
+   {
+    "text": "ERP Delivery 80537958 Material Doc 4905599287 (221)",
+    "bbox": {
+     "x0": 78,
+     "y0": 766,
+     "x1": 1898,
+     "y1": 807
+    },
+    "confidence": 95
+   },
+   {
+    "text": "Sr.No. [item No [ReservationNo. [Material # Material Description UoM [Serial #",
+    "bbox": {
+     "x0": 60,
+     "y0": 879,
+     "x1": 2166,
+     "y1": 937
+    },
+    "confidence": 58
+   },
+   {
+    "text": "TERMINATION KIT:CABLE,HEAT/",
+    "bbox": {
+     "x0": 999,
+     "y0": 973,
+     "x1": 1516,
+     "y1": 1001
+    },
+    "confidence": 85
+   },
+   {
+    "text": "310 / 2 oe",
+    "bbox": {
+     "x0": 198,
+     "y0": 990,
+     "x1": 2081,
+     "y1": 1017
+    },
+    "confidence": 63
+   },
+   {
+    "text": "TERMINATION KIT:CABLE,HEAT/",
+    "bbox": {
+     "x0": 1001,
+     "y0": 1109,
+     "x1": 1516,
+     "y1": 1137
+    },
+    "confidence": 66
+   },
+   {
+    "text": "300 } / =",
+    "bbox": {
+     "x0": 200,
+     "y0": 1128,
+     "x1": 2080,
+     "y1": 1154
+    },
+    "confidence": 26
+   },
+   {
+    "text": "TERMINATION KIT:CABLE,HEAT/ oh",
+    "bbox": {
+     "x0": 1002,
+     "y0": 1245,
+     "x1": 1831,
+     "y1": 1273
+    },
+    "confidence": 64
+   },
+   {
+    "text": "290 ' p ( _",
+    "bbox": {
+     "x0": 203,
+     "y0": 1264,
+     "x1": 2078,
+     "y1": 1291
+    },
+    "confidence": 28
+   },
+   {
+    "text": "Cp ee oem | coms a |",
+    "bbox": {
+     "x0": 65,
+     "y0": 1209,
+     "x1": 2051,
+     "y1": 1375
+    },
+    "confidence": 23
+   },
+   {
+    "text": "| Zl",
+    "bbox": {
+     "x0": 10,
+     "y0": 1334,
+     "x1": 1702,
+     "y1": 1376
+    },
+    "confidence": 74
+   },
+   {
+    "text": "|",
+    "bbox": {
+     "x0": 10,
+     "y0": 1445,
+     "x1": 11,
+     "y1": 1458
+    },
+    "confidence": 95
+   },
+   {
+    "text": "| a 0030315989 908121009 TERM KIT, STR, 1KV,4X185MM2,AL 0 =",
+    "bbox": {
+     "x0": 10,
+     "y0": 1487,
+     "x1": 2076,
+     "y1": 1621
+    },
+    "confidence": 60
+   },
+   {
+    "text": "i SS —",
+    "bbox": {
+     "x0": 9,
+     "y0": 1598,
+     "x1": 2338,
+     "y1": 1618
+    },
+    "confidence": 7
+   },
+   {
+    "text": "sw / 0030320664 908121009 TERM KIT, STR, 1KV,4X185MM2,AL © =",
+    "bbox": {
+     "x0": 70,
+     "y0": 1623,
+     "x1": 2074,
+     "y1": 1757
+    },
+    "confidence": 55
+   },
+   {
+    "text": "nea 0030325101 worsen re KIT,STR, 1KV,4X185MM2,AL 0 --",
+    "bbox": {
+     "x0": 73,
+     "y0": 1754,
+     "x1": 2073,
+     "y1": 1895
+    },
+    "confidence": 47
+   },
+   {
+    "text": "1 fo fem 908121010 TERM KIT,STR, 1KV 4X300MM2,AL [01 i ir -",
+    "bbox": {
+     "x0": 72,
+     "y0": 2021,
+     "x1": 2073,
+     "y1": 2162
+    },
+    "confidence": 39
+   },
+   {
+    "text": "8 0 7 oon 208121010 TERM KIT, STR, 1KV,4X300MM2,AL 01 | EE =",
+    "bbox": {
+     "x0": 83,
+     "y0": 2156,
+     "x1": 2073,
+     "y1": 2294
+    },
+    "confidence": 54
+   },
+   {
+    "text": "10 20, mos 908121040 CONN,ELEC,EL,DB 01 2 — & --",
+    "bbox": {
+     "x0": 89,
+     "y0": 2549,
+     "x1": 2073,
+     "y1": 2695
+    },
+    "confidence": 49
+   },
+   {
+    "text": "ofdl [2 EA |",
+    "bbox": {
+     "x0": 1611,
+     "y0": 2677,
+     "x1": 2048,
+     "y1": 2771
+    },
+    "confidence": 58
+   },
+   {
+    "text": "\\ — B=",
+    "bbox": {
+     "x0": 1555,
+     "y0": 2756,
+     "x1": 1989,
+     "y1": 2804
+    },
+    "confidence": 51
+   },
+   {
+    "text": "= J —",
+    "bbox": {
+     "x0": 1343,
+     "y0": 2801,
+     "x1": 2148,
+     "y1": 2839
+    },
+    "confidence": 61
+   },
+   {
+    "text": "01 3 KIT: =",
+    "bbox": {
+     "x0": 1591,
+     "y0": 2849,
+     "x1": 2073,
+     "y1": 2881
+    },
+    "confidence": 79
+   },
+   {
+    "text": "Eee) Ee",
+    "bbox": {
+     "x0": 818,
+     "y0": 2936,
+     "x1": 1897,
+     "y1": 2995
+    },
+    "confidence": 10
+   },
+   {
+    "text": "= £2  Ye—mery",
+    "bbox": {
+     "x0": 872,
+     "y0": 2992,
+     "x1": 1108,
+     "y1": 3021
+    },
+    "confidence": 7
+   },
+   {
+    "text": "es = iw boi)",
+    "bbox": {
+     "x0": 676,
+     "y0": 3007,
+     "x1": 1949,
+     "y1": 3085
+    },
+    "confidence": 18
+   },
+   {
+    "text": "Ll a &",
+    "bbox": {
+     "x0": 815,
+     "y0": 3047,
+     "x1": 1957,
+     "y1": 3090
+    },
+    "confidence": 46
+   },
+   {
+    "text": "Lead 5 Fa Lo prs os Page | of 4",
+    "bbox": {
+     "x0": 550,
+     "y0": 3078,
+     "x1": 2303,
+     "y1": 3141
+    },
+    "confidence": 44
+   },
+   {
+    "text": "oF Vas —",
+    "bbox": {
+     "x0": 484,
+     "y0": 3127,
+     "x1": 896,
+     "y1": 3175
+    },
+    "confidence": 18
+   },
+   {
+    "text": "Pd em a ” s",
+    "bbox": {
+     "x0": 449,
+     "y0": 3174,
+     "x1": 1940,
+     "y1": 3212
+    },
+    "confidence": 35
+   },
+   {
+    "text": "— EE Ce  ————— rm mer ull",
+    "bbox": {
+     "x0": 0,
+     "y0": 3362,
+     "x1": 2399,
+     "y1": 3398
+    },
+    "confidence": 2
+   }
+  ]
+ },
+ "1.webp_r270_p4": {
+  "lines": [
+   {
+    "text": "io",
+    "bbox": {
+     "x0": 139,
+     "y0": 96,
+     "x1": 222,
+     "y1": 154
+    },
+    "confidence": 0
+   },
+   {
+    "text": "Date & Time ; 14.10.2026:07:59:36 AM Original Created By 104812",
+    "bbox": {
+     "x0": 87,
+     "y0": 145,
+     "x1": 2085,
+     "y1": 204
+    },
+    "confidence": 76
+   },
+   {
+    "text": "WHINY sec catepass — o.",
+    "bbox": {
+     "x0": 165,
+     "y0": 214,
+     "x1": 2005,
+     "y1": 390
+    },
+    "confidence": 9
+   },
+   {
+    "text": "2000538783 Sse",
+    "bbox": {
+     "x0": 333,
+     "y0": 373,
+     "x1": 2269,
+     "y1": 471
+    },
+    "confidence": 85
+   },
+   {
+    "text": "saudi energy",
+    "bbox": {
+     "x0": 2002,
+     "y0": 482,
+     "x1": 2265,
+     "y1": 527
+    },
+    "confidence": 0
+   },
+   {
+    "text": "CR",
+    "bbox": {
+     "x0": 71,
+     "y0": 537,
+     "x1": 1598,
+     "y1": 640
+    },
+    "confidence": 28
+   },
+   {
+    "text": "Sr.No. [item No | Reservation No. [Material # Material Description UoM",
+    "bbox": {
+     "x0": 56,
+     "y0": 875,
+     "x1": 1978,
+     "y1": 941
+    },
+    "confidence": 60
+   },
+   {
+    "text": "TERMINATION KIT:CABLE,HEAT/",
+    "bbox": {
+     "x0": 999,
+     "y0": 973,
+     "x1": 1516,
+     "y1": 1001
+    },
+    "confidence": 89
+   },
+   {
+    "text": "310 : 1",
+    "bbox": {
+     "x0": 198,
+     "y0": 990,
+     "x1": 1414,
+     "y1": 1017
+    },
+    "confidence": 43
+   },
+   {
+    "text": "TERMINATION KIT:CABLE,HEAT/",
+    "bbox": {
+     "x0": 1001,
+     "y0": 1109,
+     "x1": 1516,
+     "y1": 1137
+    },
+    "confidence": 85
+   },
+   {
+    "text": "3 j J",
+    "bbox": {
+     "x0": 200,
+     "y0": 1128,
+     "x1": 1414,
+     "y1": 1153
+    },
+    "confidence": 50
+   },
+   {
+    "text": "29 , |0030364667 TERMINATION KIT:CABLE,HEAT/ =",
+    "bbox": {
+     "x0": 203,
+     "y0": 1245,
+     "x1": 1802,
+     "y1": 1312
+    },
+    "confidence": 66
+   },
+   {
+    "text": "COLD SHRINK! 01 [1 ~ KIT ol",
+    "bbox": {
+     "x0": 1003,
+     "y0": 1265,
+     "x1": 2078,
+     "y1": 1320
+    },
+    "confidence": 54
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 66,
+     "y0": 549,
+     "x1": 71,
+     "y1": 681
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 68,
+     "y0": 681,
+     "x1": 71,
+     "y1": 793
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 70,
+     "y0": 793,
+     "x1": 73,
+     "y1": 844
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 508,
+     "y0": 500,
+     "x1": 2300,
+     "y1": 549
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 508,
+     "y0": 549,
+     "x1": 2298,
+     "y1": 590
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1599,
+     "y0": 590,
+     "x1": 1836,
+     "y1": 681
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1599,
+     "y0": 681,
+     "x1": 1601,
+     "y1": 717
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1599,
+     "y0": 717,
+     "x1": 1993,
+     "y1": 762
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1599,
+     "y0": 762,
+     "x1": 1600,
+     "y1": 798
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1598,
+     "y0": 798,
+     "x1": 1966,
+     "y1": 844
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1835,
+     "y0": 640,
+     "x1": 2349,
+     "y1": 642
+    },
+    "confidence": 95
+   },
+   {
+    "text": "NASSIR MANEA WABRAN CO. &",
+    "bbox": {
+     "x0": 1687,
+     "y0": 677,
+     "x1": 2188,
+     "y1": 704
+    },
+    "confidence": 91
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1992,
+     "y0": 746,
+     "x1": 2349,
+     "y1": 748
+    },
+    "confidence": 95
+   },
+   {
+    "text": "4905599287 (221)",
+    "bbox": {
+     "x0": 1610,
+     "y0": 777,
+     "x1": 1898,
+     "y1": 807
+    },
+    "confidence": 97
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1965,
+     "y0": 840,
+     "x1": 2346,
+     "y1": 842
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 2005,
+     "y0": 941,
+     "x1": 2345,
+     "y1": 944
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 996,
+     "y0": 945,
+     "x1": 1588,
+     "y1": 990
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 996,
+     "y0": 990,
+     "x1": 1588,
+     "y1": 1079
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 997,
+     "y0": 1082,
+     "x1": 1587,
+     "y1": 1127
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 692,
+     "y0": 1127,
+     "x1": 1591,
+     "y1": 1230
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 692,
+     "y0": 1230,
+     "x1": 999,
+     "y1": 1307
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 693,
+     "y0": 1307,
+     "x1": 999,
+     "y1": 1353
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 2047,
+     "y0": 879,
+     "x1": 2349,
+     "y1": 1058
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1900,
+     "y0": 1212,
+     "x1": 2337,
+     "y1": 1215
+    },
+    "confidence": 95
+   },
+   {
+    "text": "908121008 |",
+    "bbox": {
+     "x0": 697,
+     "y0": 1268,
+     "x1": 920,
+     "y1": 1299
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1834,
+     "y0": 1347,
+     "x1": 2341,
+     "y1": 1351
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1631,
+     "y0": 1615,
+     "x1": 2338,
+     "y1": 1621
+    },
+    "confidence": 95
+   },
+   {
+    "text": "280 ££ 0030315989 208121009 TERM KIT, STR, 1KV,4X185MM2,AL 101 KIT -",
+    "bbox": {
+     "x0": 202,
+     "y0": 1534,
+     "x1": 2076,
+     "y1": 1583
+    },
+    "confidence": 67
+   },
+   {
+    "text": "-",
+    "bbox": {
+     "x0": 1893,
+     "y0": 1597,
+     "x1": 1903,
+     "y1": 1630
+    },
+    "confidence": 77
+   },
+   {
+    "text": "270 / 0030320664 908121009 TERM KIT,STR,1KV 4X185MM2,AL 01 i [KIT --",
+    "bbox": {
+     "x0": 207,
+     "y0": 1669,
+     "x1": 2074,
+     "y1": 1734
+    },
+    "confidence": 61
+   },
+   {
+    "text": "1 4 1",
+    "bbox": {
+     "x0": 1699,
+     "y0": 1734,
+     "x1": 2188,
+     "y1": 1765
+    },
+    "confidence": 53
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 947,
+     "y0": 1751,
+     "x1": 2022,
+     "y1": 1758
+    },
+    "confidence": 95
+   },
+   {
+    "text": "of 0030325101 908121009 ean KIT, STR, 1KV,4X185MM2,AL 01 I 5 © KIT --",
+    "bbox": {
+     "x0": 73,
+     "y0": 1754,
+     "x1": 2073,
+     "y1": 1891
+    },
+    "confidence": 50
+   },
+   {
+    "text": "ea 0030315989 908121010 TERM KIT,STR, TKV,4X300MM2,AL 101 1 KIT -",
+    "bbox": {
+     "x0": 76,
+     "y0": 2027,
+     "x1": 2073,
+     "y1": 2158
+    },
+    "confidence": 68
+   },
+   {
+    "text": "8 240 7 0030320664 208121010 TERM KIT, STR, 1KV,4X300MM2,AL 01 L KIT -",
+    "bbox": {
+     "x0": 83,
+     "y0": 2157,
+     "x1": 2073,
+     "y1": 2242
+    },
+    "confidence": 70
+   },
+   {
+    "text": "> fe 4 0030364667 908121010 TERM KIT,STR, 1KV,4X300MM2,AL 01 I = (KIT --",
+    "bbox": {
+     "x0": 75,
+     "y0": 2279,
+     "x1": 2073,
+     "y1": 2429
+    },
+    "confidence": 64
+   },
+   {
+    "text": "10 220 / 0030320664 908121040 Es N,ELEC,EL,DB oe EA --",
+    "bbox": {
+     "x0": 89,
+     "y0": 2590,
+     "x1": 2073,
+     "y1": 2686
+    },
+    "confidence": 74
+   },
+   {
+    "text": "| [Togdl EA",
+    "bbox": {
+     "x0": 1002,
+     "y0": 2687,
+     "x1": 1952,
+     "y1": 2810
+    },
+    "confidence": 72
+   },
+   {
+    "text": "~ \\ V dSge | =",
+    "bbox": {
+     "x0": 1343,
+     "y0": 2760,
+     "x1": 2332,
+     "y1": 2815
+    },
+    "confidence": 24
+   },
+   {
+    "text": "11 50 0030320664 908121144 CONN,ELEC,EL,DB 01 3 KLE: =",
+    "bbox": {
+     "x0": 90,
+     "y0": 2849,
+     "x1": 2073,
+     "y1": 2905
+    },
+    "confidence": 75
+   },
+   {
+    "text": "/ : e-Y Be =",
+    "bbox": {
+     "x0": 304,
+     "y0": 2889,
+     "x1": 2224,
+     "y1": 2950
+    },
+    "confidence": 38
+   },
+   {
+    "text": "os = alo",
+    "bbox": {
+     "x0": 872,
+     "y0": 2964,
+     "x1": 1970,
+     "y1": 3015
+    },
+    "confidence": 29
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1839,
+     "y0": 1879,
+     "x1": 2330,
+     "y1": 1886
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1364,
+     "y0": 1885,
+     "x1": 1683,
+     "y1": 1889
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1557,
+     "y0": 1830,
+     "x1": 1955,
+     "y1": 2025
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1537,
+     "y0": 2012,
+     "x1": 2335,
+     "y1": 2019
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1987,
+     "y0": 2145,
+     "x1": 2329,
+     "y1": 2149
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1515,
+     "y0": 2145,
+     "x1": 2329,
+     "y1": 2152
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1757,
+     "y0": 2276,
+     "x1": 2329,
+     "y1": 2281
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1552,
+     "y0": 2353,
+     "x1": 1784,
+     "y1": 2623
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1655,
+     "y0": 2407,
+     "x1": 2278,
+     "y1": 2413
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1716,
+     "y0": 2538,
+     "x1": 2333,
+     "y1": 2545
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 935,
+     "y0": 2544,
+     "x1": 1575,
+     "y1": 2553
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1777,
+     "y0": 2669,
+     "x1": 2334,
+     "y1": 2676
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1096,
+     "y0": 2676,
+     "x1": 1555,
+     "y1": 2683
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 850,
+     "y0": 2677,
+     "x1": 1555,
+     "y1": 2685
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1465,
+     "y0": 2800,
+     "x1": 2299,
+     "y1": 2807
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1005,
+     "y0": 2810,
+     "x1": 1327,
+     "y1": 2815
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 909,
+     "y0": 2929,
+     "x1": 2335,
+     "y1": 2946
+    },
+    "confidence": 95
+   },
+   {
+    "text": "—",
+    "bbox": {
+     "x0": 1045,
+     "y0": 2957,
+     "x1": 1091,
+     "y1": 2968
+    },
+    "confidence": 34
+   },
+   {
+    "text": ": ey",
+    "bbox": {
+     "x0": 1105,
+     "y0": 2981,
+     "x1": 1241,
+     "y1": 2993
+    },
+    "confidence": 24
+   },
+   {
+    "text": "a = 3 Page 1 of 4",
+    "bbox": {
+     "x0": 771,
+     "y0": 3080,
+     "x1": 2303,
+     "y1": 3122
+    },
+    "confidence": 70
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 276,
+     "y0": 3387,
+     "x1": 1873,
+     "y1": 3398
+    },
+    "confidence": 95
+   },
+   {
+    "text": "",
+    "bbox": {
+     "x0": 1872,
+     "y0": 3396,
+     "x1": 2354,
+     "y1": 3398
+    },
+    "confidence": 95
+   }
+  ]
+ },
+ "2.webp_r270_p6": {
+  "lines": [
+   {
+    "text": "AL 3IX500/35MMZXLPE/LLDPE Br",
+    "bbox": {
+     "x0": 406,
+     "y0": 0,
+     "x1": 2399,
+     "y1": 51
+    },
+    "confidence": 56
+   },
+   {
+    "text": "Sub Total 377",
+    "bbox": {
+     "x0": 1786,
+     "y0": 49,
+     "x1": 2184,
+     "y1": 87
+    },
+    "confidence": 82
+   },
+   {
+    "text": "—",
+    "bbox": {
+     "x0": 2328,
+     "y0": 95,
+     "x1": 2400,
+     "y1": 107
+    },
+    "confidence": 58
+   },
+   {
+    "text": "Material Desc. EMat Gr Uom Batch Unloading Point Reservation Item No Quantity by",
+    "bbox": {
+     "x0": 495,
+     "y0": 97,
+     "x1": 2349,
+     "y1": 139
+    },
+    "confidence": 79
+   },
+   {
+    "text": "7 TERMINATION KIT CABLE, a KIT i W264057918802/0002 0030312223 0002 1",
+    "bbox": {
+     "x0": 305,
+     "y0": 138,
+     "x1": 2173,
+     "y1": 222
+    },
+    "confidence": 67
+   },
+   {
+    "text": "HEAT/COLD SHRINK. BE",
+    "bbox": {
+     "x0": 463,
+     "y0": 182,
+     "x1": 2400,
+     "y1": 209
+    },
+    "confidence": 36
+   },
+   {
+    "text": "908121008 = i",
+    "bbox": {
+     "x0": 23,
+     "y0": 196,
+     "x1": 2341,
+     "y1": 246
+    },
+    "confidence": 79
+   },
+   {
+    "text": "TERMINATION KIT.CABLE, 01 W264066250802/0002 0030351251 0002 1",
+    "bbox": {
+     "x0": 441,
+     "y0": 234,
+     "x1": 2176,
+     "y1": 268
+    },
+    "confidence": 84
+   },
+   {
+    "text": "LL | meavcownsimig =",
+    "bbox": {
+     "x0": 308,
+     "y0": 260,
+     "x1": 2400,
+     "y1": 309
+    },
+    "confidence": 18
+   },
+   {
+    "text": "Sub Total 2",
+    "bbox": {
+     "x0": 1797,
+     "y0": 314,
+     "x1": 2182,
+     "y1": 334
+    },
+    "confidence": 92
+   },
+   {
+    "text": "Material Desc. EMotGr UOM Batch Unloading Point Reservation Item No Quantity",
+    "bbox": {
+     "x0": 506,
+     "y0": 361,
+     "x1": 2226,
+     "y1": 394
+    },
+    "confidence": 89
+   },
+   {
+    "text": "TERM KIT STR, 1KV.4X185MM2 DIST KIT W264056939802/0005 0030315989 0005 2",
+    "bbox": {
+     "x0": 421,
+     "y0": 405,
+     "x1": 2184,
+     "y1": 436
+    },
+    "confidence": 73
+   },
+   {
+    "text": "AL",
+    "bbox": {
+     "x0": 573,
+     "y0": 443,
+     "x1": 601,
+     "y1": 461
+    },
+    "confidence": 97
+   },
+   {
+    "text": "908 0 0 TERM KIT STRIKV.4X185MM2 DIST «IT 01 W264065705804/0005 0030320664 0005 2",
+    "bbox": {
+     "x0": 40,
+     "y0": 493,
+     "x1": 2188,
+     "y1": 537
+    },
+    "confidence": 86
+   },
+   {
+    "text": "TERM KIT STRIKV 4X185MM2 DIST KIT 0 W264056688402/0002 0030325101 0002 1",
+    "bbox": {
+     "x0": 428,
+     "y0": 578,
+     "x1": 2189,
+     "y1": 610
+    },
+    "confidence": 76
+   },
+   {
+    "text": "AL",
+    "bbox": {
+     "x0": 580,
+     "y0": 615,
+     "x1": 608,
+     "y1": 634
+    },
+    "confidence": 90
+   },
+   {
+    "text": "Sub Total 5",
+    "bbox": {
+     "x0": 1813,
+     "y0": 659,
+     "x1": 2195,
+     "y1": 677
+    },
+    "confidence": 95
+   },
+   {
+    "text": "Materiol Desc. EMot.Gr UOM Batch Unlooding Point Reservation Item No Quantity",
+    "bbox": {
+     "x0": 521,
+     "y0": 703,
+     "x1": 2240,
+     "y1": 734
+    },
+    "confidence": 85
+   },
+   {
+    "text": "TERM KIT STR.IKV AX300MM2. DIST Bae: © | W264056939802/0006 |",
+    "bbox": {
+     "x0": 436,
+     "y0": 732,
+     "x1": 2196,
+     "y1": 824
+    },
+    "confidence": 52
+   },
+   {
+    "text": "AL",
+    "bbox": {
+     "x0": 589,
+     "y0": 784,
+     "x1": 616,
+     "y1": 803
+    },
+    "confidence": 97
+   },
+   {
+    "text": "908121010",
+    "bbox": {
+     "x0": 52,
+     "y0": 806,
+     "x1": 235,
+     "y1": 837
+    },
+    "confidence": 96
+   },
+   {
+    "text": "TERM KIT STR 1KV 4X300MM2 DIST KIT 0 W264065705804/0006 0030320664 0006 2",
+    "bbox": {
+     "x0": 441,
+     "y0": 835,
+     "x1": 2202,
+     "y1": 865
+    },
+    "confidence": 66
+   },
+   {
+    "text": "AL",
+    "bbox": {
+     "x0": 593,
+     "y0": 872,
+     "x1": 616,
+     "y1": 889
+    },
+    "confidence": 87
+   },
+   {
+    "text": "Sub Total 3",
+    "bbox": {
+     "x0": 1827,
+     "y0": 915,
+     "x1": 2207,
+     "y1": 933
+    },
+    "confidence": 93
+   },
+   {
+    "text": "~ Moterial Desc. EMat.Gr UOoM Batch Unloading Point Reservation Item No Quantity",
+    "bbox": {
+     "x0": 441,
+     "y0": 959,
+     "x1": 2251,
+     "y1": 989
+    },
+    "confidence": 73
+   },
+   {
+    "text": "908121040 CONN.ELECEL.DB DIST [ca GT W264065705804/0012 0030320664 0012 2",
+    "bbox": {
+     "x0": 56,
+     "y0": 987,
+     "x1": 2210,
+     "y1": 1044
+    },
+    "confidence": 72
+   },
+   {
+    "text": "Sub Total 2",
+    "bbox": {
+     "x0": 1834,
+     "y0": 1050,
+     "x1": 2214,
+     "y1": 1067
+    },
+    "confidence": 96
+   },
+   {
+    "text": "Material Desc. EMatGr uoMm Batch Unloading Point Reservation Item No Quantity",
+    "bbox": {
+     "x0": 539,
+     "y0": 1094,
+     "x1": 2259,
+     "y1": 1125
+    },
+    "confidence": 88
+   },
+   {
+    "text": "008121144 A CONNELEC ELDB DIST ae | W264065705804/0021 0030320664 3",
+    "bbox": {
+     "x0": 60,
+     "y0": 1106,
+     "x1": 2218,
+     "y1": 1190
+    },
+    "confidence": 66
+   },
+   {
+    "text": "Sub Total 3",
+    "bbox": {
+     "x0": 1841,
+     "y0": 1180,
+     "x1": 2222,
+     "y1": 1210
+    },
+    "confidence": 95
+   },
+   {
+    "text": "Material Desc. EMat Gr UoMm Batch Unloading Point Reservation Item No Quan!",
+    "bbox": {
+     "x0": 544,
+     "y0": 1228,
+     "x1": 2228,
+     "y1": 1259
+    },
+    "confidence": 83
+   },
+   {
+    "text": "JOINT KITSTR, DIST W264065705804/0020 0030320664 0020 1",
+    "bbox": {
+     "x0": 545,
+     "y0": 1272,
+     "x1": 2225,
+     "y1": 1303
+    },
+    "confidence": 87
+   },
+   {
+    "text": "EEE [ee | ee [>]",
+    "bbox": {
+     "x0": 0,
+     "y0": 1238,
+     "x1": 2114,
+     "y1": 1344
+    },
+    "confidence": 36
+   },
+   {
+    "text": "Sub Total 1",
+    "bbox": {
+     "x0": 1850,
+     "y0": 1348,
+     "x1": 2230,
+     "y1": 1379
+    },
+    "confidence": 93
+   },
+   {
+    "text": "Material Desc. EMatGr UoM Batch Unloading Point Reservation Item No Quantity",
+    "bbox": {
+     "x0": 552,
+     "y0": 1398,
+     "x1": 2281,
+     "y1": 1429
+    },
+    "confidence": 80
+   },
+   {
+    "text": "| CONNECTOR,LUG,3001M2 AL. EA 01 W264056939802/0011 0030315989 0011 4",
+    "bbox": {
+     "x0": 0,
+     "y0": 1441,
+     "x1": 2236,
+     "y1": 1472
+    },
+    "confidence": 78
+   },
+   {
+    "text": "| (IMI1Z2 BLT HL",
+    "bbox": {
+     "x0": 0,
+     "y0": 1469,
+     "x1": 711,
+     "y1": 1503
+    },
+    "confidence": 63
+   },
+   {
+    "text": "CONNECTOR LUG, 300MMZ AL DIST EA 01 W284067057805/0002 0030324171 0002 4",
+    "bbox": {
+     "x0": 473,
+     "y0": 1529,
+     "x1": 2242,
+     "y1": 1560
+    },
+    "confidence": 73
+   },
+   {
+    "text": "[908122008 ny",
+    "bbox": {
+     "x0": 1,
+     "y0": 1553,
+     "x1": 716,
+     "y1": 1596
+    },
+    "confidence": 17
+   },
+   {
+    "text": "CONNECTOR.LUG,300MMZ AL DIST EA 01 W264067057805/0056 0030324171 0056 16",
+    "bbox": {
+     "x0": 476,
+     "y0": 1617,
+     "x1": 2255,
+     "y1": 1650
+    },
+    "confidence": 87
+   },
+   {
+    "text": "J (M12 BLT HL",
+    "bbox": {
+     "x0": 0,
+     "y0": 1658,
+     "x1": 720,
+     "y1": 1691
+    },
+    "confidence": 71
+   },
+   {
+    "text": "TT i",
+    "bbox": {
+     "x0": 464,
+     "y0": 1692,
+     "x1": 2260,
+     "y1": 1744
+    },
+    "confidence": 10
+   },
+   {
+    "text": "/",
+    "bbox": {
+     "x0": 8,
+     "y0": 1728,
+     "x1": 9,
+     "y1": 1739
+    },
+    "confidence": 6
+   },
+   {
+    "text": "Ll",
+    "bbox": {
+     "x0": 5,
+     "y0": 1787,
+     "x1": 8,
+     "y1": 1799
+    },
+    "confidence": 47
+   },
+   {
+    "text": "| RECEIVED BY ID# DATE -——— Page 3of12",
+    "bbox": {
+     "x0": 4,
+     "y0": 1811,
+     "x1": 2340,
+     "y1": 2051
+    },
+    "confidence": 55
+   },
+   {
+    "text": "BEE eee —————————————————————————————————",
+    "bbox": {
+     "x0": 0,
+     "y0": 2069,
+     "x1": 2400,
+     "y1": 2087
+    },
+    "confidence": 17
+   }
+  ]
+ }
+}

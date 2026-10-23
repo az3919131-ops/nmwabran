@@ -1,0 +1,17 @@
+# نشر على Netlify: اسحب مجلد materials-tracker إلى netlify.com/drop
+# أو اربط المستودع واجعل Base directory = materials-tracker و Publish directory = .
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=()"
+    X-Frame-Options = "DENY"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"

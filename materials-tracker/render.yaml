@@ -1,0 +1,18 @@
+# نشر على Render كموقع ثابت (Static Site)
+services:
+  - type: web
+    name: materials-tracker
+    runtime: static
+    rootDir: materials-tracker
+    buildCommand: echo "لا توجد خطوة بناء"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(self), microphone=(), geolocation=()

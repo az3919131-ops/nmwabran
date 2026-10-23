@@ -1,0 +1,51 @@
+/* صورة المستند: تُحفظ مع الـ Gate Pass وتُعرض لاحقًا، وتعديل بيانات المستند، وعزل المسودة بين المشاريع */
+const { launch, fileUrl } = require('./harness.cjs');
+let fail = 0;
+const ok = (c, m) => { if (!c) { fail++; console.log('  ✗', m); } else console.log('  ✓', m); };
+const IMG = process.env.IMG || '/tmp/claude-0/-home-user-nmwabran/bcbad044-f9e9-50f8-94b4-ce0e32325ad5/images';
+(async () => {
+  const { browser, page, errors } = await launch();
+  await page.goto(fileUrl());
+  await page.fill('input[name=name]', 'x'); await page.click('button[type=submit]');
+  await page.click('#new-project'); await page.fill('#np-name', 'مشروع أ');
+  await page.click('dialog .dlg-foot button:has-text("أنشئ المشروع")');
+  await page.waitForSelector('.dropzone');
+  await page.goto(fileUrl('#/import/gatepass'));
+  await page.setInputFiles('#f-img', IMG + '/1.webp');
+  await page.click('#skip');
+  await page.fill('[data-h=no]', '2000111222');
+  await page.click('#add-row');
+  await page.fill('[data-f=code]', '908121144'); await page.fill('[data-f=qty]', '3');
+  await page.click('#save');
+  await page.waitForSelector('.gp-card');
+  await page.click('.gp-card summary');
+  ok((await page.$$('[data-gp-img]')).length === 1, 'زر صورة المستند ظاهر');
+  await page.click('[data-gp-img]');
+  await page.waitForSelector('dialog[open] .doc-img');
+  await page.waitForFunction(() => { const i = document.querySelector('dialog[open] .doc-img'); return i && i.complete && i.naturalWidth > 0; });
+  ok(true, 'الصورة المحفوظة تُعرض من التخزين المحلي');
+  await page.keyboard.press('Escape');
+  await page.click('[data-gp-edit]');
+  await page.fill('[data-e=no]', '2000111999');
+  await page.fill('[data-e=date]', '2026-10-20');
+  await page.click('dialog button:has-text("احفظ التعديل")');
+  await page.waitForFunction(() => document.querySelector('.gp-no') && document.querySelector('.gp-no').textContent.trim() === '2000111999');
+  ok(true, 'تعديل رقم المستند');
+  // مسودة غير محفوظة ثم تبديل المشروع
+  await page.goto(fileUrl('#/import/checklist'));
+  await page.setInputFiles('#f-img', IMG + '/2.webp');
+  await page.click('#skip');
+  await page.click('#add-row');
+  await page.fill('[data-f=code]', '908121008');
+  await page.goto(fileUrl('#/projects'));
+  await page.click('#new-project'); await page.fill('#np-name', 'مشروع ب');
+  await page.click('dialog .dlg-foot button:has-text("أنشئ المشروع")');
+  await page.waitForSelector('.dropzone');
+  await page.goto(fileUrl('#/import/checklist'));
+  await page.waitForSelector('.dropzone');
+  ok((await page.$('#rv-body')) === null, 'المسودة لا تنتقل إلى مشروع آخر');
+  console.log('ERRORS', errors);
+  await browser.close();
+  if (fail) { console.log('FAILED', fail); process.exit(1); }
+  console.log('OK');
+})().catch((e) => { console.error(e); process.exit(1); });
