@@ -318,6 +318,7 @@
   };
 
   /* ---------- الإعدادات ---------- */
+  App.openSettings = openSettings;
   async function openSettings() {
     const AI = MT.AI;
     const key = AI.getKey();
@@ -327,10 +328,13 @@
     await UI.dialog({
       title: 'الإعدادات',
       size: 'md',
-      body: `<section class="set-block"><h3>القراءة الذكية للصور (اختياري)</h3>
-          <p class="dlg-text">القراءة المجانية تعمل على جهازك. إذا أضفت مفتاح Anthropic API ستظهر لك خيار «قراءة ذكية» أدق مع الصور المائلة وخط اليد. المفتاح يُحفظ في هذا المتصفح فقط ويُرسل إلى Anthropic مباشرة.</p>
+      body: `<section class="set-block"><h3>القراءة الدقيقة بالذكاء الاصطناعي</h3>
+          <p class="dlg-text">بمفتاح Anthropic API يقرأ Claude الصور وملفات PDF وPowerPoint والنص الملصوق، ثم يراجع الصفوف المشكوك فيها مرة ثانية. هذا أدق من القراءة المحلية المجانية، خصوصًا مع الصور المائلة وخط اليد. المفتاح يُحفظ في هذا المتصفح فقط، ويُرسل المحتوى إلى Anthropic مباشرة دون أي خادم وسيط. تظهر لك التكلفة التقريبية بعد كل قراءة. <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">احصل على مفتاح من console.anthropic.com</a></p>
           <label class="field"><span class="field-label">مفتاح API</span><input class="input mono" dir="ltr" type="password" id="set-key" placeholder="sk-ant-..." value="${esc(key)}" autocomplete="off"></label>
           <label class="field"><span class="field-label">النموذج</span><select class="input" id="set-model">${modelOpts}</select></label>
+          <label class="check"><input type="checkbox" id="set-on" ${AI.isEnabled() || !key ? 'checked' : ''}><span>استخدم القراءة الدقيقة تلقائيًا عند الاستيراد</span></label>
+          <div class="row-actions"><button class="btn btn-sm" type="button" id="set-test">اختبر المفتاح</button></div>
+          <p class="note note-soft" id="set-test-out" role="status" hidden></p>
         </section>
         ${local ? `<section class="set-block"><h3>نسخة احتياطية (الوضع المحلي)</h3><p class="dlg-text">بيانات الوضع المحلي تُحفظ في هذا المتصفح فقط. نزّل نسخة قبل تغيير الجهاز أو مسح بيانات المتصفح. الصور لا تدخل في النسخة.</p><div class="row-actions"><button class="btn" type="button" id="bk-down">${UI.icon('download', 18)}<span>نزّل نسخة JSON</span></button><label class="btn" for="bk-up">${UI.icon('upload', 18)}<span>استعد من ملف</span></label><input type="file" id="bk-up" accept="application/json,.json" hidden></div></section>` : ''}`,
       actions: [
@@ -343,12 +347,25 @@
           onClick: (d) => {
             AI.setKey(d.querySelector('#set-key').value);
             AI.setModel(d.querySelector('#set-model').value);
+            AI.setEnabled(d.querySelector('#set-on').checked);
             UI.toast('تم حفظ الإعدادات.');
             d.close('0');
           },
         },
       ],
       onOpen: (d) => {
+        const test = d.querySelector('#set-test');
+        test.onclick = async () => {
+          const out = d.querySelector('#set-test-out');
+          out.hidden = false;
+          out.textContent = 'جارٍ الفحص...';
+          try {
+            await AI.test(d.querySelector('#set-key').value.trim(), d.querySelector('#set-model').value);
+            out.textContent = 'المفتاح صالح والنموذج متاح. لا تنسَ الضغط على «احفظ الإعدادات».';
+          } catch (e) {
+            out.textContent = e.message;
+          }
+        };
         const down = d.querySelector('#bk-down');
         if (down)
           down.onclick = () => {

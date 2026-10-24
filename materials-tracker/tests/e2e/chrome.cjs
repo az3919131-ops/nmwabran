@@ -81,19 +81,30 @@ const ok = (c, m) => { if (!c) { fail++; console.log('  ✗', m); } else console
   await page.waitForSelector('#use-ai');
   ok(true, 'خيار «قراءة ذكية» يظهر بعد إضافة المفتاح');
   // محاكاة طلب Claude
+  let nCalls = 0;
+  const sse = (json) => {
+    const ev = (type, data) => `event: ${type}\ndata: ${JSON.stringify({ type, ...data })}\n\n`;
+    return ev('message_start', { message: { id: 'm', type: 'message', role: 'assistant', content: [], usage: { input_tokens: 2000, output_tokens: 1 } } }) + ev('content_block_start', { index: 0, content_block: { type: 'text', text: '' } }) + ev('content_block_delta', { index: 0, delta: { type: 'text_delta', text: JSON.stringify(json) } }) + ev('content_block_stop', { index: 0 }) + ev('message_delta', { delta: { stop_reason: 'end_turn' }, usage: { output_tokens: 500 } }) + ev('message_stop', {});
+  };
   await page.route('https://api.anthropic.com/v1/messages', async (route) => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': 'POST,OPTIONS' } });
+    nCalls++;
     const body = JSON.parse(route.request().postData());
     const h = route.request().headers();
     const img = body.messages[0].content[0];
-    window_calls = { model: body.model, key: h['x-api-key'], browser: h['anthropic-dangerous-direct-browser-access'], mt: img.source.media_type, hasImg: img.source.data.length > 1000 };
-    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ content: [{ type: 'text', text: '```json\n{"page":"3 of 12","rows":[{"material":"908121150","description":"JOINT KIT","uom":"KIT","unloading_point":"W264065705804/0020","reservation":"0030320664","item_no":"0020","quantity":1},{"material":"908121009","description":"TERM KIT","uom":"KIT","unloading_point":"W264056939802/0005","reservation":"0030315989","item_no":"0005","quantity":2}],"subtotals":[{"material":"908121009","subtotal":5}]}\n```' }] }) });
+    if (nCalls === 1) window_calls = { model: body.model, key: h['x-api-key'], browser: h['anthropic-dangerous-direct-browser-access'], mt: img.source.media_type, hasImg: img.source.data.length > 1000 };
+    // الطلب الأول: قراءة فيها مجموع لا يطابق. الثاني (مراجعة): لا تصحيح
+    const json = nCalls === 1
+      ? { page: '3 of 12', rows: [{ material: '908121150', description: 'JOINT KIT', uom: 'KIT', unloading_point: 'W264065705804/0020', reservation: '0030320664', item_no: '0020', quantity: 1 }, { material: '908121009', description: 'TERM KIT', uom: 'KIT', unloading_point: 'W264056939802/0005', reservation: '0030315989', item_no: '0005', quantity: 2 }], subtotals: [{ material: '908121009', subtotal: 5 }] }
+      : { rows: [] };
+    await route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'content-type': 'text/event-stream' }, body: sse(json) });
   });
   await page.check('#use-ai');
   await page.click('#read');
   await page.waitForSelector('.review');
   const aiRows = await page.$$eval('#rv-body tr', (t) => t.map((r) => [r.querySelector('[data-f=code]').value, r.querySelector('[data-f=qty]').value, r.className, r.querySelector('.rv-flags').innerText.replace(/\n/g, ' ')]));
   console.log('  صفوف القراءة الذكية:', JSON.stringify(aiRows));
-  ok(window_calls && window_calls.model === 'claude-sonnet-5-5' && window_calls.key === 'sk-ant-test' && window_calls.browser === 'true' && window_calls.mt === 'image/jpeg' && window_calls.hasImg, 'طلب Claude مضبوط: ' + JSON.stringify(window_calls));
+  ok(window_calls && window_calls.model === 'claude-opus-5-5' && window_calls.key === 'sk-ant-test' && window_calls.browser === 'true' && window_calls.mt === 'image/jpeg' && window_calls.hasImg, 'طلب Claude مضبوط: ' + JSON.stringify(window_calls));
   ok(aiRows.length === 2 && aiRows[1][3].includes('مجموع'), 'مقارنة المجموع الفرعي المطبوع تكشف الفرق (5 مقابل 2)');
   await page.click('#cancel');
   await page.click('dialog button:has-text("ألغِ المسودة")');

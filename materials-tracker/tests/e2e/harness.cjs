@@ -13,6 +13,7 @@ const CHROME = process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome
 const MAP = [
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/xlsx\/0\.18\.5\/xlsx\.full\.min\.js/, 'xlsx/dist/xlsx.full.min.js'],
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/exceljs\/4\.4\.0\/exceljs\.min\.js/, 'exceljs/dist/exceljs.min.js'],
+  [/cdnjs\.cloudflare\.com\/ajax\/libs\/jszip\/3\.10\.1\/jszip\.min\.js/, 'jszip/dist/jszip.min.js'],
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\/3\.11\.174\/pdf\.min\.js/, 'pdfjs-dist/build/pdf.min.js'],
   [/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\/3\.11\.174\/pdf\.worker\.min\.js/, 'pdfjs-dist/build/pdf.worker.min.js'],
   [/cdn\.jsdelivr\.net\/npm\/pdfjs-dist@3\.11\.174\/(.+)$/, (m) => 'pdfjs-dist/' + m[1]],

@@ -23,7 +23,7 @@
       title: 'قائمة UDS',
       sub: 'المسجّل على نظام UDS',
       qtyLabel: 'الكمية المسجلة',
-      tips: ['صوّر شاشة UDS أو ارفع لقطة الشاشة بدل التصوير من الجوال إن أمكن.', 'تأكد أن رقم المادة والكمية ورقم المرجع ظاهرة في كل سطر.', 'يمكنك أيضًا رفع ملف Excel أو PDF مُصدَّر من النظام.'],
+      tips: ['صوّر شاشة UDS أو ارفع لقطة الشاشة بدل التصوير من الجوال إن أمكن.', 'تأكد أن رقم المادة والكمية ورقم المرجع ظاهرة في كل سطر.', 'يمكنك أيضًا رفع ملف Excel أو PDF مُصدَّر من النظام، أو لصق الجدول المنسوخ بـ Ctrl+V.'],
     },
     gatepass: {
       label: 'Gate Pass',
@@ -36,7 +36,7 @@
 
   const FLAG_ICON = { bad: '✕', warn: '▲', ok: '●' };
   const drafts = {};
-  const fresh = () => ({ step: 'source', src: null, file: null, blob: null, rotation: 0, auto: true, useAI: false, busy: null, rows: [], header: {}, warnings: [], matrix: null, mapping: {}, headerIndex: -1, sheetName: '', note: '', mode: 'merge', previewUrl: '', readInfo: '', pdf: null });
+  const fresh = () => ({ step: 'source', src: null, file: null, blob: null, rotation: 0, auto: true, useAI: false, busy: null, rows: [], header: {}, warnings: [], matrix: null, mapping: {}, headerIndex: -1, sheetName: '', note: '', mode: 'merge', previewUrl: '', readInfo: '', doc: null, abort: null });
   const D = (k) => (drafts[k] = drafts[k] || fresh());
   // مسودة مشروع لا تنتقل إلى مشروع آخر
   Store.on('project', () => Object.keys(drafts).forEach((k) => delete drafts[k]));
@@ -85,7 +85,7 @@
   /* ====================== المعالج ====================== */
   function stepsBar(active) {
     const src = D(kind).src;
-    const s = ['١. اختر المصدر', src === 'pdf' || src === 'excel' ? '٢. جهّز الملف' : '٢. جهّز الصورة', '٣. راجع واحفظ'];
+    const s = ['١. اختر المصدر', src === 'excel' || src === 'text' ? (src === 'text' ? '٢. جهّز النص' : '٢. جهّز الملف') : src && src !== 'image' ? '٢. جهّز الملف' : '٢. جهّز الصورة', '٣. راجع واحفظ'];
     return `<ol class="wz-steps" aria-label="خطوات الاستيراد">${s.map((t, i) => `<li class="${i + 1 === active ? 'is-current' : i + 1 < active ? 'is-done' : ''}" ${i + 1 === active ? 'aria-current="step"' : ''}>${t}</li>`).join('')}</ol>`;
   }
 
@@ -97,6 +97,17 @@
     else drawReview(host, d);
   }
 
+  /* ====== مصادر الاستيراد: كاميرا، صورة أو PowerPoint، Excel أو PDF، لصق ====== */
+  const DOC_TYPES = { pdf: 'ملف PDF', pptx: 'عرض PowerPoint', docx: 'مستند Word', text: 'نص ملصوق' };
+
+  /** حالة القراءة الذكية: سطر أعلى الإرشادات في شاشة المصدر */
+  function aiStrip() {
+    const AI = MT.AI;
+    if (AI.hasKey() && AI.isEnabled()) return `<div class="ai-strip is-on"><span class="ai-dot" aria-hidden="true"></span><p><strong>القراءة الدقيقة بالذكاء الاصطناعي مفعّلة</strong> (${esc(AI.label(AI.getModel()))}). تعمل مع الصور وPDF وPowerPoint وWord والنص الملصوق، ثم تُراجَع الصفوف المشكوك فيها مرة ثانية.</p><button type="button" class="btn btn-sm" data-ai-setup>الإعدادات</button></div>`;
+    if (AI.hasKey()) return `<div class="ai-strip"><span class="ai-dot" aria-hidden="true"></span><p><strong>القراءة الدقيقة موقوفة.</strong> تُقرأ الصور والملفات محليًا بدقة أقل.</p><button type="button" class="btn btn-sm" data-ai-on>فعّلها</button></div>`;
+    return `<div class="ai-strip"><span class="ai-dot" aria-hidden="true"></span><p><strong>القراءة هنا محلية ومجانية.</strong> للحصول على قراءة أدق للصور وخط اليد أضف مفتاح Anthropic API.</p><button type="button" class="btn btn-sm" data-ai-setup>أضف المفتاح</button></div>`;
+  }
+
   function drawSource(host, d) {
     const k = KINDS[kind];
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
@@ -105,18 +116,33 @@
       <div class="dropzone" id="drop">
         <div class="source-btns">
           <button type="button" class="src-btn src-btn-cam" data-pick="cam">${UI.icon('camera', 34)}<strong>صوّر بالكاميرا</strong><small>على الجوال تفتح الكاميرا مباشرة</small></button>
-          <button type="button" class="src-btn" data-pick="img">${UI.icon('image', 34)}<strong>ارفع صورة</strong><small>JPG أو PNG أو لقطة شاشة</small></button>
-          <button type="button" class="src-btn" data-pick="xls">${UI.icon('sheet', 34)}<strong>ارفع Excel أو PDF</strong><small>ملف مُصدَّر من النظام يُقرأ مباشرة</small></button>
+          <button type="button" class="src-btn" data-pick="img">${UI.icon('image', 34)}<strong>ارفع صورة أو PPT</strong><small>JPG أو PNG أو لقطة شاشة أو عرض PowerPoint</small></button>
+          <button type="button" class="src-btn" data-pick="xls">${UI.icon('sheet', 34)}<strong>ارفع Excel أو PDF</strong><small>ملف مُصدَّر من النظام</small></button>
+          <button type="button" class="src-btn" data-pick="paste">${UI.icon('paste', 34)}<strong>الصق</strong><small>نص أو جدول منسوخ أو لقطة شاشة أو ملف (Ctrl+V)</small></button>
         </div>
         <input type="file" id="f-cam" accept="image/*" capture="environment" hidden>
-        <input type="file" id="f-img" accept="image/*" hidden>
-        <input type="file" id="f-xls" accept=".xlsx,.xls,.csv,.pdf,text/csv,application/pdf" hidden>
-        <p class="dz-hint">أو اسحب الملف وأفلته هنا.</p>
+        <input type="file" id="f-img" accept="image/*,.pptx,.ppt,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-powerpoint" hidden>
+        <input type="file" id="f-xls" accept=".xlsx,.xls,.csv,.pdf,.docx,.txt,text/csv,application/pdf" hidden>
+        <p class="dz-hint">أو اسحب أي ملف وأفلته هنا، أو اضغط Ctrl+V في أي مكان من الصفحة للصق.</p>
       </div>
+      ${aiStrip()}
       <ul class="tips">${k.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
     </section>`;
     const pick = (id) => host.querySelector('#' + id).click();
-    UI.on(host, 'click', '[data-pick]', (e, el) => pick({ cam: 'f-cam', img: 'f-img', xls: 'f-xls' }[el.dataset.pick]));
+    // معالج واحد يُستبدل عند كل إعادة رسم، حتى لا تتراكم المعالجات على الحاوية نفسها
+    host.onclick = async (e) => {
+      const el = e.target.closest('[data-pick], [data-ai-setup], [data-ai-on]');
+      if (!el || !host.contains(el)) return;
+      if (el.dataset.pick === 'paste') pasteFromClipboard();
+      else if (el.dataset.pick) pick({ cam: 'f-cam', img: 'f-img', xls: 'f-xls' }[el.dataset.pick]);
+      else if (el.hasAttribute('data-ai-setup')) {
+        await App.openSettings();
+        drawWizard();
+      } else {
+        MT.AI.setEnabled(true);
+        drawWizard();
+      }
+    };
     ['f-cam', 'f-img', 'f-xls'].forEach((id) =>
       host.querySelector('#' + id).addEventListener('change', (e) => {
         const f = e.target.files[0];
@@ -128,42 +154,215 @@
     ['dragenter', 'dragover'].forEach((ev) => dz.addEventListener(ev, (e) => (e.preventDefault(), dz.classList.add('is-over'))));
     ['dragleave', 'drop'].forEach((ev) => dz.addEventListener(ev, (e) => (e.preventDefault(), dz.classList.remove('is-over'))));
     dz.addEventListener('drop', (e) => {
-      const f = e.dataTransfer.files[0];
-      if (f) handleFile(f);
+      const files = [...(e.dataTransfer.files || [])];
+      const text = e.dataTransfer.getData('text/plain');
+      if (files.length || text) handlePasted({ files, text });
     });
   }
 
-  const isPdf = (f) => /\.pdf$/i.test(f.name || '') || f.type === 'application/pdf';
+  /* ----- اللصق ----- */
+  const typeOf = (f) => {
+    const n = f.name || '';
+    if (/\.pdf$/i.test(n) || f.type === 'application/pdf') return 'pdf';
+    if (/\.(pptx|ppt)$/i.test(n) || /presentationml|ms-powerpoint/.test(f.type)) return 'pptx';
+    if (/\.(docx|doc)$/i.test(n) || /wordprocessingml|msword/.test(f.type)) return 'docx';
+    if (/\.(xlsx|xls|csv)$/i.test(n) || /spreadsheet|excel|csv/.test(f.type)) return 'excel';
+    if (/^image\//.test(f.type) || /\.(jpe?g|png|webp|heic|gif|bmp)$/i.test(n)) return 'image';
+    if (/\.txt$/i.test(n) || f.type === 'text/plain') return 'txt';
+    return '';
+  };
 
-  function releasePdf(d) {
-    if (d.pdf && d.pdf.doc && d.pdf.doc.destroy) d.pdf.doc.destroy().catch(() => {});
-    d.pdf = null;
+  /** ما في الحافظة أو المُسقَط: ملف غير صورة أولًا، ثم النص، ثم الصورة */
+  async function handlePasted({ files = [], text = '' }) {
+    const other = files.find((f) => typeOf(f) && typeOf(f) !== 'image');
+    if (other) return handleFile(other);
+    if (text && text.trim().length >= 3) return handleText(text);
+    const img = files.find((f) => typeOf(f) === 'image');
+    if (img) return handleFile(img);
+    if (files.length) return handleFile(files[0]);
+    UI.toast('لم أجد شيئًا للصقه. انسخ نصًا أو جدولًا أو صورة أو ملفًا ثم حاول مرة أخرى.', { type: 'error', ms: 6000 });
+  }
+
+  async function pasteFromClipboard() {
+    const cb = navigator.clipboard;
+    if (cb && cb.read) {
+      try {
+        const items = await cb.read();
+        let text = '';
+        const files = [];
+        for (const it of items) {
+          for (const type of it.types) {
+            if (type === 'text/plain') text = await (await it.getType(type)).text();
+            else if (/^image\//.test(type)) files.push(new File([await it.getType(type)], 'clipboard.' + type.split('/')[1].replace('jpeg', 'jpg'), { type }));
+          }
+        }
+        if (text.trim() || files.length) return handlePasted({ files, text });
+        return UI.toast('الحافظة فارغة. انسخ نصًا أو جدولًا أو صورة ثم اضغط «الصق».', { type: 'error', ms: 6000 });
+      } catch (e) {
+        /* رُفض الإذن أو غير مدعوم: نفتح مربع اللصق */
+      }
+    }
+    openPasteDialog();
+  }
+
+  async function openPasteDialog() {
+    let go = null;
+    await UI.dialog({
+      title: 'الصق ما نسخته',
+      size: 'md',
+      body: `<p class="dlg-text">اضغط داخل المربع ثم Ctrl+V (أو اضغط مطولًا واختر «لصق» على الجوال). يمكنك لصق جدول منسوخ من Excel، أو نص من أي برنامج، أو لقطة شاشة، أو ملف منسوخ من الجهاز.</p>
+        <label class="field"><span class="field-label">المحتوى الملصوق</span><textarea class="input paste-box" id="paste-box" rows="8" dir="auto" placeholder="الصق هنا"></textarea></label>`,
+      actions: [
+        { label: 'إلغاء', value: false },
+        { label: 'اقرأ النص', kind: 'primary', value: true, noClose: true, onClick: (dlg) => (go = dlg.querySelector('#paste-box').value) != null && dlg.close('1') },
+      ],
+      onOpen: (dlg) => {
+        const box = dlg.querySelector('#paste-box');
+        box.focus();
+        box.addEventListener('paste', (e) => {
+          const cd = e.clipboardData;
+          if (!cd) return;
+          const files = [...cd.files];
+          const text = cd.getData('text/plain');
+          if (files.length && !text.trim()) {
+            e.preventDefault();
+            go = { files };
+            dlg.close('1');
+          } else if (files.some((f) => typeOf(f) && typeOf(f) !== 'image')) {
+            e.preventDefault();
+            go = { files };
+            dlg.close('1');
+          } else if (!box.value.trim() && text.trim()) {
+            e.preventDefault();
+            go = text;
+            dlg.close('1');
+          }
+        });
+      },
+    });
+    if (go == null) return;
+    if (typeof go === 'string') return go.trim() ? handleText(go) : UI.toast('اكتب أو الصق شيئًا أولًا.', { type: 'error' });
+    return handlePasted(go);
+  }
+
+  /** نص ملصوق: جدول بعلامات Tab يذهب إلى ربط الأعمدة، وغيره يُقرأ كأسطر */
+  function handleText(raw) {
+    const d = D(kind);
+    const text = String(raw).replace(/\r/g, '').replace(/ /g, ' ');
+    const lines = text.split('\n').filter((l) => l.trim());
+    if (!lines.length) return UI.toast('النص فارغ.', { type: 'error' });
+    if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
+    releaseDoc(d);
+    if (lines.length >= 2 && lines.filter((l) => l.includes('\t')).length >= Math.ceil(lines.length / 2)) {
+      const matrix = lines.map((l) => l.split('\t').map((c) => c.trim()));
+      const tb = P.detectTable(matrix);
+      let headerIndex = tb.headerIndex;
+      let mapping = tb.mapping;
+      if (headerIndex < 0) {
+        const cols = Math.max(...matrix.map((r) => r.length));
+        matrix.unshift(Array.from({ length: cols }, (_, i) => 'عمود ' + String.fromCharCode(65 + (i % 26))));
+        headerIndex = 0;
+        mapping = {};
+      }
+      Object.assign(d, fresh(), { step: 'prepare', src: 'excel', file: { name: 'الحافظة', size: text.length }, matrix, sheetName: 'الحافظة', headerIndex, mapping });
+    } else {
+      Object.assign(d, fresh(), { step: 'prepare', src: 'text', doc: docFromText(text, lines), useAI: MT.AI.isEnabled() });
+    }
+    drawWizard();
+  }
+
+  /* ----- المستندات متعددة الصفحات (PDF وPowerPoint وWord والنص) ----- */
+  const toLines = (arr) => arr.map((t, i) => ({ text: t, bbox: { x0: 0, y0: i * 10, x1: 0, y1: i * 10 + 9 }, confidence: 100 }));
+
+  function docFromText(text, lines) {
+    return {
+      type: 'text',
+      file: null,
+      summary: `${U.fmt(lines.length, 0)} سطرًا`,
+      note: 'يُقرأ النص مباشرة. الأسطر التي فيها كود المادة والكمية تتحول إلى صفوف تراجعها قبل الحفظ.',
+      textual: true,
+      lines: toLines(lines),
+      preview: null,
+      previewText: lines.slice(0, 40).join('\n') + (lines.length > 40 ? '\n...' : ''),
+      aiInputs: () => [{ type: 'text', text, label: 'Text pasted by the user (columns may be separated by tabs or spaces)' }],
+      ocrBlobs: async () => [],
+      firstImage: async () => null,
+      release() {},
+    };
+  }
+
+  function docFromPdf(file, info) {
+    return {
+      type: 'pdf',
+      file,
+      summary: `${info.pageCount} ${info.pageCount === 1 ? 'صفحة' : 'صفحات'}${info.pageCount > info.usedPages ? ` (تُقرأ أول ${info.usedPages} فقط)` : ''}`,
+      note: info.textual ? 'الملف يحتوي نصًا مضمّنًا، فيُقرأ مباشرة دون تعرّف ضوئي.' : 'الملف صورة ممسوحة بلا نص مضمّن، فيُقرأ بالتعرّف الضوئي وقد تحتاج مراجعة بعض الأرقام.',
+      textual: info.textual,
+      lines: info.lines,
+      preview: info.preview,
+      aiInputs: () => [{ type: 'pdf', blob: file }],
+      ocrBlobs: (onStep) => MT.PDF.renderAll(info.doc, info.usedPages, onStep),
+      firstImage: (w) => MT.PDF.renderPage(info.doc, 1, w),
+      release() {
+        if (info.doc && info.doc.destroy) info.doc.destroy().catch(() => {});
+      },
+    };
+  }
+
+  function docFromOffice(type, file, info) {
+    const what = type === 'pptx' ? 'عرض' : 'مستند';
+    const unit = type === 'pptx' ? (info.slides === 1 ? 'شريحة' : 'شرائح') : 'مستند';
+    return {
+      type,
+      file,
+      summary: `${type === 'pptx' ? info.slides + ' ' + unit + '، ' : ''}${info.images.length} ${info.images.length === 1 ? 'صورة' : 'صور'}، ${U.fmt(info.lines.length, 0)} سطر نص${info.skipped ? ` (تخطّيت ${info.skipped} صورة بصيغة لا يقرؤها المتصفح)` : ''}`,
+      note: info.textual ? `وجدت نصًا في ال${what}، فيُقرأ مباشرة وتُقرأ صوره عند الحاجة.` : info.images.length ? `ال${what} يحتوي صورًا (لقطات شاشة)، فتُقرأ بالتعرّف الضوئي أو بالذكاء الاصطناعي.` : `لم أجد في ال${what} نصًا ولا صورًا يمكن قراءتها.`,
+      textual: info.textual,
+      lines: info.lines,
+      preview: info.preview,
+      aiInputs: () => [...info.images.map((i) => ({ type: 'image', blob: i.blob })), ...(info.lines.length ? [{ type: 'text', text: info.lines.map((l) => l.text).join('\n'), label: 'Text found in the document' }] : [])],
+      ocrBlobs: async () => info.images.map((i) => i.blob),
+      firstImage: async () => (info.images[0] ? info.images[0].blob : null),
+      release() {},
+    };
+  }
+
+  function releaseDoc(d) {
+    if (d.doc && d.doc.release) d.doc.release();
+    d.doc = null;
   }
 
   async function handleFile(file) {
     const d = D(kind);
     const hint = rootEl && rootEl.querySelector('.dz-hint');
+    const keep = hint ? hint.textContent : '';
+    const t = typeOf(file);
     try {
-      if (isPdf(file)) {
+      if (!t) throw new Error('نوع الملف غير مدعوم. ارفع ملف Excel أو PDF أو PowerPoint أو Word أو صورة أو نصًا.');
+      if (t === 'pdf' || t === 'pptx' || t === 'docx') {
         if (hint) hint.textContent = 'جارٍ فتح الملف...';
-        const info = await MT.PDF.inspect(file);
+        const info = t === 'pdf' ? await MT.PDF.inspect(file) : t === 'pptx' ? await MT.Office.inspectPptx(file) : await MT.Office.inspectDocx(file);
+        if (t !== 'pdf' && !info.lines.length && !info.images.length) throw new Error('لم أجد في الملف نصًا ولا صورًا يمكن قراءتها.');
         if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
-        releasePdf(d);
-        Object.assign(d, fresh(), { step: 'prepare', src: 'pdf', file, pdf: info, previewUrl: URL.createObjectURL(info.preview) });
-      } else if (/\.(xlsx|xls|csv)$/i.test(file.name) || /spreadsheet|excel|csv/.test(file.type)) {
+        releaseDoc(d);
+        const doc = t === 'pdf' ? docFromPdf(file, info) : docFromOffice(t, file, info);
+        Object.assign(d, fresh(), { step: 'prepare', src: t, file, doc, useAI: MT.AI.isEnabled(), previewUrl: doc.preview ? URL.createObjectURL(doc.preview) : '' });
+      } else if (t === 'excel') {
         const { matrix, sheetName } = await MT.Excel.readMatrix(file);
         if (!matrix.length) throw new Error('الملف فارغ.');
-        const t = P.detectTable(matrix);
-        Object.assign(d, fresh(), { step: 'prepare', src: 'excel', file, matrix, sheetName, headerIndex: Math.max(t.headerIndex, 0), mapping: t.mapping });
-      } else if (/^image\//.test(file.type) || /\.(jpe?g|png|webp|heic)$/i.test(file.name)) {
+        const tb = P.detectTable(matrix);
+        Object.assign(d, fresh(), { step: 'prepare', src: 'excel', file, matrix, sheetName, headerIndex: Math.max(tb.headerIndex, 0), mapping: tb.mapping });
+      } else if (t === 'txt') {
+        return handleText(await file.text());
+      } else {
         if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
-        Object.assign(d, fresh(), { step: 'prepare', src: 'image', file, blob: file });
-        d.useAI = false;
+        releaseDoc(d);
+        Object.assign(d, fresh(), { step: 'prepare', src: 'image', file, blob: file, useAI: MT.AI.isEnabled() });
         await refreshPreview(d);
-      } else throw new Error('نوع الملف غير مدعوم. ارفع ملف Excel أو PDF أو صورة.');
+      }
       drawWizard();
     } catch (e) {
-      if (hint) hint.textContent = 'أو اسحب الملف وأفلته هنا.';
+      if (hint) hint.textContent = keep;
       UI.toast(e.message || String(e), { type: 'error', ms: 7000 });
     }
   }
@@ -174,88 +373,76 @@
     d.previewUrl = URL.createObjectURL(blob);
   }
 
-  /* ----- الخطوة 2 ----- */
+  /* ----- الخطوة 2: تجهيز الصورة أو المستند ----- */
+  const isDoc = (d) => !!d.doc;
+
+  function aiBlock(d) {
+    const AI = MT.AI;
+    if (AI.hasKey()) {
+      return `<label class="check"><input type="checkbox" id="use-ai" ${d.useAI ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>قراءة دقيقة بالذكاء الاصطناعي (${esc(AI.label(AI.getModel()))})</span></label>
+        <p class="note note-soft">${d.useAI ? 'يُرسل المحتوى إلى Anthropic ليُقرأ، ثم تُراجَع الصفوف المشكوك فيها مرة ثانية تلقائيًا. إن تعذّرت القراءة الذكية تُقرأ محليًا.' : 'القراءة المحلية مجانية لكنها أقل دقة مع الصور المائلة وخط اليد.'}</p>`;
+    }
+    return `<div class="note"><strong>القراءة الدقيقة بالذكاء الاصطناعي غير مفعّلة.</strong> أضف مفتاح Anthropic API لقراءة أدق للصور المائلة وخط اليد والجداول الطويلة.<div class="row-actions"><button type="button" class="btn btn-sm" id="ai-setup">أضف المفتاح</button></div></div>`;
+  }
+
   function drawPrepare(host, d) {
     if (d.src === 'excel') return drawMapping(host, d);
-    if (d.src === 'pdf') return drawPdfPrepare(host, d);
-    const aiOk = MT.AI.hasKey();
+    const doc = d.doc;
+    const img = !isDoc(d);
+    const figure = img
+      ? `<figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة صورة ${KINDS[kind].title}"></figure>`
+      : d.previewUrl
+        ? `<figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة الصفحة الأولى من ${DOC_TYPES[doc.type]} ${KINDS[kind].title}"></figure>`
+        : doc.previewText
+          ? `<figure class="prep-img prep-text"><pre dir="auto" tabindex="0" aria-label="معاينة النص">${esc(doc.previewText)}</pre></figure>`
+          : '';
+    const meta = img
+      ? `<p class="muted mono" dir="ltr">${esc(d.file.name || 'camera.jpg')} (${(d.file.size / 1024).toFixed(0)} KB)</p>`
+      : `<p class="muted"><strong>${esc(DOC_TYPES[doc.type])}</strong>${doc.file ? ` <span class="mono" dir="ltr">${esc(doc.file.name)} (${(doc.file.size / 1024).toFixed(0)} KB)</span>` : ''}</p><p><strong>${esc(doc.summary)}</strong></p><p class="note">${esc(doc.note)}</p>`;
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
       ${stepsBar(2)}
-      <h2 id="wz-h" class="h3">جهّز الصورة</h2>
-      <div class="prep">
-        <figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة صورة ${KINDS[kind].title}"></figure>
+      <h2 id="wz-h" class="h3">${img ? 'جهّز الصورة' : doc.type === 'text' ? 'جهّز النص' : 'جهّز الملف'}</h2>
+      <div class="prep ${figure ? '' : 'prep-solo'}">
+        ${figure}
         <div class="prep-side">
-          <p class="muted mono" dir="ltr">${esc(d.file.name || 'camera.jpg')} (${(d.file.size / 1024).toFixed(0)} KB)</p>
-          <div class="row-actions">
+          ${meta}
+          ${img ? `<div class="row-actions">
             <button type="button" class="btn" id="rot-l" ${d.busy ? 'disabled' : ''}>${UI.icon('rotl', 20)}<span>دوّر يسارًا</span></button>
             <button type="button" class="btn" id="rot-r" ${d.busy ? 'disabled' : ''}>${UI.icon('rotr', 20)}<span>دوّر يمينًا</span></button>
           </div>
-          <label class="check"><input type="checkbox" id="auto" ${d.auto ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>اكتشف اتجاه الصورة تلقائيًا</span></label>
-          ${aiOk ? `<label class="check"><input type="checkbox" id="use-ai" ${d.useAI ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>قراءة ذكية بـ Claude (أدق مع خط اليد والميلان)</span></label>` : `<p class="note">للحصول على قراءة أدق مع الصور المائلة وخط اليد، أضف مفتاح API من <strong>الإعدادات</strong>.</p>`}
+          <label class="check"><input type="checkbox" id="auto" ${d.auto ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>اكتشف اتجاه الصورة تلقائيًا</span></label>` : ''}
+          ${aiBlock(d)}
           <div class="row-actions">
-            <button type="button" class="btn btn-primary" id="read" ${d.busy ? 'disabled' : ''}>${UI.icon('spark', 20)}<span>اقرأ الصورة</span></button>
+            <button type="button" class="btn btn-primary" id="read" ${d.busy ? 'disabled' : ''}>${UI.icon('spark', 20)}<span>${img ? 'اقرأ الصورة' : doc.type === 'text' ? 'اقرأ النص' : 'اقرأ الملف'}</span></button>
             <button type="button" class="btn" id="skip" ${d.busy ? 'disabled' : ''}>${UI.icon('edit', 20)}<span>أدخل البيانات يدويًا</span></button>
-            <button type="button" class="btn btn-ghost" id="back" ${d.busy ? 'disabled' : ''}>اختر ملفًا آخر</button>
+            <button type="button" class="btn btn-ghost" id="back" ${d.busy ? 'disabled' : ''}>${img ? 'اختر ملفًا آخر' : 'اختر مصدرًا آخر'}</button>
           </div>
           <div class="progress-box" id="prog" ${d.busy ? '' : 'hidden'} role="status" aria-live="polite"><div class="progress progress-lg"><span id="prog-bar" style="width:${d.busy ? d.busy.pct : 0}%"></span></div><p id="prog-text" class="muted">${d.busy ? esc(d.busy.text) : ''}</p><div class="row-actions"><button type="button" class="btn btn-sm" id="cancel-read">ألغِ القراءة</button></div></div>
         </div>
       </div>
     </section>`;
-    host.querySelector('#rot-l').onclick = () => rotate(d, -90);
-    host.querySelector('#rot-r').onclick = () => rotate(d, 90);
-    host.querySelector('#auto').onchange = (e) => (d.auto = e.target.checked);
+    if (img) {
+      host.querySelector('#rot-l').onclick = () => rotate(d, -90);
+      host.querySelector('#rot-r').onclick = () => rotate(d, 90);
+      host.querySelector('#auto').onchange = (e) => (d.auto = e.target.checked);
+    }
     const ai = host.querySelector('#use-ai');
-    if (ai) ai.onchange = (e) => (d.useAI = e.target.checked);
-    host.querySelector('#back').onclick = () => {
-      Object.assign(d, fresh());
-      drawWizard();
-    };
-    host.querySelector('#skip').onclick = () => {
-      d.rows = [];
-      d.header = kind === 'gatepass' ? { date: U.today() } : {};
-      d.step = 'review';
-      d.readInfo = 'أُدخلت البيانات يدويًا.';
-      drawWizard();
-    };
-    host.querySelector('#read').onclick = () => runRead(host, d);
-    host.querySelector('#cancel-read').onclick = () => {
-      d.run = (d.run || 0) + 1;
-      d.busy = null;
-      MT.OCR.dispose();
-      drawWizard();
-      UI.toast('أُلغيت القراءة.', { type: 'info', ms: 2500 });
-    };
-  }
-
-  /* ----- الخطوة 2 لملف PDF ----- */
-  function drawPdfPrepare(host, d) {
-    const info = d.pdf;
-    const aiOk = MT.AI.hasKey() && !info.textual;
-    const extra = info.pageCount > info.usedPages ? ` (تُقرأ أول ${info.usedPages} صفحة فقط)` : '';
-    host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
-      ${stepsBar(2)}
-      <h2 id="wz-h" class="h3">جهّز الملف</h2>
-      <div class="prep">
-        <figure class="prep-img"><img id="prev" decoding="async" src="${d.previewUrl}" alt="معاينة الصفحة الأولى من ملف ${KINDS[kind].title}"></figure>
-        <div class="prep-side">
-          <p class="muted mono" dir="ltr">${esc(d.file.name || 'file.pdf')} (${(d.file.size / 1024).toFixed(0)} KB)</p>
-          <p><strong>${info.pageCount} ${info.pageCount === 1 ? 'صفحة' : 'صفحات'}</strong>${extra}</p>
-          <p class="note">${info.textual ? 'الملف يحتوي نصًا مضمّنًا، فيُقرأ مباشرة وبدقة عالية دون تعرّف ضوئي. صفحات الملف تُجمع في قائمة واحدة.' : 'الملف صورة ممسوحة بلا نص مضمّن، فيُقرأ بالتعرّف الضوئي كما تُقرأ الصور وقد تحتاج مراجعة بعض الأرقام. صفحات الملف تُجمع في قائمة واحدة.'}</p>
-          ${aiOk ? `<label class="check"><input type="checkbox" id="use-ai" ${d.useAI ? 'checked' : ''} ${d.busy ? 'disabled' : ''}><span>قراءة ذكية بـ Claude (أدق مع الصور الممسوحة)</span></label>` : ''}
-          <div class="row-actions">
-            <button type="button" class="btn btn-primary" id="read" ${d.busy ? 'disabled' : ''}>${UI.icon('spark', 20)}<span>اقرأ الملف</span></button>
-            <button type="button" class="btn" id="skip" ${d.busy ? 'disabled' : ''}>${UI.icon('edit', 20)}<span>أدخل البيانات يدويًا</span></button>
-            <button type="button" class="btn btn-ghost" id="back" ${d.busy ? 'disabled' : ''}>اختر ملفًا آخر</button>
-          </div>
-          <div class="progress-box" id="prog" ${d.busy ? '' : 'hidden'} role="status" aria-live="polite"><div class="progress progress-lg"><span id="prog-bar" style="width:${d.busy ? d.busy.pct : 0}%"></span></div><p id="prog-text" class="muted">${d.busy ? esc(d.busy.text) : ''}</p><div class="row-actions"><button type="button" class="btn btn-sm" id="cancel-read">ألغِ القراءة</button></div></div>
-        </div>
-      </div>
-    </section>`;
-    const ai = host.querySelector('#use-ai');
-    if (ai) ai.onchange = (e) => (d.useAI = e.target.checked);
+    if (ai)
+      ai.onchange = (e) => {
+        d.useAI = e.target.checked;
+        MT.AI.setEnabled(d.useAI);
+        drawWizard();
+      };
+    const setup = host.querySelector('#ai-setup');
+    if (setup)
+      setup.onclick = async () => {
+        await App.openSettings();
+        d.useAI = MT.AI.isEnabled();
+        drawWizard();
+      };
     host.querySelector('#back').onclick = () => {
       if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
-      releasePdf(d);
+      releaseDoc(d);
       Object.assign(d, fresh());
       drawWizard();
     };
@@ -269,6 +456,7 @@
     host.querySelector('#read').onclick = () => runRead(host, d);
     host.querySelector('#cancel-read').onclick = () => {
       d.run = (d.run || 0) + 1;
+      if (d.abort) d.abort.abort();
       d.busy = null;
       MT.OCR.dispose();
       drawWizard();
@@ -276,34 +464,51 @@
     };
   }
 
-  /** قراءة ملف PDF: النص المضمّن أولًا، ثم التعرّف الضوئي على صفحات مرسومة إن لزم */
-  async function readPdf(d, setBusy) {
-    const info = d.pdf;
+  const parseLocal = (L, ctx) => (kind === 'checklist' ? P.parseChecklist(L, ctx) : kind === 'gatepass' ? P.parseGatePass(L, ctx) : P.parseUds(L, ctx));
+
+  /** القراءة بالذكاء الاصطناعي أولًا إن فُعّلت، وعند تعذرها قراءة محلية مع تنبيه واضح */
+  async function readSource(d, setBusy) {
     const ctx = ctxFor();
-    if (info.textual) {
-      setBusy(40, 'قراءة النص من الملف...');
-      const L = { lines: info.lines };
-      const parsed = kind === 'checklist' ? P.parseChecklist(L, ctx) : kind === 'gatepass' ? P.parseGatePass(L, ctx) : P.parseUds(L, ctx);
-      if (parsed.rows.length) return { parsed, direct: true };
-      setBusy(45, 'لا صفوف في النص المضمّن. أجرّب التعرّف الضوئي على الصفحات...');
-    }
-    setBusy(8, 'تجهيز صفحات الملف...');
-    const pages = await MT.PDF.renderAll(info.doc, info.usedPages, (n, N) => setBusy(8 + Math.round((n / N) * 10), `تجهيز الصفحة ${n} من ${N}...`));
-    if (d.useAI && MT.AI.hasKey() && !info.textual) {
-      const rows = [];
-      let header = {};
-      const warnings = [];
-      for (let i = 0; i < pages.length; i++) {
-        setBusy(20 + Math.round((i / pages.length) * 70), `تحليل الصفحة ${i + 1} من ${pages.length} بالذكاء الاصطناعي...`);
-        const part = await MT.AI.read(kind, pages[i], { rotation: 0, ctx });
-        rows.push(...part.rows);
-        header = { ...(part.header || {}), ...header };
-        warnings.push(...(part.warnings || []));
+    const warn = [];
+    d.abort = new AbortController();
+    if (d.useAI && MT.AI.hasKey()) {
+      try {
+        const inputs = isDoc(d) ? d.doc.aiInputs() : [{ type: 'image', blob: d.blob, rotate: d.auto ? 0 : d.rotation }];
+        const out = await MT.AI.read(kind, inputs, { ctx, signal: d.abort.signal, onStatus: (s) => setBusy(s.pct, s.text) });
+        return { parsed: out.parsed, ai: out };
+      } catch (e) {
+        if (e.code === 'aborted') throw e;
+        warn.push(`تعذّرت القراءة الدقيقة بالذكاء الاصطناعي: ${e.message} قُرئ المحتوى محليًا، فراجع الأرقام بعناية أكبر.`);
+        setBusy(10, 'تحويل إلى القراءة المحلية...');
       }
-      return { parsed: { rows, header, warnings }, ai: true };
     }
-    const out = await MT.OCR.readMany(kind, pages, { rotation: 'auto', upright: true, onStatus: (s) => setBusy(Math.max(18, Math.round(18 + s.pct * 0.82)), s.text), ctx });
-    return { parsed: out.parsed };
+    let out;
+    if (isDoc(d)) {
+      const doc = d.doc;
+      if (doc.textual) {
+        setBusy(40, 'قراءة النص مباشرة...');
+        const parsed = parseLocal({ lines: doc.lines }, ctx);
+        if (parsed.rows.length) out = { parsed, direct: true };
+        else setBusy(45, 'لا صفوف في النص. أجرّب التعرّف الضوئي على الصور...');
+      }
+      if (!out) {
+        setBusy(8, 'تجهيز الصور...');
+        const blobs = await doc.ocrBlobs((n, N) => setBusy(8 + Math.round((n / N) * 10), `تجهيز الصفحة ${n} من ${N}...`));
+        if (blobs.length) {
+          const r = await MT.OCR.readMany(kind, blobs, { rotation: 'auto', upright: doc.type === 'pdf', onStatus: (s) => setBusy(Math.max(18, Math.round(18 + s.pct * 0.82)), s.text), ctx });
+          out = { parsed: r.parsed };
+        } else out = { parsed: { rows: [], header: {}, warnings: [] } };
+      }
+    } else {
+      const r = await MT.OCR.read(kind, d.blob, { rotation: d.auto ? 'auto' : d.rotation, onStatus: (s) => setBusy(s.pct, s.text), ctx });
+      if (d.auto && r.rotation !== d.rotation) {
+        d.rotation = r.rotation;
+        await refreshPreview(d);
+      }
+      out = { parsed: r.parsed };
+    }
+    out.parsed.warnings = [...warn, ...(out.parsed.warnings || [])];
+    return out;
   }
 
   async function rotate(d, delta) {
@@ -326,34 +531,25 @@
     };
     drawWizard();
     try {
-      let out;
-      if (d.src === 'pdf') {
-        out = await readPdf(d, setBusy);
-      } else if (d.useAI && MT.AI.hasKey()) {
-        setBusy(30, 'تحليل الصورة بالذكاء الاصطناعي...');
-        const parsed = await MT.AI.read(kind, d.blob, { rotation: d.auto ? 0 : d.rotation, ctx: ctxFor() });
-        out = { parsed, rotation: d.rotation, ai: true };
-      } else {
-        out = await MT.OCR.read(kind, d.blob, { rotation: d.auto ? 'auto' : d.rotation, onStatus: (s) => setBusy(s.pct, s.text), ctx: ctxFor() });
-        if (d.auto && out.rotation !== d.rotation) {
-          d.rotation = out.rotation;
-          await refreshPreview(d);
-        }
-      }
+      const out = await readSource(d, setBusy);
       if (d.run !== run) return;
       d.rows = out.parsed.rows;
       d.header = out.parsed.header || {};
       if (kind === 'gatepass' && !d.header.date) d.header.date = U.today();
       d.warnings = out.parsed.warnings || [];
-      d.readInfo = out.direct ? 'قُرئ النص المضمّن في ملف PDF مباشرة. راجع الأرقام قبل الحفظ.' : out.ai ? 'قراءة ذكية بـ Claude.' : `قراءة محلية مجانية. دقتها تتأثر بجودة الصورة، فراجع كل رقم.`;
+      if (out.ai) {
+        const a = out.ai;
+        d.readInfo = `قراءة دقيقة بـ ${MT.AI.label(a.model)}${a.verified ? `، مع مراجعة ثانية لـ ${a.verified} صفًا` : ''}. التكلفة التقريبية ${a.cost < 0.01 ? 'أقل من سنت' : '$' + a.cost.toFixed(2)}.`;
+      } else if (out.direct) d.readInfo = 'قُرئ النص المضمّن مباشرة. راجع الأرقام قبل الحفظ.';
+      else d.readInfo = 'قراءة محلية مجانية. دقتها تتأثر بجودة الصورة، فراجع كل رقم.';
       d.busy = null;
       d.step = 'review';
       drawWizard();
       const bad = d.rows.filter((r) => P.flagLevel(r.flags) === 'bad').length;
-      UI.toast(d.rows.length ? `قُرئ ${d.rows.length} صفًا${bad ? `، منها ${bad} يحتاج إكمالًا` : ''}.` : (d.src === 'pdf' ? 'لم أجد صفوفًا في الملف. تأكد أنه القائمة الصحيحة أو أدخل البيانات يدويًا.' : 'لم أجد صفوفًا في الصورة. أعد التصوير أو أدخل البيانات يدويًا.'), { type: d.rows.length ? 'ok' : 'error', ms: 7000 });
+      UI.toast(d.rows.length ? `قُرئ ${d.rows.length} صفًا${bad ? `، منها ${bad} يحتاج إكمالًا` : ''}.` : isDoc(d) ? 'لم أجد صفوفًا في المحتوى. تأكد أنه القائمة الصحيحة أو أدخل البيانات يدويًا.' : 'لم أجد صفوفًا في الصورة. أعد التصوير أو أدخل البيانات يدويًا.', { type: d.rows.length ? 'ok' : 'error', ms: 7000 });
     } catch (e) {
+      if (d.run !== run || (e && e.code === 'aborted')) return;
       console.error(e);
-      if (d.run !== run) return;
       d.busy = null;
       drawWizard();
       UI.toast(e.message || String(e), { type: 'error', ms: 9000 });
@@ -406,7 +602,7 @@
         const first = out.rows.find((r) => r.gp_no) || {};
         d.header = { no: first.gp_no || '', date: (out.rows.find((r) => r.date) || {}).date || U.today() };
       }
-      d.readInfo = `من ملف ${d.file.name}`;
+      d.readInfo = d.file.name === 'الحافظة' ? 'من الجدول الملصوق.' : `من ملف ${d.file.name}`;
       d.step = 'review';
       drawWizard();
     };
@@ -506,7 +702,7 @@
     const canMode = kind !== 'gatepass';
     host.innerHTML = `<section class="card wizard" aria-labelledby="wz-h">
       ${stepsBar(3)}
-      <div class="rv-head"><h2 id="wz-h" class="h3">راجع ${k.title} واحفظها</h2><p class="muted">${esc(d.readInfo)} ${d.src === 'image' || d.src === 'pdf' ? 'الصف الملوّن يحتاج تدخلك. لا يُحفظ أي صف ناقص الكود أو الكمية.' : ''}</p></div>
+      <div class="rv-head"><h2 id="wz-h" class="h3">راجع ${k.title} واحفظها</h2><p class="muted">${esc(d.readInfo)} ${d.src && d.src !== 'excel' ? 'الصف الملوّن يحتاج تدخلك. لا يُحفظ أي صف ناقص الكود أو الكمية.' : ''}</p></div>
       ${d.warnings.length ? `<ul class="note note-warn">${d.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : ''}
       <div class="rv-layout ${d.previewUrl ? 'has-img' : ''}">
         ${d.previewUrl ? `<aside class="rv-img"><button type="button" class="rv-img-btn" id="zoom" aria-label="كبّر صورة المستند">${`<img loading="lazy" decoding="async" src="${d.previewUrl}" alt="صورة المستند الأصلية للمقارنة مع الجدول">`}<span class="rv-zoom">${UI.icon('zoom', 18)}<span>كبّر الصورة</span></span></button></aside>` : ''}
@@ -610,7 +806,7 @@
     const zoom = host.querySelector('#zoom');
     if (zoom)
       zoom.onclick = async () => {
-        const big = d.src === 'pdf' ? await MT.PDF.renderPage(d.pdf.doc, 1, 2200) : await UI.imageToBlob(d.blob, { maxSide: 2200, quality: 0.9, rotate: d.rotation });
+        const big = d.doc ? await d.doc.firstImage(2200) : await UI.imageToBlob(d.blob, { maxSide: 2200, quality: 0.9, rotate: d.rotation });
         const url = URL.createObjectURL(big);
         UI.dialog({ title: 'صورة المستند', size: 'xl', body: `<img class="doc-img" loading="lazy" decoding="async" src="${url}" alt="صورة المستند الأصلي">`, actions: [{ label: 'إغلاق', value: null }] });
       };
@@ -623,7 +819,7 @@
     host.querySelector('#cancel').onclick = async () => {
       if (d.rows.length && !(await UI.confirm('ستُحذف المسودة بما فيها من صفوف. هل تتابع؟', { ok: 'ألغِ المسودة', danger: true }))) return;
       if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
-      releasePdf(d);
+      releaseDoc(d);
       drafts[kind] = fresh();
       drawWizard();
     };
@@ -667,7 +863,7 @@
     const btn = host.querySelector('#save');
     btn.disabled = true;
     try {
-      const imageBlob = d.src === 'image' && d.blob ? await UI.imageToBlob(d.blob, { maxSide: 1800, quality: 0.82, rotate: d.rotation }) : d.src === 'pdf' && d.pdf ? await MT.PDF.renderPage(d.pdf.doc, 1, 1800) : null;
+      const imageBlob = d.src === 'image' && d.blob ? await UI.imageToBlob(d.blob, { maxSide: 1800, quality: 0.82, rotate: d.rotation }) : d.doc ? await d.doc.firstImage(1800) : null;
       let msg;
       if (kind === 'gatepass') {
         const groups = U.groupBy(valid, (r) => r.gp_no || d.header.no);
@@ -683,11 +879,11 @@
         }
         msg = `تم حفظ Gate Pass: ${added} بند جديد${updated ? `، ${updated} محدَّث` : ''}${merged ? ' (أُضيفت إلى مستند موجود)' : ''}.`;
       } else {
-        const res = await Store.importList(kind, valid.map(cleanRow), { mode: d.mode, ref: d.note, note: d.src === 'excel' ? 'من ملف Excel' : d.src === 'pdf' ? 'من ملف PDF' : d.src === 'image' ? 'من صورة' : 'إدخال يدوي', imageBlob });
+        const res = await Store.importList(kind, valid.map(cleanRow), { mode: d.mode, ref: d.note, note: d.src === 'excel' ? (d.file && d.file.name === 'الحافظة' ? 'من الحافظة' : 'من ملف Excel') : d.doc ? 'من ' + DOC_TYPES[d.doc.type] : d.src === 'image' ? 'من صورة' : 'إدخال يدوي', imageBlob });
         msg = `تم حفظ ${KINDS[kind].label}: ${res.added} بند جديد${res.updated ? `، ${res.updated} محدَّث` : ''}${res.removed ? `، ${res.removed} محذوف` : ''}.`;
       }
       if (d.previewUrl) URL.revokeObjectURL(d.previewUrl);
-      releasePdf(d);
+      releaseDoc(d);
       drafts[kind] = fresh();
       drawWizard();
       UI.toast(msg, { ms: 9000, action: { label: 'قارن الآن', fn: () => App.go('#/compare') } });
@@ -873,6 +1069,21 @@
         <div class="row-actions">${(gp.images || []).map((r, n) => `<button type="button" class="btn btn-sm" data-gp-img="${esc(r)}">${UI.icon('image', 16)}<span>صورة ${n + 1}</span></button>`).join('')}<button type="button" class="btn btn-sm" data-gp-edit="${gp.id}">${UI.icon('edit', 16)}<span>عدّل بيانات المستند</span></button><button type="button" class="btn btn-sm" data-gp-export="${gp.id}">${UI.icon('download', 16)}<span>Excel لهذا المستند</span></button><button type="button" class="btn btn-sm btn-danger" data-gp-del="${gp.id}">${UI.icon('trash', 16)}<span>احذف المستند</span></button></div>
       </div></details>`;
   }
+
+  /* Ctrl+V في أي مكان من شاشة الاستيراد (في خطوة اختيار المصدر فقط، ولا يتعارض مع حقول الإدخال) */
+  document.addEventListener('paste', (e) => {
+    if (!rootEl || !rootEl.isConnected) return;
+    if (D(kind).step !== 'source') return;
+    const t = e.target;
+    if (t && t.closest && t.closest('input, textarea, select, [contenteditable="true"], dialog')) return;
+    const cd = e.clipboardData;
+    if (!cd) return;
+    const files = [...cd.files];
+    const text = cd.getData('text/plain');
+    if (!files.length && !text.trim()) return;
+    e.preventDefault();
+    handlePasted({ files, text });
+  });
 
   App.views.import = view;
 })(window);
