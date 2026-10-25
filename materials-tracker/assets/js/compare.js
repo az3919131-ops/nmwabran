@@ -63,6 +63,33 @@
     return out;
   }
 
+  /* ---------- الوحدات: القطع تُجمع معًا، والأمتار والكيلومترات كل منها وحدها ---------- */
+  const UNIT_LABEL = { PCS: 'قطعة', M: 'متر', KM: 'كم' };
+  /** المجموعة من وحدة مكتوبة (من المستند أو الكتالوج): M وKM مستقلتان، وغيرهما قطع */
+  const unitGroup = (u) => {
+    const x = String(u || '').trim().toUpperCase();
+    if (x === 'M' || x === 'MTR' || x === 'METER' || x === 'METRE') return 'M';
+    if (x === 'KM') return 'KM';
+    return 'PCS';
+  };
+  const firstUom = (...lists) => {
+    for (const l of lists) {
+      const hit = l.find((x) => x && x.uom && String(x.uom).trim());
+      if (hit) return String(hit.uom).trim();
+    }
+    return '';
+  };
+  const emptyUnits = () => ({ PCS: { cl: 0, uds: 0, gp: 0 }, M: { cl: 0, uds: 0, gp: 0 }, KM: { cl: 0, uds: 0, gp: 0 } });
+  const addUnits = (a, b) => {
+    for (const k of Object.keys(a)) for (const f of ['cl', 'uds', 'gp']) a[k][f] = r3(a[k][f] + ((b[k] && b[k][f]) || 0));
+    return a;
+  };
+  /** كميات حقل واحد (cl أو uds أو gp) مفصولة بالوحدة: القطع دائمًا، والأمتار والكيلومترات إن وُجدت */
+  const unitSplit = (units, field) =>
+    ['PCS', 'M', 'KM']
+      .map((k) => ({ unit: k, label: UNIT_LABEL[k], value: r3((units[k] && units[k][field]) || 0) }))
+      .filter((x, i) => i === 0 || x.value > 0);
+
   function build(data, opts = {}) {
     const checklist = data.checklist || [];
     const uds = data.uds || [];
@@ -138,10 +165,21 @@
       if (!r.inCatalog) counts.unknown++;
     }
 
+    const unitTotals = emptyUnits();
+    for (const r of list) {
+      // الوحدة المكتوبة في المستند أولى من وحدة الكتالوج (الكابلات قد تُكتب بالمتر في المستند وبالكيلومتر في الكتالوج)
+      r.unitGroup = unitGroup(firstUom(r.clLines, r.udsLines, r.gpLines) || r.unit);
+      const t = unitTotals[r.unitGroup];
+      t.cl = r3(t.cl + r.cl);
+      t.uds = r3(t.uds + r.uds);
+      t.gp = r3(t.gp + r.gp);
+    }
+
     const wos = workOrders(checklist, gps, resWo);
     return {
       rows: list,
       counts,
+      unitTotals,
       workOrders: wos,
       resWo,
       totals: {
@@ -324,6 +362,6 @@
     return { from: U.addDays(from, -len), to: U.addDays(from, -1), label: 'عن الفترة السابقة' };
   }
 
-  MT.Compare = { STATUS, relate, build, workOrders, trend, pairwise, shortage, alerts, previousWindow, inPeriod, reservationMap, r3 };
+  MT.Compare = { STATUS, relate, build, UNIT_LABEL, unitGroup, emptyUnits, addUnits, unitSplit, workOrders, trend, pairwise, shortage, alerts, previousWindow, inPeriod, reservationMap, r3 };
   if (typeof module !== 'undefined' && module.exports) module.exports = MT.Compare;
 })(typeof window !== 'undefined' ? window : globalThis);

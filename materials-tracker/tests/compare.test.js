@@ -50,5 +50,26 @@ eq(empty.counts.total, 0, 'مشروع فارغ');
 eq(K.trend(data).days.map((d) => [d.date, d.qty]), [['2026-10-14', 18]], 'اتجاه الصرف');
 eq(K.alerts(R).map((a) => a.filter), ['none', 'excess', 'uds'], 'التنبيهات');
 
+console.log('== الوحدات: القطع منفصلة عن الأمتار والكيلومترات');
+const mixed = {
+  checklist: [
+    { id: 'a', code: '908121008', qty: 3, reservation: '0030312223', uom: 'KIT' },
+    { id: 'b', code: '908111001', qty: 377, reservation: '0030312223', uom: 'M' }, // كابل: الكتالوج KM والمستند بالمتر
+    { id: 'c', code: '908111002', qty: 2, reservation: '0030312223', uom: 'KM' },
+  ],
+  uds: [],
+  gatePasses: [{ id: 'g', no: '2000000001', date: '2026-10-14', items: [{ id: 'i1', code: '908121008', qty: 2, uom: 'KIT' }, { id: 'i2', code: '908111001', qty: 590, uom: 'M' }] }],
+};
+const RM = K.build(mixed);
+eq(RM.unitTotals.PCS, { cl: 3, uds: 0, gp: 2 }, 'القطع وحدها');
+eq(RM.unitTotals.M, { cl: 377, uds: 0, gp: 590 }, 'الأمتار حسب وحدة المستند لا الكتالوج');
+eq(RM.unitTotals.KM.cl, 2, 'الكيلومترات وحدها');
+eq(K.unitSplit(RM.unitTotals, 'gp').map((x) => [x.label, x.value]), [['قطعة', 2], ['متر', 590]], 'عرض الكميات المصروفة');
+eq(K.unitSplit(K.build({ checklist: [], uds: [], gatePasses: [] }).unitTotals, 'cl').map((x) => x.label), ['قطعة'], 'القطع تظهر دائمًا حتى لو صفر');
+const sum2 = K.addUnits(K.emptyUnits(), RM.unitTotals);
+K.addUnits(sum2, RM.unitTotals);
+eq(sum2.PCS.cl, 6, 'جمع مشروعين');
+eq(K.unitGroup('mtr'), 'M', 'تطبيع الوحدات');
+
 if (fail) { console.log('FAILED', fail); process.exit(1); }
 console.log('OK');

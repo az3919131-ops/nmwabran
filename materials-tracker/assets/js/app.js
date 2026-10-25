@@ -14,6 +14,7 @@
     { id: 'import', label: 'استيراد القوائم', icon: 'upload', href: '#/import/checklist' },
     { id: 'compare', label: 'مقارنة المواد', icon: 'compare', href: '#/compare' },
     { id: 'reports', label: 'التقارير', icon: 'report', href: '#/reports' },
+    { id: 'totals', label: 'الإجمالي', icon: 'layers', href: '#/totals' },
     { id: 'catalog', label: 'كتالوج المواد', icon: 'book', href: '#/catalog' },
   ];
   const SITE = 'متابعة صرف المواد من الكهرباء';

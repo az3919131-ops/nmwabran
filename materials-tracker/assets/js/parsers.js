@@ -552,6 +552,7 @@
           row.unloading_point = '';
         }
       }
+      if (kind !== 'uds') row.uom = String(get('unit') || '').trim().toUpperCase();
       if (kind === 'uds') row.reference = String(get('reference') || '').trim();
       if (kind === 'gatepass') {
         row.line_no = String(get('item_no') || '').trim();

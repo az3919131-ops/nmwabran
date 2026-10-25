@@ -68,6 +68,7 @@
           <div><h1 class="h1">استيراد القوائم</h1>
           <p class="lead">صوّر القائمة أو ارفعها. تظهر لك الأرقام المقروءة لتصحيحها قبل الحفظ.</p></div>
         </header>
+        <p class="meta-line">تُحفظ هذه القوائم في مشروع «${esc(Store.project.name)}» وحده، ولا تدخل في حسابات مشروع آخر. <a class="chip-link" href="#/projects">غيّر المشروع</a> أو شاهد <a class="chip-link" href="#/totals">الإجمالي لكل المشاريع</a>.</p>
         <div class="tabs" role="tablist" aria-label="نوع القائمة">${Object.entries(KINDS)
           .map(([id, x]) => `<a role="tab" class="tab tab-${id}" href="#/import/${id}" aria-selected="${id === kind}"><span>${x.label}</span><small>${x.sub}</small></a>`)
           .join('')}</div>
@@ -558,9 +559,9 @@
 
   /* ----- ربط أعمدة Excel ----- */
   const MAP_FIELDS = {
-    checklist: [['code', 'كود المادة', true], ['qty', 'الكمية المطلوبة', true], ['desc', 'الوصف'], ['reservation', 'رقم الحجز'], ['item_no', 'البند'], ['unloading', 'Unloading Point أو أمر العمل']],
+    checklist: [['code', 'كود المادة', true], ['qty', 'الكمية المطلوبة', true], ['desc', 'الوصف'], ['reservation', 'رقم الحجز'], ['item_no', 'البند'], ['unit', 'الوحدة'], ['unloading', 'Unloading Point أو أمر العمل']],
     uds: [['code', 'كود المادة', true], ['qty', 'الكمية المسجلة', true], ['desc', 'الوصف'], ['reference', 'رقم المرجع'], ['reservation', 'رقم الحجز']],
-    gatepass: [['code', 'كود المادة', true], ['qty', 'الكمية المصروفة', true], ['gp_no', 'رقم Gate Pass'], ['date', 'التاريخ'], ['item_no', 'رقم السطر'], ['reservation', 'رقم الحجز'], ['desc', 'الوصف']],
+    gatepass: [['code', 'كود المادة', true], ['qty', 'الكمية المصروفة', true], ['gp_no', 'رقم Gate Pass'], ['date', 'التاريخ'], ['item_no', 'رقم السطر'], ['reservation', 'رقم الحجز'], ['unit', 'الوحدة'], ['desc', 'الوصف']],
   };
 
   function drawMapping(host, d) {

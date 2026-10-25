@@ -461,8 +461,20 @@
       this.emit('project');
       return p;
     },
-    registerUnknownCodes() {
-      const all = [...this.data.checklist, ...this.data.uds, ...this.data.gatePasses.flatMap((p) => p.items)];
+    /** بيانات كل المشاريع (لصفحة الإجمالي) دون تغيير المشروع المفتوح */
+    async loadAllProjects() {
+      const list = await this.refreshProjects();
+      const out = [];
+      for (const p of list) {
+        const data = this.project && this.project.id === p.id && this.data ? this.data : await this.adapter.loadProject(p.id);
+        data.gatePasses.forEach((gp) => (gp.items = gp.items || []));
+        this.registerUnknownCodes(data);
+        out.push({ project: p, data });
+      }
+      return out;
+    },
+    registerUnknownCodes(data = this.data) {
+      const all = [...data.checklist, ...data.uds, ...data.gatePasses.flatMap((p) => p.items)];
       all.forEach((r) => r.code && !C.get(r.code) && C.addExtra(r.code, r.doc_desc, r.uom));
     },
     lastProjectId() {

@@ -496,8 +496,9 @@ a {
   inset-block-end: calc(12px + env(safe-area-inset-bottom));
   z-index: 30;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 2px;
   padding: 6px;
   background: rgba(255, 255, 255, 0.94);
   border: 1.5px solid var(--line);
@@ -524,6 +525,11 @@ a {
 .bn-item span {
   font-size: 12px;
   max-width: 100%;
+}
+@media (max-width: 400px) {
+  .bn-item span {
+    font-size: 11px;
+  }
 }
 .bn-item.is-active {
   background: var(--accent);
@@ -3053,4 +3059,42 @@ tr[data-code] {
   tr {
     break-inside: avoid;
   }
+}
+
+/* ---------- صفحة الإجمالي ---------- */
+.node-static:hover {
+  transform: none;
+  box-shadow: none;
+}
+.tt-body {
+  display: grid;
+  gap: 24px;
+}
+.chip-proj[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.chip-proj[aria-pressed='true']::before {
+  background: var(--accent-2);
+}
+.tt-name {
+  text-align: start;
+}
+.tt-name small,
+.tt-extra {
+  display: block;
+  font-weight: 400;
+  font-size: var(--fs-1);
+}
+.tt-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tt-table tfoot th,
+.tt-table tfoot td {
+  background: var(--tint-excess);
+  font-weight: 700;
+  border-block-start: 2px solid var(--ink);
 }

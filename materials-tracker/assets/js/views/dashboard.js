@@ -36,10 +36,15 @@
       const prevInfo = K.previousWindow(App.window());
       const c = R.counts;
       const d = Store.data;
-      const clQty = U.sum(d.checklist, (x) => x.qty);
-      const udsQty = U.sum(d.uds, (x) => x.qty);
+      // القطع تُجمع معًا، والأمتار والكيلومترات منفصلة حتى لا يتضخم رقم القطع
+      const clQty = R.unitTotals.PCS.cl;
+      const udsQty = R.unitTotals.PCS.uds;
       const gpCount = R.gatePasses.length;
-      const gpQty = U.sum(R.gatePasses, (p) => U.sum(p.items, (i) => i.qty));
+      const gpQty = R.unitTotals.PCS.gp;
+      const more = (field) => {
+        const ex = K.unitSplit(R.unitTotals, field).slice(1).map((p) => `${U.fmt(p.value)} ${p.label}`).join(' و ');
+        return ex ? `، و ${esc(ex)}` : '';
+      };
       const empty = !d.checklist.length && !d.uds.length && !d.gatePasses.length;
       const pct = c.total ? Math.round((c.ok / c.total) * 100) : 0;
       const hasPrev = P.counts.total > 0;
@@ -64,15 +69,15 @@
           <div class="flow-head">
             <div>
               <h2 id="flow-h" class="flow-title">${c.total ? (needs ? `${needs} من ${c.total} أصناف تحتاج متابعة` : 'كل الأصناف مطابقة للمطلوب') : 'لا توجد أصناف ضمن هذه الفترة'}</h2>
-              <p class="flow-sub">المطلوب ثم المسجّل ثم المصروف فعليًا. الأنبوب بين كل مرحلتين يبيّن الفرق في الكمية.</p>
+              <p class="flow-sub">أرقام مشروع «${esc(Store.project.name)}» وحده. المطلوب ثم المسجّل ثم المصروف فعليًا، والأنبوب بين كل مرحلتين يبيّن الفرق في القطع. <a class="chip-link" href="#/totals">الإجمالي لكل المشاريع</a></p>
             </div>
           </div>
           <div class="flow-track">
-            <a class="node node-cl" href="#/import/checklist"><span class="node-k">Checklist</span><strong class="node-n figure" dir="ltr">${U.fmt(clQty)}</strong><small>قطعة مطلوبة في ${U.fmt(d.checklist.length, 0)} بندًا</small></a>
+            <a class="node node-cl" href="#/import/checklist"><span class="node-k">Checklist</span><strong class="node-n figure" dir="ltr">${U.fmt(clQty)}</strong><small>قطعة مطلوبة في ${U.fmt(d.checklist.length, 0)} بندًا${more('cl')}</small></a>
             ${pipe(gap1, 1, 'فرق UDS عن Checklist')}
-            <a class="node node-uds" href="#/import/uds"><span class="node-k">UDS</span><strong class="node-n figure" dir="ltr">${U.fmt(udsQty)}</strong><small>قطعة مسجلة في ${U.fmt(d.uds.length, 0)} بندًا</small></a>
+            <a class="node node-uds" href="#/import/uds"><span class="node-k">UDS</span><strong class="node-n figure" dir="ltr">${U.fmt(udsQty)}</strong><small>قطعة مسجلة في ${U.fmt(d.uds.length, 0)} بندًا${more('uds')}</small></a>
             ${pipe(gap2, 2, 'فرق Gate Pass عن UDS')}
-            <a class="node node-gp" href="#/import/gatepass"><span class="node-k">Gate Pass</span><strong class="node-n figure" dir="ltr">${U.fmt(gpQty)}</strong><small>قطعة مصروفة في ${U.fmt(gpCount, 0)} مستندًا</small></a>
+            <a class="node node-gp" href="#/import/gatepass"><span class="node-k">Gate Pass</span><strong class="node-n figure" dir="ltr">${U.fmt(gpQty)}</strong><small>قطعة مصروفة في ${U.fmt(gpCount, 0)} مستندًا${more('gp')}</small></a>
           </div>
           <div class="flow-foot">
             ${MT.Charts.stack(KPIS.map((k) => ({ key: k.key, value: c[k.key], label: k.label })))}
