@@ -22,7 +22,7 @@
             <p class="muted">${p.contractor ? 'المقاول: ' + esc(p.contractor) : 'بدون اسم مقاول'}</p>
             <div class="card-actions">
               <button class="btn btn-primary" type="button" data-open="${p.id}">${active ? 'تابع في هذا المشروع' : 'افتح المشروع'}</button>
-              <button class="btn btn-danger btn-sm" type="button" data-del="${p.id}" aria-label="احذف مشروع ${esc(p.name)}">${UI.icon('trash', 18)}<span>احذف</span></button>
+              ${Store.can('write') ? `<button class="btn btn-danger btn-sm" type="button" data-del="${p.id}" aria-label="احذف مشروع ${esc(p.name)}">${UI.icon('trash', 18)}<span>احذف</span></button>` : ''}
             </div>
           </article>`;
         })
@@ -30,12 +30,12 @@
       root.innerHTML = `<div class="page">
         <header class="page-head">
           <div><h1 class="h1">اختر مشروعك</h1><p class="lead">كل مشروع له Checklist وUDS وGate Pass خاصة به.</p></div>
-          <div class="page-actions"><button class="btn btn-primary" type="button" id="new-project">${UI.icon('plus', 20)}<span>أنشئ مشروعًا</span></button></div>
+          <div class="page-actions">${Store.can('write') ? `<button class="btn btn-primary" type="button" id="new-project">${UI.icon('plus', 20)}<span>أنشئ مشروعًا</span></button>` : ''}</div>
         </header>
         ${list.length
           ? `<section class="grid-cards">${cards}</section>`
           : `<section class="card">${UI.empty({ title: 'لا توجد مشاريع بعد', text: 'أنشئ مشروعك الأول، أو حمّل المشروع التجريبي لترى الشاشات بأرقام حقيقية من الصورتين.' })}</section>`}
-        ${!hasDemo ? `<p class="demo-line"><button class="link-btn" type="button" id="add-demo">حمّل المشروع التجريبي</button><span class="muted"> بياناته من صورة Gate Pass وصورة Checklist حقيقيتين.</span></p>` : ''}
+        ${!hasDemo && Store.can('write') ? `<p class="demo-line"><button class="link-btn" type="button" id="add-demo">حمّل المشروع التجريبي</button><span class="muted"> بياناته من صورة Gate Pass وصورة Checklist حقيقيتين.</span></p>` : ''}
       </div>`;
 
       UI.on(root, 'click', '[data-open]', async (e, el) => {
@@ -60,7 +60,8 @@
           await Store.openProject(p.id);
           MT.App.go('#/dashboard');
         };
-      root.querySelector('#new-project').onclick = async () => {
+      const newBtn = root.querySelector('#new-project');
+      if (newBtn) newBtn.onclick = async () => {
         const body = `<label class="field"><span class="field-label">اسم المشروع</span><input class="input" id="np-name" required placeholder="مثال: توسعة شبكة التوزيع في شرورة"></label>
           <label class="field"><span class="field-label">المنطقة</span><input class="input" id="np-region" value="نجران"></label>
           <label class="field"><span class="field-label">المقاول</span><input class="input" id="np-contractor" placeholder="مثال: شركة ناصر مانع وبران"></label>`;

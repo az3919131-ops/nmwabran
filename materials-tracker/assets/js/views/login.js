@@ -31,7 +31,8 @@
                 ${signup ? `<label class="field"><span class="field-label">الاسم</span><input class="input" name="name" autocomplete="name" required></label>` : ''}
                 <label class="field"><span class="field-label">البريد الإلكتروني</span><input class="input" dir="ltr" type="email" name="email" autocomplete="email" required></label>
                 <label class="field"><span class="field-label">كلمة المرور</span><input class="input" dir="ltr" type="password" name="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="6" required></label>`
-              : `<label class="field"><span class="field-label">اسمك</span><input class="input" name="name" autocomplete="name" placeholder="مثال: م. أحمد زهران" required></label>`}
+              : `<label class="field"><span class="field-label">اسمك</span><input class="input" name="name" autocomplete="name" placeholder="مثال: م. أحمد زهران" required></label>
+                <label class="field"><span class="field-label">البريد الإلكتروني (اختياري)</span><input class="input" dir="ltr" type="email" name="email" autocomplete="email" placeholder="يحدد دورك إن كان مضافًا في المستخدمين"></label>`}
               <p class="form-error" role="alert" id="login-err">${esc(error)}</p>
               <button class="btn btn-primary btn-block" type="submit">${sb ? (signup ? 'أنشئ الحساب' : 'ادخل إلى اللوحة') : 'ادخل إلى اللوحة'}</button>
             </form>
@@ -61,7 +62,7 @@
           btn.textContent = 'جارٍ الدخول...';
           try {
             if (sb) await (signup ? Store.signUp({ email, password, name }) : Store.signIn({ email, password }));
-            else await Store.signIn({ name });
+            else await Store.signIn({ name, email });
             await Store.refreshProjects();
             MT.App.go('#/projects');
           } catch (ex) {

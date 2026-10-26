@@ -6,6 +6,8 @@
   const C = MT.Catalog;
   const CFG = g.MT_CONFIG || {};
 
+  const ADMIN_EMAIL = 'az3919131@gmail.com';
+  const ROLES = { admin: 'مدير النظام', editor: 'مستخدم رئيسي', viewer: 'مشاهد' };
   const FIELDS = {
     checklist: ['id', 'code', 'qty', 'reservation', 'item_no', 'work_order', 'wo_type', 'unloading_point', 'doc_desc', 'uom', 'created_at'],
     uds: ['id', 'code', 'qty', 'reference', 'reservation', 'doc_desc', 'created_at'],
@@ -44,6 +46,13 @@
         MT.Store && MT.Store.emit('warn', 'تعذّر الحفظ في هذا المتصفح. البيانات ستبقى حتى تغلق الصفحة فقط.');
       }
     }
+    /* الوضع المحلي: بدون بريد يكون صاحب الجهاز مديرًا. وبالبريد يُحدَّد الدور من قائمة المستخدمين (لا حماية حقيقية هنا) */
+    const roleOf = (mail) => {
+      const e = (mail || '').trim().toLowerCase();
+      if (!e || e === ADMIN_EMAIL) return { role: 'admin', active: true };
+      const u = (db.localUsers || []).find((x) => x.email === e);
+      return u ? { role: u.role, active: u.active !== false } : { role: 'viewer', active: true };
+    };
     const proj = (pid) => (db.data[pid] = db.data[pid] || { checklist: [], uds: [], gatePasses: [], activity: [] });
 
     const idb = () =>
@@ -73,15 +82,38 @@
       },
       auth: {
         async getUser() {
-          return db.user;
+          if (!db.user) return null;
+          const r = db.user.noEmail ? { role: 'admin', active: true } : roleOf(db.user.email);
+          return r.active ? { ...db.user, role: r.role } : null;
         },
-        async signIn({ name }) {
-          db.user = { id: 'local', email: name || 'مستخدم محلي', name: name || 'مستخدم محلي' };
+        async signIn({ name, email }) {
+          const mail = (email || '').trim().toLowerCase();
+          const r = roleOf(mail);
+          if (!r.active) throw new Error('هذا الحساب موقوف. تواصل مع مدير النظام.');
+          db.user = { id: 'local', email: mail || name || 'مستخدم محلي', name: name || mail || 'مستخدم محلي', role: r.role, noEmail: !mail };
           write();
           return db.user;
         },
         async signOut() {
           db.user = null;
+          write();
+        },
+      },
+      users: {
+        async list() {
+          return [{ email: ADMIN_EMAIL, name: '', role: 'admin', active: true }, ...(db.localUsers || [])];
+        },
+        async upsert(u) {
+          const e = u.email.trim().toLowerCase();
+          db.localUsers = db.localUsers || [];
+          const i = db.localUsers.findIndex((x) => x.email === e);
+          const row = { email: e, name: u.name || '', role: u.role, active: u.active !== false };
+          if (i >= 0) db.localUsers[i] = { ...db.localUsers[i], ...row };
+          else db.localUsers.push(row);
+          write();
+        },
+        async remove(email) {
+          db.localUsers = (db.localUsers || []).filter((x) => x.email !== email);
           write();
         },
       },
@@ -209,6 +241,26 @@
       if (/Failed to fetch|NetworkError/i.test(m)) return 'تعذّر الاتصال بالإنترنت.';
       return m;
     }
+    /** الدور من جدول user_roles. المالك دائمًا مدير. إن لم يوجد الجدول (قاعدة قديمة) يُعامل المستخدم كمستخدم رئيسي كما كان */
+    const roleFor = async (u) => {
+      const mail = (u.email || '').toLowerCase();
+      if (mail === ADMIN_EMAIL) return { role: 'admin', active: true };
+      try {
+        const { data, error } = await client.from('user_roles').select('role,active').eq('email', mail).maybeSingle();
+        if (error) throw error;
+        return data ? { role: data.role, active: data.active !== false } : { role: 'viewer', active: true };
+      } catch (e) {
+        return { role: 'editor', active: true };
+      }
+    };
+    const withRole = async (u) => {
+      const r = await roleFor(u);
+      if (!r.active) {
+        await client.auth.signOut();
+        throw new Error('هذا الحساب موقوف. تواصل مع مدير النظام.');
+      }
+      return { ...u, role: r.role };
+    };
     const mapUser = (u) => ({ id: u.id, email: u.email, name: (u.user_metadata && u.user_metadata.name) || u.email });
 
     async function ensureMaterials(list) {
@@ -242,21 +294,41 @@
       auth: {
         async getUser() {
           const { data } = await client.auth.getSession();
-          return data && data.session ? mapUser(data.session.user) : null;
+          if (!(data && data.session)) return null;
+          try {
+            return await withRole(mapUser(data.session.user));
+          } catch (e) {
+            return null;
+          }
         },
         async signIn({ email, password }) {
           const { data, error } = await client.auth.signInWithPassword({ email, password });
           fail(error);
-          return mapUser(data.user);
+          return withRole(mapUser(data.user));
         },
         async signUp({ email, password, name }) {
           const { data, error } = await client.auth.signUp({ email, password, options: { data: { name } } });
           fail(error);
           if (!data.session) throw new Error('تم إنشاء الحساب. افتح رسالة التأكيد في بريدك ثم سجّل الدخول.');
-          return mapUser(data.user);
+          return withRole(mapUser(data.user));
         },
         async signOut() {
           await client.auth.signOut();
+        },
+      },
+      users: {
+        async list() {
+          const { data, error } = await client.from('user_roles').select('email,name,role,active,created_at').order('created_at');
+          fail(error);
+          return data || [];
+        },
+        async upsert(u) {
+          const { error } = await client.from('user_roles').upsert({ email: u.email.trim().toLowerCase(), name: u.name || null, role: u.role, active: u.active !== false }, { onConflict: 'email' });
+          fail(error);
+        },
+        async remove(email) {
+          const { error } = await client.from('user_roles').delete().eq('email', email);
+          fail(error);
         },
       },
       projects: {
@@ -381,6 +453,32 @@
     projects: [],
     project: null,
     data: null,
+    ADMIN_EMAIL,
+    ROLES,
+
+    /** write: إنشاء وتعديل البيانات (مدير أو مستخدم رئيسي). admin: إدارة المستخدمين فقط */
+    can(action) {
+      const r = this.user && this.user.role;
+      if (!this.user) return false;
+      if (action === 'admin') return r === 'admin';
+      return r === 'admin' || r === 'editor';
+    },
+    _need(action = 'write') {
+      if (this.user && !this.can(action)) throw new Error(action === 'admin' ? 'هذا الإجراء لمدير النظام فقط.' : 'صلاحيتك مشاهد فقط، فلا يمكنك تعديل البيانات.');
+    },
+    users: {
+      list: () => Store.adapter.users.list(),
+      async upsert(u) {
+        Store._need('admin');
+        if (u.email.trim().toLowerCase() === ADMIN_EMAIL && (u.role !== 'admin' || u.active === false)) throw new Error('لا يمكن تغيير دور مالك النظام أو إيقافه.');
+        return Store.adapter.users.upsert(u);
+      },
+      async remove(email) {
+        Store._need('admin');
+        if (email.trim().toLowerCase() === ADMIN_EMAIL) throw new Error('لا يمكن حذف مالك النظام.');
+        return Store.adapter.users.remove(email.trim().toLowerCase());
+      },
+    },
 
     on(evt, fn) {
       (listeners[evt] = listeners[evt] || []).push(fn);
@@ -422,12 +520,14 @@
       return this.projects;
     },
     async createProject({ name, region, contractor }) {
+      this._need('write');
       const p = { id: U.uid(), name: name.trim(), region: (region || 'نجران').trim(), contractor: (contractor || '').trim(), created_at: new Date().toISOString() };
       const saved = await this.adapter.projects.upsert(p);
       await this.refreshProjects();
       return saved;
     },
     async deleteProject(id) {
+      this._need('write');
       await this.adapter.projects.remove(id);
       if (this.project && this.project.id === id) {
         this.project = null;
@@ -436,6 +536,7 @@
       await this.refreshProjects();
     },
     async addDemo() {
+      this._need('write');
       const { project, data } = MT.Seed.demo(this.user && this.user.email);
       await this.adapter.projects.upsert(project);
       await this.adapter.saveRows('checklist', project.id, data.checklist);
@@ -524,6 +625,7 @@
     },
 
     async uploadImage(kind, blob) {
+      this._need('write');
       return this.adapter.images.put(this.project.id, kind, blob);
     },
     imageUrl(ref) {
@@ -531,6 +633,7 @@
     },
 
     async importList(kind, rows, { mode = 'merge', note = '', ref = '', imageBlob = null } = {}) {
+      this._need('write');
       const table = kind;
       const existing = this.data[table];
       const m = this._merge(kind, existing, rows, mode);
@@ -546,6 +649,7 @@
     },
 
     async importGatePass(header, rows, { imageBlob = null, pageNote = '' } = {}) {
+      this._need('write');
       const no = String(header.no || '').trim();
       if (!no) throw new Error('رقم الـ Gate Pass مطلوب');
       let gp = this.data.gatePasses.find((p) => p.no === no);
@@ -575,6 +679,7 @@
 
     /* ----- تعديل وحذف ----- */
     async updateRow(kind, id, patch) {
+      this._need('write');
       const row = this.data[kind].find((r) => r.id === id);
       if (!row) return;
       Object.assign(row, patch);
@@ -582,12 +687,14 @@
       this.emit('change');
     },
     async deleteRows(kind, ids) {
+      this._need('write');
       await this.adapter.deleteRows(kind, this.project.id, ids);
       this.data[kind] = this.data[kind].filter((r) => !ids.includes(r.id));
       await this._log(kind, '', ids.length, 'حذف بنود');
       this.emit('change');
     },
     async updateGpItem(gpId, itemId, patch) {
+      this._need('write');
       const gp = this.data.gatePasses.find((p) => p.id === gpId);
       const it = gp && gp.items.find((i) => i.id === itemId);
       if (!it) return;
@@ -596,6 +703,7 @@
       this.emit('change');
     },
     async updateGatePass(id, patch) {
+      this._need('write');
       const gp = this.data.gatePasses.find((p) => p.id === id);
       if (!gp) return;
       const old = gp.no;
@@ -607,6 +715,7 @@
       this.emit('change');
     },
     async deleteGpItem(gpId, itemId) {
+      this._need('write');
       const gp = this.data.gatePasses.find((p) => p.id === gpId);
       if (!gp) return;
       gp.items = gp.items.filter((i) => i.id !== itemId);
@@ -615,6 +724,7 @@
       this.emit('change');
     },
     async deleteGatePass(id) {
+      this._need('write');
       const gp = this.data.gatePasses.find((p) => p.id === id);
       if (!gp) return;
       await this.adapter.deleteGatePass(this.project.id, id);
@@ -626,6 +736,7 @@
 
     /* ----- الكتالوج ----- */
     async saveCatalog(items) {
+      this._need('write');
       await this.adapter.catalog.save(items);
       C.merge(items);
     },

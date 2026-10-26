@@ -10,14 +10,15 @@ const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) { fail++;
   const db = new PGlite();
   await db.exec(`
     create role anon nologin; create role authenticated nologin;
-    create schema auth; create table auth.users (id uuid primary key);
+    create schema auth; create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
+    create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     create schema storage;
     create table storage.buckets (id text primary key, name text, public boolean);
     create table storage.objects (id uuid default gen_random_uuid() primary key, bucket_id text, name text);
     alter table storage.objects enable row level security;
     grant usage on schema auth, storage to authenticated, anon;
-    grant execute on function auth.uid() to authenticated, anon;
+    grant execute on function auth.uid(), auth.jwt() to authenticated, anon;
     grant all on all tables in schema storage to authenticated;
   `);
   const sql = fs.readFileSync(path.join(__dirname, '..', 'supabase', 'schema.sql'), 'utf8');
@@ -26,8 +27,8 @@ const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) { fail++;
   console.log('  ✓ schema.sql يعمل ويُعاد تشغيله بأمان');
 
   const u = '11111111-1111-1111-1111-111111111111';
-  await db.exec(`insert into auth.users values ('${u}')`);
-  await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${u}', false);`);
+  await db.exec(`insert into auth.users values ('${u}', 'az3919131@gmail.com', '{}')`);
+  await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${u}', false); select set_config('request.jwt.claims','{"email":"az3919131@gmail.com"}', false);`);
 
   // نفس العمليات التي ينفذها المحوّل
   const p = (await db.query(`insert into projects (name, region) values ('اختبار', 'نجران') returning id, created_by`)).rows[0];
@@ -66,6 +67,42 @@ const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) { fail++;
   await db.exec(`reset role;`);
   const bucket = (await db.query(`select id, public from storage.buckets`)).rows;
   eq(bucket, [{ id: 'documents', public: false }], 'مخزن documents خاص');
+
+  console.log('== الأدوار');
+  const as = async (email) => { await db.exec(`reset role; set role authenticated; select set_config('request.jwt.claims','{"email":"${email}"}', false);`); };
+  const tryq = async (q) => { try { await db.query(q); return true; } catch (e) { return false; } };
+  // التسجيل: المالك مدير، وغيره مشاهد
+  await db.exec(`reset role; insert into auth.users values ('22222222-2222-2222-2222-222222222222','new@x.com','{"name":"جديد"}'), ('33333333-3333-3333-3333-333333333333','ed@x.com','{}')`);
+  await as('az3919131@gmail.com');
+  eq((await db.query(`select my_role() r`)).rows[0].r, 'admin', 'المالك مدير');
+  eq((await db.query(`select role from user_roles where email='new@x.com'`)).rows[0].role, 'viewer', 'التسجيل ينشئ صف مشاهد تلقائيًا');
+  await db.exec(`reset role; insert into auth.users values ('44444444-4444-4444-4444-444444444444','late@x.com','{"name":"متأخر"}')`);
+  await as('az3919131@gmail.com');
+  eq((await db.query(`select role from user_roles where email='late@x.com'`)).rows[0].role, 'viewer', 'من يسجّل بلا دعوة يصير مشاهدًا');
+  // المدير يضيف مستخدمًا رئيسيًا
+  eq(await tryq(`insert into user_roles (email, role) values ('ed@x.com','editor') on conflict (email) do update set role = excluded.role`), true, 'المدير يرقّي مستخدمًا إلى رئيسي');
+  await as('ed@x.com');
+  eq((await db.query(`select my_role() r`)).rows[0].r, 'editor', 'المستخدم الرئيسي');
+  eq(await tryq(`insert into projects (name) values ('مشروع المحرر')`), true, 'المستخدم الرئيسي يكتب');
+  eq(await tryq(`insert into user_roles (email, role) values ('x@x.com','admin')`), false, 'المستخدم الرئيسي لا يدير المستخدمين');
+  eq((await db.query(`select count(*)::int n from user_roles`)).rows[0].n, 1, 'يرى صفه فقط');
+  await as('late@x.com');
+  eq((await db.query(`select count(*)::int n from projects`)).rows[0].n >= 1, true, 'المشاهد يقرأ');
+  eq(await tryq(`insert into projects (name) values ('ممنوع')`), false, 'المشاهد لا يكتب');
+  eq(await tryq(`delete from projects`), true, 'حذف المشاهد لا يحذف شيئًا دون خطأ');
+  await as('az3919131@gmail.com');
+  eq((await db.query(`select count(*)::int n from projects where name='مشروع المحرر'`)).rows[0].n, 1, 'حذف المشاهد لم يمسّ البيانات');
+  // إيقاف مستخدم
+  await db.query(`update user_roles set active=false where email='ed@x.com'`);
+  await as('ed@x.com');
+  eq((await db.query(`select my_role() r`)).rows[0].r, null, 'الموقوف بلا دور');
+  eq(await tryq(`insert into projects (name) values ('موقوف')`), false, 'الموقوف لا يكتب');
+  // المالك لا يُنزَّل
+  await as('az3919131@gmail.com');
+  eq(await tryq(`update user_roles set role='viewer' where email='az3919131@gmail.com'`), false, 'لا يمكن تنزيل المالك');
+  eq(await tryq(`delete from user_roles where email='az3919131@gmail.com'`), true, 'حذف صف المالك لا يضيّع صلاحيته');
+  eq((await db.query(`select my_role() r`)).rows[0].r, 'admin', 'المالك يبقى مديرًا');
+  await db.exec('reset role;');
 
   if (fail) { console.log('FAILED', fail); process.exit(1); }
   console.log('OK');

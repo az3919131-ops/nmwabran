@@ -152,9 +152,54 @@ from j
 join public.materials m on m.id = j.material_id;
 
 -- ============ الأمان (RLS) ============
--- كل مستخدم مسجّل الدخول يرى ويعدّل كل المشاريع (فريق صغير موثوق).
--- مهم: أوقف التسجيل الذاتي من Authentication > Providers > Email > Allow new users to sign up،
--- وأضف المستخدمين يدويًا من Authentication > Users. غير المسجّلين لا يصلون إلى أي بيانات.
+-- ============ المستخدمون والأدوار ============
+-- admin: مدير النظام (مالك النظام az3919131@gmail.com دائمًا مدير)، editor: مستخدم رئيسي، viewer: مشاهد.
+-- المدير يضيف بريدًا ودورًا من صفحة «إدارة المستخدمين». من يسجّل دون إضافة يصير viewer.
+create table if not exists public.user_roles (
+  email text primary key,
+  user_id uuid references auth.users(id) on delete set null,
+  name text,
+  role text not null default 'viewer' check (role in ('admin','editor','viewer')),
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  constraint owner_stays_admin check (lower(email) <> 'az3919131@gmail.com' or (role = 'admin' and active))
+);
+alter table public.user_roles enable row level security;
+
+create or replace function public.my_role() returns text
+language sql stable security definer set search_path = public as $$
+  select case
+    when lower(auth.jwt() ->> 'email') = 'az3919131@gmail.com' then 'admin'
+    else (select role from public.user_roles where lower(email) = lower(auth.jwt() ->> 'email') and active limit 1)
+  end
+$$;
+grant execute on function public.my_role() to authenticated;
+
+create or replace function public.handle_new_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.user_roles (email, user_id, name, role)
+  values (lower(new.email), new.id, new.raw_user_meta_data ->> 'name',
+          case when lower(new.email) = 'az3919131@gmail.com' then 'admin' else 'viewer' end)
+  on conflict (email) do update set user_id = excluded.user_id, name = coalesce(public.user_roles.name, excluded.name);
+  return new;
+end $$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
+
+-- المالك يُسجَّل مديرًا فورًا (إن كان حسابه موجودًا قبل تشغيل هذا الملف)
+insert into public.user_roles (email, role) values ('az3919131@gmail.com', 'admin') on conflict (email) do nothing;
+
+drop policy if exists "roles read" on public.user_roles;
+drop policy if exists "roles admin write" on public.user_roles;
+create policy "roles read" on public.user_roles for select to authenticated
+  using (public.my_role() = 'admin' or lower(email) = lower(auth.jwt() ->> 'email'));
+create policy "roles admin write" on public.user_roles for all to authenticated
+  using (public.my_role() = 'admin') with check (public.my_role() = 'admin');
+
+-- ============ صلاحيات البيانات ============
+-- القراءة لكل مستخدم له دور فعّال، والكتابة للمدير والمستخدم الرئيسي فقط.
+-- مهم: أوقف التسجيل الذاتي إن أردت حصر الدخول بمن تضيفهم (Authentication > Providers > Email > Allow new users to sign up).
 
 alter table public.projects         enable row level security;
 alter table public.materials        enable row level security;
@@ -170,7 +215,10 @@ begin
   foreach t in array array['projects','materials','checklist_items','uds_records','gate_passes','gate_pass_items','activity_log']
   loop
     execute format('drop policy if exists "team access" on public.%I', t);
-    execute format('create policy "team access" on public.%I for all to authenticated using (true) with check (true)', t);
+    execute format('drop policy if exists "role read" on public.%I', t);
+    execute format('drop policy if exists "role write" on public.%I', t);
+    execute format('create policy "role read" on public.%I for select to authenticated using (public.my_role() is not null)', t);
+    execute format('create policy "role write" on public.%I for all to authenticated using (public.my_role() in (''admin'',''editor'')) with check (public.my_role() in (''admin'',''editor''))', t);
   end loop;
 end $$;
 
@@ -183,7 +231,10 @@ values ('documents', 'documents', false)
 on conflict (id) do nothing;
 
 drop policy if exists "documents team access" on storage.objects;
-create policy "documents team access" on storage.objects
-  for all to authenticated
-  using (bucket_id = 'documents')
-  with check (bucket_id = 'documents');
+drop policy if exists "documents read" on storage.objects;
+drop policy if exists "documents write" on storage.objects;
+create policy "documents read" on storage.objects for select to authenticated
+  using (bucket_id = 'documents' and public.my_role() is not null);
+create policy "documents write" on storage.objects for all to authenticated
+  using (bucket_id = 'documents' and public.my_role() in ('admin','editor'))
+  with check (bucket_id = 'documents' and public.my_role() in ('admin','editor'));

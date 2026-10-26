@@ -18,6 +18,8 @@
     { id: 'catalog', label: 'كتالوج المواد', icon: 'book', href: '#/catalog' },
   ];
   const SITE = 'متابعة صرف المواد من الكهرباء';
+  const NEEDS_WRITE = new Set(['import']);
+  const navList = () => NAV.filter((n) => n.id !== 'import' || Store.can('write'));
   const NEEDS_PROJECT = new Set(['dashboard', 'import', 'compare', 'reports']);
 
   const App = (MT.App = {
@@ -83,6 +85,14 @@
         }
       } else name = 'projects';
     }
+    if (NEEDS_WRITE.has(name) && !Store.can('write')) {
+      UI.toast('صلاحيتك مشاهد فقط، فلا يمكنك الاستيراد.', { type: 'error' });
+      name = Store.project ? 'dashboard' : 'projects';
+    }
+    if (name === 'users' && !Store.can('admin')) {
+      UI.toast('صفحة المستخدمين لمدير النظام فقط.', { type: 'error' });
+      name = Store.project ? 'dashboard' : 'projects';
+    }
     const view = App.views[name];
     if (!view) {
       App.go(Store.user ? '#/dashboard' : '#/login');
@@ -142,11 +152,11 @@
             <span class="brand-mark">${UI.icon('bolt', 26)}</span>
             <span class="brand-text"><strong>صرف المواد</strong><small>كهرباء نجران</small></span>
           </a>
-          <nav class="nav" aria-label="الأقسام">${NAV.map((n) => navItem(n, 'nav-item')).join('')}</nav>
+          <nav class="nav" aria-label="الأقسام">${navList().map((n) => navItem(n, 'nav-item')).join('')}</nav>
           <div class="side-foot">
             <div class="account">
               <span class="avatar" aria-hidden="true">${initial}</span>
-              <span class="account-text"><strong>${esc(Store.user.name || Store.user.email)}</strong><small>${Store.mode === 'supabase' ? 'متصل بقاعدة البيانات' : 'وضع محلي'}</small></span>
+              <span class="account-text"><strong>${esc(Store.user.name || Store.user.email)}</strong><small>${esc(Store.ROLES[Store.user.role] || '')}، ${Store.mode === 'supabase' ? 'متصل' : 'وضع محلي'}</small></span>
             </div>
           </div>
         </aside>
@@ -168,8 +178,9 @@
             <div class="pop-wrap">
               <button class="icon-btn avatar-btn" type="button" id="acct" aria-haspopup="true" aria-expanded="false" aria-controls="pop-acct" aria-label="الحساب"><span class="avatar">${initial}</span></button>
               <div class="pop pop-acct" id="pop-acct" hidden>
-                <p class="pop-user"><strong>${esc(Store.user.name || Store.user.email)}</strong><small class="mono">${esc(Store.user.email || '')}</small></p>
+                <p class="pop-user"><strong>${esc(Store.user.name || Store.user.email)}</strong><small class="mono">${esc(Store.user.email || '')}</small><small>${esc(Store.ROLES[Store.user.role] || '')}</small></p>
                 <button class="pop-item" type="button" data-action="projects">${UI.icon('folder', 18)}<span>المشاريع</span></button>
+                ${Store.can('admin') ? `<button class="pop-item" type="button" data-action="users">${UI.icon('users', 18)}<span>إدارة المستخدمين</span></button>` : ''}
                 <button class="pop-item" type="button" data-action="settings">${UI.icon('sliders', 18)}<span>الإعدادات</span></button>
                 <button class="pop-item" type="button" data-action="logout">${UI.icon('logout', 18)}<span>تسجيل الخروج</span></button>
               </div>
@@ -178,7 +189,7 @@
           <main id="main" tabindex="-1"></main>
           ${UI.pmFooter()}
         </div>
-        <nav class="bottom-nav" aria-label="الأقسام">${NAV.map((n) => navItem(n, 'bn-item')).join('')}</nav>
+        <nav class="bottom-nav" aria-label="الأقسام">${navList().map((n) => navItem(n, 'bn-item')).join('')}</nav>
       </div>`;
     App.shell = true;
     bindShell();
@@ -196,6 +207,7 @@
       if (a === 'switch-project' || a === 'projects') (closePops(), App.go('#/projects'));
       else if (a === 'period') openPeriod();
       else if (a === 'settings') (closePops(), openSettings());
+      else if (a === 'users') (closePops(), App.go('#/users'));
       else if (a === 'logout') logout();
     });
     // النوافذ المنبثقة الصغيرة

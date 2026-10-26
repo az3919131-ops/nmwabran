@@ -20,8 +20,8 @@
           <div><h1 class="h1">كتالوج المواد</h1>
           <p class="lead">الوصف والوحدة لكل رقم مادة. تُعرض هذه الأوصاف في كل الشاشات بدل ما يُقرأ من الصورة.</p></div>
           <div class="page-actions">
-            <label class="btn btn-primary" for="cat-file">${UI.icon('upload', 20)}<span>استورد كتالوج Excel</span></label>
-            <input id="cat-file" type="file" accept=".xlsx,.xls,.csv" hidden>
+            ${Store.can('write') ? `<label class="btn btn-primary" for="cat-file">${UI.icon('upload', 20)}<span>استورد كتالوج Excel</span></label>
+            <input id="cat-file" type="file" accept=".xlsx,.xls,.csv" hidden>` : ''}
             <button class="btn" type="button" id="cat-export">${UI.icon('download', 20)}<span>نزّل الكتالوج</span></button>
           </div>
         </header>
@@ -64,7 +64,8 @@
         }
       };
 
-      root.querySelector('#cat-file').onchange = async (e) => {
+      const catFile = root.querySelector('#cat-file');
+      if (catFile) catFile.onchange = async (e) => {
         const file = e.target.files[0];
         e.target.value = '';
         if (!file) return;

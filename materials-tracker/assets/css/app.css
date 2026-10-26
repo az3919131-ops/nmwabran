@@ -3098,3 +3098,30 @@ tr[data-code] {
   font-weight: 700;
   border-block-start: 2px solid var(--ink);
 }
+
+/* ---------- إدارة المستخدمين ---------- */
+.role-list {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.role-list > div {
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--bg);
+}
+.role-list dt {
+  font-weight: 700;
+  margin-block-end: 4px;
+}
+.role-list dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-1);
+}
+.u-form {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
