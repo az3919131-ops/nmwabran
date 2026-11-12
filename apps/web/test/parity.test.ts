@@ -1,5 +1,5 @@
 // يقارن صفحات الواجهة الجديدة بلقطات المنصة القديمة (golden) لمشروع الحصينية: نفس الـHTML الطبيعي حرفيًا.
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { DEFAULT_CATALOG, hassiniya } from "@iltizam/core";
 import golden from "../../../packages/core/test/golden/pages.json";
 import { AUTH, S, setCatalog, setContractors } from "../src/runtime";
@@ -25,6 +25,9 @@ const stripToday = (h: string) => h.replace(/<span class="who2">[\s\S]*?<\/span>
 const PAGES = ["dash", "firms", "master", "qty", "boq", "wages", "inv", "forms", "map", "recs"] as const;
 
 beforeAll(() => {
+  // لقطات golden سُجّلت بتاريخ 3 أكتوبر 2026؛ نثبّت الساعة كي لا يتغير التاريخ الظاهر في الترويسة والغلاف كل يوم
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-10-03T12:00:00+03:00"));
   document.body.innerHTML = '<div id="view"></div><div id="toast"></div><div id="deck" hidden></div>';
   setCatalog(DEFAULT_CATALOG);
   setContractors([{ id: "c0", name: "شركة ناصر مانع وبران وشركاه" }, { id: "c1", name: "مقاول آخر / Other contractor" }]);
@@ -59,3 +62,5 @@ for (const lang of ["ar", "en"] as const) {
     });
   });
 }
+
+afterAll(() => vi.useRealTimers());
