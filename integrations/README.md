@@ -73,5 +73,12 @@ const ok = (secret, rawBody, header) => {
 | `StorageProvider` | `apps/api/src/services/storage.ts` | `local` (افتراضي) أو `s3` (`STORAGE_PROVIDER=s3`) لأصول الملفات والمرفقات الكبيرة |
 | `MailProvider` | `apps/api/src/services/mail/index.ts` | `smtp` (افتراضي) أو `resend` أو `gmail_api` عبر `MAIL_PROVIDER` |
 
+## 6) لوحة تحكم الرد الآلي على واتساب (موقع أحمد زهران)
+
+`integrations/n8n/dashboard-api.json` — workflow «واجهة لوحة التحكم – أحمد»: webhook `POST /webhook/ahmed-dashboard`
+يقرأ ويكتب في جدولي n8n الموجودين `wa_daily_message` و`wa_reply_log`، ويتحقق من المفتاح في الترويسة `x-dashboard-key`
+مقابل صف `api_key` في جدول `dashboard_config` (القيمة `CHANGE_ME` مرفوضة دائمًا). التفاصيل وخطوات الإعداد في
+[`apps/portfolio/README.md`](../apps/portfolio/README.md). بعد الاستيراد اختر الجداول الثلاثة من جديد داخل العقد (معرّفاتها خاصة بكل خادم).
+
 ---
 Project manager · Eng. Ahmed Zahran

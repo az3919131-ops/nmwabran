@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "visibility": {
+    "services": true,
+    "platforms": true,
+    "security": true,
+    "youtube": true,
+    "linkedin": true,
+    "pages": true
+  },
+  "services": [
+    {
+      "id": "svc-pm",
+      "icon": "gantt",
+      "title": {
+        "ar": "إدارة المشاريع والعقود الموحدة",
+        "en": "Project & unified-contract management"
+      },
+      "description": {
+        "ar": "إشراف كامل على تنفيذ المشاريع: الجدولة وضبط التكاليف وتقارير الإدارة العليا، والتنسيق مع المقاولين والاستشاريين والجهات الحكومية.",
+        "en": "End-to-end delivery oversight: scheduling, cost control and executive reporting, coordinating contractors, consultants and authorities."
+      }
+    },
+    {
+      "id": "svc-eng",
+      "icon": "bolt",
+      "title": {
+        "ar": "استشارات هندسية كهربائية",
+        "en": "Electrical engineering consulting"
+      },
+      "description": {
+        "ar": "تصميم ومراجعة المخططات أحادية الخط لشبكات الجهد المتوسط والمنخفض، وتقييم المواد وفق مواصفات الشركة السعودية للكهرباء، ودعم تشغيل المحطات.",
+        "en": "Single-line diagram design and review for MV/LV networks, material evaluation against SEC specifications, and substation commissioning support."
+      }
+    },
+    {
+      "id": "svc-test",
+      "icon": "wrench",
+      "title": {
+        "ar": "فحص الكابلات وتحديد الأعطال",
+        "en": "Cable testing & fault location"
+      },
+      "description": {
+        "ar": "اختبار كابلات الجهد العالي والمتوسط والمنخفض والمحولات وتحديد مواقع الأعطال بطرق: ICE، ARM، Decay.",
+        "en": "Testing HV/MV/LV cables and transformers and locating faults with ICE, ARM and decay methods."
+      }
+    },
+    {
+      "id": "svc-thermal",
+      "icon": "thermo",
+      "title": {
+        "ar": "المسح الحراري والصيانة التنبؤية",
+        "en": "Thermal scanning & predictive maintenance"
+      },
+      "description": {
+        "ar": "مسح حراري بكاميرات FLIR لاكتشاف الأعطال مبكرًا قبل توقف المعدات، ومتابعة المعالجة.",
+        "en": "FLIR thermal scanning to catch faults early, before equipment stops, with follow-up of the fixes."
+      }
+    },
+    {
+      "id": "svc-train",
+      "icon": "mentor",
+      "title": {
+        "ar": "التدريب الفني والتوجيه الهندسي",
+        "en": "Technical training & mentoring"
+      },
+      "description": {
+        "ar": "برامج عملية للمهندسين والفنيين في شبكات التوزيع والسلامة، وتأهيل فرق الصيانة والتشغيل.",
+        "en": "Hands-on programmes for engineers and technicians in distribution networks and safety, and readiness for maintenance and operations teams."
+      }
+    },
+    {
+      "id": "svc-web",
+      "icon": "layout",
+      "title": {
+        "ar": "تصميم المواقع والمنصات الرقمية",
+        "en": "Website & digital platform design"
+      },
+      "description": {
+        "ar": "تصميم مواقع ومنصات عربية وإنجليزية متجاوبة: منصات تدريب، وإدارة أعمال المقاولين، ولوحات متابعة.",
+        "en": "Responsive Arabic and English websites and platforms: training platforms, contractor management and tracking dashboards."
+      },
+      "href": "#platforms",
+      "hrefLabel": {
+        "ar": "شاهد أعمالي",
+        "en": "See my work"
+      }
+    },
+    {
+      "id": "svc-auto",
+      "icon": "bot",
+      "title": {
+        "ar": "الأتمتة والردود الآلية",
+        "en": "Automation & auto-replies"
+      },
+      "description": {
+        "ar": "ربط الأنظمة وأتمتة الردود على واتساب ولوحات المتابعة عبر n8n.",
+        "en": "Connecting systems and automating WhatsApp replies and tracking dashboards with n8n."
+      }
+    }
+  ],
+  "platforms": [
+    {
+      "id": "pl-training",
+      "name": {
+        "ar": "منصة التزام للتدريب",
+        "en": "Iltizam Training Platform"
+      },
+      "description": {
+        "ar": "منصة تعليمية للتدريب وبناء المهارات المهنية.",
+        "en": "An e-learning platform for professional training and skills development."
+      },
+      "category": {
+        "ar": "منصة تعليمية",
+        "en": "Education"
+      },
+      "url": "https://iltizam-training.netlify.app/#/home",
+      "status": "working",
+      "icon": "graduation"
+    },
+    {
+      "id": "pl-contractors",
+      "name": {
+        "ar": "منصة التزام لإدارة وتحليل أعمال المقاولين",
+        "en": "Iltizam Contractors Management & Analytics"
+      },
+      "description": {
+        "ar": "منصة لمتابعة التزام المقاولين بأوامر عملهم: الحصر والمقايسة والمواد والفواتير، مع تقارير وتحليلات.",
+        "en": "A platform that tracks contractors' compliance with their work orders: quantities, BOQ, materials and invoices, with reports and analytics."
+      },
+      "category": {
+        "ar": "إدارة وتحليل أعمال",
+        "en": "Management & analytics"
+      },
+      "url": "https://iltizam-najran.netlify.app/",
+      "status": "working",
+      "icon": "building",
+      "featured": true
+    }
+  ],
+  "security": [
+    {
+      "id": "sec-nmwabran",
+      "name": {
+        "ar": "موقع التأمين الإلكتروني",
+        "en": "Electronic Security Site"
+      },
+      "description": {
+        "ar": "موقع مخصص للتأمين الإلكتروني.",
+        "en": "A site dedicated to electronic security."
+      },
+      "category": {
+        "ar": "تأمين إلكتروني",
+        "en": "Electronic security"
+      },
+      "url": "https://securitynmwabran.netlify.app/",
+      "status": "working",
+      "icon": "shield"
+    }
+  ],
+  "youtube": [
+    {
+      "id": "yt-alphamedia",
+      "name": {
+        "ar": "Alphamedia",
+        "en": "Alphamedia"
+      },
+      "description": {
+        "ar": "قناتي على يوتيوب.",
+        "en": "My YouTube channel."
+      },
+      "url": "https://www.youtube.com/@Alphamedia-010",
+      "handle": "@Alphamedia-010",
+      "videos": []
+    }
+  ],
+  "linkedin": [
+    {
+      "id": "li-main",
+      "name": {
+        "ar": "حسابي الشخصي على لينكدإن",
+        "en": "My personal LinkedIn account"
+      },
+      "kind": "personal",
+      "url": "https://www.linkedin.com/in/ahmed-zahran-8b7730340",
+      "description": {
+        "ar": "الحساب الشخصي المذكور في سيرتي الذاتية: الخبرات المهنية والمشاريع.",
+        "en": "The personal account listed on my CV: professional experience and projects."
+      }
+    },
+    {
+      "id": "li-second",
+      "name": {
+        "ar": "حساب لينكدإن شخصي آخر",
+        "en": "Another personal LinkedIn account"
+      },
+      "kind": "personal",
+      "url": "https://www.linkedin.com/in/ahmed-zahran-2815633b4",
+      "description": {
+        "ar": "حساب شخصي إضافي.",
+        "en": "An additional personal account."
+      }
+    }
+  ],
+  "pages": [],
+  "custom": []
+}

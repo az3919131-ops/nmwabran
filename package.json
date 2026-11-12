@@ -11,13 +11,14 @@
   "scripts": {
     "dev:api": "npm run dev -w @iltizam/api",
     "dev:web": "npm run dev -w @iltizam/web",
-    "build": "npm run build -w @iltizam/core --if-present && npm run build -w @iltizam/web && npm run build -w @iltizam/api",
-    "test": "npm run test -w @iltizam/core && npm run test -w @iltizam/api && npm run test -w @iltizam/web",
+    "build": "npm run build -w @iltizam/core --if-present && npm run build -w @iltizam/web && npm run build -w @iltizam/api && npm run build -w @nmwabran/portfolio",
+    "test": "npm run test -w @iltizam/core && npm run test -w @iltizam/api && npm run test -w @iltizam/web && npm run test -w @nmwabran/portfolio",
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
-    "typecheck": "npm run typecheck -w @iltizam/core && npm run typecheck -w @iltizam/api && npm run typecheck -w @iltizam/web",
+    "typecheck": "npm run typecheck -w @iltizam/core && npm run typecheck -w @iltizam/api && npm run typecheck -w @iltizam/web && npm run typecheck -w @nmwabran/portfolio",
     "db:generate": "npm run db:generate -w @iltizam/api",
     "db:migrate": "npm run db:migrate -w @iltizam/api",
-    "db:seed": "npm run db:seed -w @iltizam/api"
+    "db:seed": "npm run db:seed -w @iltizam/api",
+    "dev:portfolio": "npm run dev -w @nmwabran/portfolio"
   },
   "engines": {
     "node": ">=20"
