@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as profile from "../src/data/profile";
 import { S } from "../src/i18n/strings";
 import { D } from "../src/dashboard/strings";
+import { C } from "../src/i18n/content-strings";
 
 // يمر على كل كائن { ar, en } ويتأكد أن اللغتين موجودتان وغير فارغتين وبنفس الشكل
 function leaves(node: unknown, path: string, out: Array<[string, { ar: unknown; en: unknown }]>) {
@@ -20,6 +21,7 @@ describe("ثنائية اللغة", () => {
   const all: Array<[string, { ar: unknown; en: unknown }]> = [];
   leaves(S, "S", all);
   leaves(D, "D", all);
+leaves(C, "C", all);
   leaves(profile, "profile", all);
 
   it("جمع عددًا معقولًا من النصوص", () => expect(all.length).toBeGreaterThan(150));

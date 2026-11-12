@@ -14,7 +14,7 @@ const KIND_ICON: Record<Credential["kind"], LucideIcon> = {
 export function Certifications() {
   const { t } = useLang();
   return (
-    <section id="certifications" aria-labelledby="cert-title" className="section-pad bg-navy-950/60">
+    <section id="certifications" aria-labelledby="cert-title" className="section-pad">
       <div className="container-x">
         <SectionHeading id="cert-title" title={t(S.certs.title)} lead={t(S.certs.lead)} />
 

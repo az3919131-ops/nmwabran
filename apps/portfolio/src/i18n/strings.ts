@@ -39,6 +39,7 @@ export const S = {
       en: "From cable and transformer maintenance in the field to leading SEC unified-contract projects.",
     } as Bi,
     now: { ar: "الحالي", en: "Current" } as Bi,
+    titles: { ar: "المسميات الوظيفية", en: "Job titles" } as Bi,
     expand: { ar: "عرض التفاصيل", en: "Show details" } as Bi,
     collapse: { ar: "إخفاء التفاصيل", en: "Hide details" } as Bi,
   },

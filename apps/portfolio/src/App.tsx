@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
 import { ToastProvider } from "./components/Toast";
 import { LangProvider } from "./i18n/lang";
+import { ContentProvider } from "./lib/ContentContext";
 import { Landing } from "./landing/Landing";
 import { NotFound } from "./NotFound";
 import { useRoute } from "./lib/useRoute";
@@ -13,7 +14,7 @@ function Routes() {
 
   useEffect(() => {
     if (route.name === "home" && !window.location.hash) window.scrollTo({ top: 0 });
-    if (route.name === "dashboard") window.scrollTo({ top: 0 });
+    if (route.name === "dashboard" || route.name === "edit") window.scrollTo({ top: 0 });
   }, [route.name]);
 
   if (route.name === "dashboard")
@@ -23,7 +24,11 @@ function Routes() {
       </Suspense>
     );
   if (route.name === "not-found") return <NotFound />;
-  return <Landing />;
+  return (
+    <ContentProvider editing={route.name === "edit"}>
+      <Landing />
+    </ContentProvider>
+  );
 }
 
 export function App() {

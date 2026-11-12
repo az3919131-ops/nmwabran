@@ -39,6 +39,16 @@ function RoleCard({ role, defaultOpen }: { role: Role; defaultOpen: boolean }) {
           {role.place && <span className="text-slate-500"> — {t(role.place)}</span>}
         </p>
 
+        {role.titles && (
+          <ul className="mt-3 flex flex-wrap gap-1.5" aria-label={t(S.experience.titles)}>
+            {t(role.titles).map((x) => (
+              <li key={x} className="pill border-mint-500/30 bg-mint-500/8 text-mint-400">
+                {x}
+              </li>
+            ))}
+          </ul>
+        )}
+
         <ul className="mt-4 space-y-2 text-sm text-slate-300">
           <AnimatePresence initial={false}>
             {shown.map((p, i) => (
@@ -76,7 +86,7 @@ function RoleCard({ role, defaultOpen }: { role: Role; defaultOpen: boolean }) {
 export function Experience() {
   const { t } = useLang();
   return (
-    <section id="experience" aria-labelledby="exp-title" className="section-pad bg-navy-950/60">
+    <section id="experience" aria-labelledby="exp-title" className="section-pad">
       <div className="container-x">
         <SectionHeading id="exp-title" title={t(S.experience.title)} lead={t(S.experience.lead)} />
         <div className="relative max-w-3xl">

@@ -4,7 +4,7 @@ import { useLang } from "../i18n/lang";
 import { S } from "../i18n/strings";
 
 /** نافذة حوار فوق الصفحة بعنصر <dialog> الأصلي: يحبس التركيز ويغلق بـ Esc */
-export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
+export function Modal({ open, onClose, title, children, wide = false }: { open: boolean; onClose: () => void; title: string; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   const { t } = useLang();
 
@@ -23,7 +23,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
         if (e.target === ref.current) onClose(); // النقر على الخلفية
       }}
       aria-labelledby="modal-title"
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-white/10 bg-navy-800 p-0 text-slate-100 shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className={`m-auto max-h-[92vh] w-[calc(100%-2rem)] ${wide ? "max-w-2xl" : "max-w-lg"} overflow-y-auto rounded-2xl border border-white/10 bg-navy-800 p-0 text-slate-100 shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm`}
     >
       <div className="p-5 sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-4">

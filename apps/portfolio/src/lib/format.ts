@@ -34,3 +34,11 @@ export function shortDay(day: string): string {
 export function fillTemplate(text: string, vars: { name: string; date: string }): string {
   return text.replaceAll("{name}", vars.name).replaceAll("{date}", vars.date);
 }
+
+/** تاريخ الإطلاق: 2026 أو 2026-03 أو 2026-03-15 → عرض مقروء بأرقام لاتينية */
+export function formatLaunch(value: string, lang: Lang): string {
+  const [y, m, d] = value.split("-").map(Number);
+  if (!y) return value;
+  const opts: Intl.DateTimeFormatOptions = m ? (d ? { year: "numeric", month: "long", day: "numeric" } : { year: "numeric", month: "long" }) : { year: "numeric" };
+  return new Intl.DateTimeFormat(loc(lang), { timeZone: "UTC", ...opts }).format(new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1)));
+}

@@ -20,6 +20,10 @@ export const config = {
   /** مسار webhook لوحة التحكم داخل n8n */
   n8nDashboardPath: (env.VITE_N8N_DASHBOARD_PATH || "ahmed-dashboard").replace(/^\/+|\/+$/g, ""),
   siteUrl: trimSlash(env.VITE_SITE_URL || ""),
+  /** رابط تحرير ملف المحتوى في GitHub (زر «كيف أنشر للجميع؟» في وضع التحرير) */
+  contentEditUrl:
+    env.VITE_CONTENT_EDIT_URL ||
+    "https://github.com/az3919131-ops/nmwabran/edit/claude/ahmed-portfolio-landing-n3ywsp/apps/portfolio/src/data/site-content.json",
 } as const;
 
 /** التوقيع المطلوب أسفل كل صفحة وكل عمل يُنشر من التطبيق (بنفس صيغة packages/core/src/signature.ts) */

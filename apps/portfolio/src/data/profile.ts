@@ -113,6 +113,8 @@ export type Role = {
   org: Bi;
   place?: Bi;
   current?: boolean;
+  /** المسميات الوظيفية داخل الدور (تُعرض كشارات) */
+  titles?: Bi<string[]>;
   points: Bi<string[]>;
 };
 
@@ -149,10 +151,14 @@ export const roles: Role[] = [
     title: { ar: "مهندس كهرباء — اختبار وتحديد أعطال الكابلات والمحولات", en: "Electrical Engineer — Cable & Transformer Test / Fault Location" },
     org: { ar: "جنوب القاهرة لتوزيع الكهرباء", en: "South Cairo Electricity Distribution" },
     place: { ar: "القاهرة، مصر", en: "Cairo, Egypt" },
+    titles: {
+      ar: ["مهندس موقع للبنية التحتية الكهربائية", "مهندس اختبار وتحديد أعطال الكابلات والمحولات", "مهندس صيانة محولات", "مهندس تصميم كهربائي", "مهندس وردية وصيانة (شبكة الجهد المنخفض)", "مدرّب فني — RTC حلوان"],
+      en: ["Electrical infrastructure site engineer", "Test & fault locator engineer (cables, transformers)", "Transformer maintenance engineer", "Electrical design engineer", "Shift & maintenance engineer (LV network)", "Trainer — RTC Helwan"],
+    },
     points: {
       ar: [
         "تصميم المخططات أحادية الخط لكابلات الجهد المنخفض والمتوسط ورسومات الورش.",
-        "اختبار وتحديد أعطال كابلات الجهد العالي والمتوسط والمنخفض والمحولات بعربة اختبار على جهود 13.8 و33 ك.ف، بطرق ICE وARM وARM Burning وDecay.",
+        "اختبار وتحديد أعطال كابلات الجهد العالي والمتوسط والمنخفض والمحولات بعربة اختبار على جهود 13.8 و33 ك.ف، بطرق: ICE، ARM، ARM Burning، Decay.",
         "صيانة كابلات الجهد المتوسط (وصلات الزيت وXLPE والنهايات) واختبار مكونات الشبكة: محولات القدرة ومحولات الجهد والتيار وقواطع SF6 ووحدات RMU ولوحات التوزيع.",
         "الصيانة التنبؤية بالتصوير الحراري (FLIR) ومعالجة النتائج.",
         "مهندس وردية وصيانة: قيادة فرق صيانة شبكة الجهد المنخفض، وإدارة مواقع الإنشاء.",

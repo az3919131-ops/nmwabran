@@ -1,21 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Download, Menu, X } from "lucide-react";
 import { LogoMark } from "../components/Brand";
 import { LangToggle } from "../components/LangToggle";
 import { useToast } from "../components/Toast";
+import { C } from "../i18n/content-strings";
+import { useContent } from "../lib/ContentContext";
+import { navItems, renderedSections, type NavGroup } from "../lib/sections";
+import type { Bi } from "../i18n/lang";
 import { useLang } from "../i18n/lang";
 import { S } from "../i18n/strings";
 import { downloadVCard } from "../lib/vcard";
 import { useScrollSpy } from "../lib/useScrollSpy";
 
-export const NAV_IDS = ["about", "experience", "projects", "certifications", "contact"] as const;
+const LABELS: Record<NavGroup, Bi> = {
+  about: S.nav.about,
+  services: C.nav.services,
+  experience: S.nav.experience,
+  projects: S.nav.projects,
+  platforms: C.nav.platforms,
+  presence: C.nav.presence,
+  certifications: S.nav.certifications,
+  contact: S.nav.contact,
+};
 
 export function Header() {
   const { t, lang } = useLang();
   const toast = useToast();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const active = useScrollSpy([...NAV_IDS]);
+  const { content, editing } = useContent();
+  const plan = useMemo(() => renderedSections(content, editing), [content, editing]);
+  const nav = useMemo(() => navItems(plan), [plan]);
+  const activeId = useScrollSpy(plan.map((e) => e.id));
+  const activeGroup = plan.find((e) => e.id === activeId)?.group;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -24,13 +41,7 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links: Array<[(typeof NAV_IDS)[number], string]> = [
-    ["about", t(S.nav.about)],
-    ["experience", t(S.nav.experience)],
-    ["projects", t(S.nav.projects)],
-    ["certifications", t(S.nav.certifications)],
-    ["contact", t(S.nav.contact)],
-  ];
+  const links = nav.map((e) => [e.group, e.id, t(LABELS[e.group])] as const);
 
   const save = () => {
     downloadVCard(lang);
@@ -56,14 +67,14 @@ export function Header() {
           <span className="font-display text-lg text-white max-sm:hidden">{t(S.brand)}</span>
         </a>
 
-        <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
-          {links.map(([id, label]) => (
+        <nav aria-label="Primary" className="hidden items-center gap-1 xl:flex">
+          {links.map(([group, id, label]) => (
             <a
-              key={id}
+              key={group}
               href={`#${id}`}
-              aria-current={active === id ? "true" : undefined}
+              aria-current={activeGroup === group ? "true" : undefined}
               className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                active === id ? "bg-white/10 text-gold-300" : "text-slate-300 hover:text-white"
+                activeGroup === group ? "bg-white/10 text-gold-300" : "text-slate-300 hover:text-white"
               }`}
             >
               {label}
@@ -79,7 +90,7 @@ export function Header() {
           </button>
           <button
             type="button"
-            className="btn btn-ghost btn-sm lg:hidden"
+            className="btn btn-ghost btn-sm xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? t(S.nav.close) : t(S.nav.menu)}
@@ -91,13 +102,13 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-menu" aria-label="Mobile" className="container-x flex flex-col gap-1 pb-4 lg:hidden">
-          {links.map(([id, label]) => (
+        <nav id="mobile-menu" aria-label="Mobile" className="container-x flex flex-col gap-1 pb-4 xl:hidden">
+          {links.map(([group, id, label]) => (
             <a
-              key={id}
+              key={group}
               href={`#${id}`}
               onClick={() => setOpen(false)}
-              className={`rounded-xl px-4 py-3 font-semibold ${active === id ? "bg-white/10 text-gold-300" : "text-slate-200 hover:bg-white/5"}`}
+              className={`rounded-xl px-4 py-3 font-semibold ${activeGroup === group ? "bg-white/10 text-gold-300" : "text-slate-200 hover:bg-white/5"}`}
             >
               {label}
             </a>

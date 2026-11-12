@@ -186,6 +186,10 @@
   .section-pad {
     padding-block: clamp(4rem, 8vw, 6.5rem);
   }
+  /* خلفية متبادلة للأقسام تلقائيًا مهما أُخفي منها */
+  main > section.section-pad:nth-of-type(even) {
+    background-color: rgb(7 13 26 / 0.6);
+  }
   .container-x {
     width: 100%;
     max-width: 72rem;
